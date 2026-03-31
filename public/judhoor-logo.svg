@@ -1,0 +1,45 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="judhoorGradient" x1="64" y1="80" x2="438" y2="408" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7E9578"/>
+      <stop offset="0.55" stop-color="#A9A170"/>
+      <stop offset="1" stop-color="#D1B46A"/>
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#A89873" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)" fill="none" stroke="url(#judhoorGradient)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M248 133C216 127 181 142 157 167C130 195 121 228 124 264C128 314 164 355 224 384" stroke-width="16"/>
+    <path d="M264 126C312 120 355 137 384 168C411 197 421 228 416 269C411 313 381 351 322 384" stroke-width="16"/>
+    <path d="M253 147C230 164 213 190 207 221C198 266 212 319 248 379" stroke-width="13"/>
+    <path d="M261 147C284 165 301 189 307 221C315 267 301 319 264 379" stroke-width="13"/>
+    <path d="M154 168C153 133 174 109 211 100" stroke-width="12"/>
+    <path d="M176 156C193 129 219 110 251 103" stroke-width="12"/>
+    <path d="M359 169C360 134 340 109 302 100" stroke-width="12"/>
+    <path d="M336 156C320 129 294 110 261 103" stroke-width="12"/>
+    <path d="M132 232C116 214 107 192 106 165" stroke-width="11"/>
+    <path d="M120 265C99 243 87 218 82 188" stroke-width="11"/>
+    <path d="M382 232C397 214 406 192 407 165" stroke-width="11"/>
+    <path d="M393 266C414 243 426 218 431 188" stroke-width="11"/>
+    <path d="M224 383L199 428" stroke-width="10"/>
+    <path d="M242 387L232 447" stroke-width="10"/>
+    <path d="M286 387L296 447" stroke-width="10"/>
+    <path d="M306 383L331 428" stroke-width="10"/>
+    <path d="M204 413L170 433" stroke-width="9"/>
+    <path d="M327 413L361 433" stroke-width="9"/>
+    <path d="M230 429L206 459" stroke-width="8"/>
+    <path d="M282 429L306 459" stroke-width="8"/>
+    <path d="M256 235L256 410" stroke-width="14"/>
+    <path d="M243 410H269" stroke-width="14"/>
+  </g>
+
+  <g fill="url(#judhoorGradient)">
+    <circle cx="218" cy="194" r="23"/>
+    <circle cx="293" cy="187" r="26"/>
+    <path d="M177 301C182 260 202 227 233 222C256 218 267 245 266 273V301H177Z"/>
+    <path d="M247 303C249 260 271 221 304 218C333 215 352 251 352 303H247Z"/>
+    <rect x="247" y="298" width="18" height="118" rx="9"/>
+  </g>
+</svg>
