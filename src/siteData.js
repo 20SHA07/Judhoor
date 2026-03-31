@@ -1,3 +1,5 @@
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+
 export const heroHighlights = [
   {
     title: "Premium physical boxes",
@@ -40,9 +42,9 @@ export const productBoxes = [
       "Bakhoor memory scent sample",
     ],
     images: [
-      "/mockups/past-box-hero.png",
-      "/mockups/past-box-items.png",
-      "/mockups/past-box-detail.png",
+      assetPath("/mockups/past-box-hero.png"),
+      assetPath("/mockups/past-box-items.png"),
+      assetPath("/mockups/past-box-detail.png"),
     ],
   },
   {
@@ -64,9 +66,9 @@ export const productBoxes = [
       "Linen sleep mask",
     ],
     images: [
-      "/mockups/balance-box-hero.png",
-      "/mockups/balance-box-items.png",
-      "/mockups/balance-box-detail.png",
+      assetPath("/mockups/balance-box-hero.png"),
+      assetPath("/mockups/balance-box-items.png"),
+      assetPath("/mockups/balance-box-detail.png"),
     ],
   },
   {
@@ -88,8 +90,8 @@ export const productBoxes = [
       "Knitting starter kit",
     ],
     images: [
-      "/mockups/creative-box-hero.png",
-      "/mockups/creative-box-items.png",
+      assetPath("/mockups/creative-box-hero.png"),
+      assetPath("/mockups/creative-box-items.png"),
     ],
   },
   {
@@ -111,8 +113,8 @@ export const productBoxes = [
       "Shared writing journal",
     ],
     images: [
-      "/mockups/important-box-hero.png",
-      "/mockups/important-box-items.png",
+      assetPath("/mockups/important-box-hero.png"),
+      assetPath("/mockups/important-box-items.png"),
     ],
   },
 ];
@@ -176,18 +178,18 @@ export const conceptGallery = [
     title: "Four-box elderly wellbeing line",
     description:
       "The main Judhoor system built around memory, health, creativity, and connection.",
-    image: "/mockups/past-box-hero.png",
+    image: assetPath("/mockups/past-box-hero.png"),
   },
   {
     title: "Crafted item ecosystems",
     description:
       "Every box contains premium tactile objects designed to be used, revisited, and cherished.",
-    image: "/mockups/creative-box-items.png",
+    image: assetPath("/mockups/creative-box-items.png"),
   },
   {
     title: "Additional concept experience",
     description:
       "A travel-themed Judhoor box concept shown as part of the wider visual brand world.",
-    image: "/mockups/travel-box-hero.png",
+    image: assetPath("/mockups/travel-box-hero.png"),
   },
 ];

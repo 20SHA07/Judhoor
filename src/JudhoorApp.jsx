@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { boxCatalog, conceptMoments, journeySteps } from "./judhoorData";
 
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+
 function IntroScreen({ onFinish }) {
   useEffect(() => {
     const timer = window.setTimeout(onFinish, 4300);
@@ -25,7 +27,7 @@ function IntroScreen({ onFinish }) {
           <div className="jh-intro__lid jh-intro__lid--right" />
           <div className="jh-intro__site-glow" />
           <div className="jh-intro__base">
-            <img src="/judhoor-logo.png" alt="" className="jh-intro__logo" />
+            <img src={assetPath("/judhoor-logo.png")} alt="" className="jh-intro__logo" />
             <span className="jh-intro__shine" />
             <span className="jh-intro__dust jh-intro__dust--one" />
             <span className="jh-intro__dust jh-intro__dust--two" />
@@ -130,7 +132,7 @@ function Shell({ cartCount, children, onReplayIntro }) {
       <div className="jh-bg jh-bg--two" />
       <header className="jh-header">
         <NavLink to="/" className="jh-brand">
-          <img src="/judhoor-logo.png" alt="Judhoor logo" />
+          <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
             <span>Premium care boxes for cherished elders</span>
@@ -152,7 +154,7 @@ function Shell({ cartCount, children, onReplayIntro }) {
       <main className="jh-main">{children}</main>
       <footer className="jh-footer">
         <div className="jh-footer__brand">
-          <img src="/judhoor-logo.png" alt="Judhoor logo" />
+          <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
             <p>
@@ -258,7 +260,7 @@ function HomePage({ onAddToCart }) {
         <div className="jh-hero__visual jh-animate jh-animate--float">
           <div className="jh-hero__visual-shell">
             <img
-              src="/mockups/past-box-hero.png"
+              src={assetPath("/mockups/past-box-hero.png")}
               alt="Judhoor box presentation"
               className="jh-hero__image"
             />
@@ -422,28 +424,28 @@ function ExperiencePage() {
       title: "Unboxing should feel ceremonial, not clinical.",
       text:
         "The first impression matters. Judhoor boxes are designed to arrive like meaningful gifts, with premium presentation, warm materials, and an immediate sense of care.",
-      image: "/mockups/important-box-hero.png",
+      image: assetPath("/mockups/important-box-hero.png"),
       alt: "Judhoor ceremonial unboxing presentation",
     },
     {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: "/mockups/past-box-items.png",
+      image: assetPath("/mockups/past-box-items.png"),
       alt: "Judhoor memory and storytelling objects",
     },
     {
       title: "The experience moves between calm activity and shared presence.",
       text:
         "Some moments are reflective and solitary. Others are designed for family participation. Together they create a rhythm that feels supportive rather than demanding.",
-      image: "/mockups/creative-box-items.png",
+      image: assetPath("/mockups/creative-box-items.png"),
       alt: "Judhoor creative and calming activity set",
     },
     {
       title: "Every box becomes a repeatable ritual of care.",
       text:
         "The goal is not a one-time unboxing. Judhoor is designed to be revisited across days and weeks, turning beautifully made objects into ongoing moments of connection.",
-      image: "/mockups/balance-box-items.png",
+      image: assetPath("/mockups/balance-box-items.png"),
       alt: "Judhoor wellbeing and routine objects",
     },
   ];
