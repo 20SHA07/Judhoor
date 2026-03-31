@@ -233,21 +233,21 @@ function HomePage({ onAddToCart }) {
   const calmPillars = [
     {
       kicker: "01",
-      title: "Thoughtful, not overwhelming",
+      title: "Gentle to begin",
       description:
-        "Every box is designed to feel calm at first glance, with just enough guidance to invite a gentle start.",
+        "A calm first impression with just enough guidance to get started.",
     },
     {
       kicker: "02",
       title: "Beautifully familiar",
       description:
-        "Materials, colors, and objects are chosen to feel respectful, rooted, and easy to welcome into the home.",
+        "Objects, colors, and materials chosen to feel rooted and respectful.",
     },
     {
       kicker: "03",
-      title: "Made for shared moments",
+      title: "Made to share",
       description:
-        "The experience supports elders, families, and caregivers with rituals that feel warm rather than demanding.",
+        "Supports elders, families, and caregivers without pressure.",
     },
   ];
 
@@ -256,23 +256,21 @@ function HomePage({ onAddToCart }) {
       <section className="jh-hero">
         <div className="jh-hero__copy jh-animate jh-animate--up">
           <p className="jh-eyebrow">Judhoor | جذور</p>
-          <h1>Beautiful care experiences designed to feel calm, warm, and dignified.</h1>
+          <h1>Calm, dignified care in a beautifully made box.</h1>
           <p className="jh-hero__text">
-            Judhoor creates premium activity boxes for elders that support memory,
-            wellbeing, creativity, and connection through tactile objects and
-            culturally meaningful rituals.
+            Premium activity boxes for elders, designed around memory,
+            wellbeing, creativity, and connection.
           </p>
           <div className="jh-hero__actions">
-            <NavLink to="/product-line" className="jh-button jh-button--ghost">
-              Explore collection
-            </NavLink>
             <NavLink to="/shop" className="jh-button jh-button--solid">
               View boxes
             </NavLink>
+            <NavLink to="/product-line" className="jh-hero__text-link">
+              Explore the full collection
+            </NavLink>
           </div>
           <p className="jh-hero__note">
-            Designed for families, caregivers, and communities who want support
-            that feels honoring from the very first moment.
+            Designed to feel honoring from the very first moment.
           </p>
         </div>
         <div className="jh-hero__visual jh-animate jh-animate--float">
@@ -290,11 +288,8 @@ function HomePage({ onAddToCart }) {
       <section className="jh-home-promise jh-animate jh-animate--fade">
         <div className="jh-section__head">
           <p className="jh-eyebrow">Why It Feels Different</p>
-          <h2>Less like a task. More like a gift of care.</h2>
-          <p>
-            Judhoor is designed to reduce pressure, soften the visual experience,
-            and make it easy for families to begin with warmth and confidence.
-          </p>
+          <h2>Less like a task. More like a quiet gift of care.</h2>
+          <p>A softer, more welcoming way to support shared moments.</p>
         </div>
         <div className="jh-pillars__grid">
           {calmPillars.map((item) => (
@@ -310,11 +305,8 @@ function HomePage({ onAddToCart }) {
       <section className="jh-section jh-animate jh-animate--up">
         <div className="jh-section__head">
           <p className="jh-eyebrow">Featured Boxes</p>
-          <h2>A quieter first look at the collection.</h2>
-          <p>
-            Start with two signature experiences, then explore the full range
-            when you are ready.
-          </p>
+          <h2>A simple first look at the collection.</h2>
+          <p>Start here, then explore the full range when you are ready.</p>
         </div>
         <div className="jh-product-grid jh-product-grid--featured">
           {featuredBoxes.map((box) => (
@@ -351,11 +343,10 @@ function HomePage({ onAddToCart }) {
       <section className="jh-home-story jh-animate jh-animate--up">
         <div className="jh-home-story__copy">
           <p className="jh-eyebrow">Atmosphere</p>
-          <h2>Not clinical. Not childish. Quietly elegant.</h2>
+          <h2>Quietly elegant by design.</h2>
           <p>
-            Linen textures, Arabic calligraphy, warm monochromatic palettes,
-            botanical linework, and culturally familiar objects turn the product
-            into something emotionally elegant.
+            Warm palettes, tactile materials, and culturally familiar details make
+            the experience feel respectful, elevated, and easy on the eye.
           </p>
         </div>
         <article className="jh-scene-card jh-home-story__card">

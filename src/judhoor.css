@@ -304,6 +304,7 @@ img {
 
 .jh-hero__actions {
   margin-top: 8px;
+  gap: 18px;
 }
 
 .jh-highlight-grid,
@@ -321,10 +322,12 @@ img {
 }
 
 .jh-mini-card {
-  padding: 18px;
+  padding: 16px 18px;
   border-radius: 22px;
   display: flex;
   flex-direction: column;
+  background: rgba(255, 251, 246, 0.52);
+  box-shadow: none;
   transition:
     transform 260ms ease,
     box-shadow 260ms ease,
@@ -345,7 +348,7 @@ img {
 .jh-shop-card h3 {
   margin: 10px 0 8px;
   font-family: var(--jh-font-display);
-  font-size: 2rem;
+  font-size: 1.55rem;
 }
 
 .jh-hero__visual {
@@ -396,9 +399,21 @@ img {
 
 .jh-hero__note {
   max-width: 36rem;
-  margin: 18px 0 0;
+  margin: 12px 0 0;
   color: var(--jh-muted);
   line-height: 1.75;
+}
+
+.jh-hero__text-link {
+  color: var(--jh-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.jh-hero__text-link:hover,
+.jh-hero__text-link:focus-visible {
+  color: var(--jh-text);
 }
 
 .jh-hero__frame-tag {
@@ -501,11 +516,11 @@ img {
 }
 
 .jh-home-promise {
-  padding: clamp(20px, 2.6vw, 34px);
-  border: 1px solid var(--jh-line);
+  padding: clamp(18px, 2.2vw, 28px);
+  border: 1px solid rgba(86, 70, 53, 0.08);
   border-radius: 32px;
-  background: rgba(255, 251, 246, 0.68);
-  box-shadow: var(--jh-shadow);
+  background: rgba(255, 251, 246, 0.46);
+  box-shadow: none;
 }
 
 .jh-pillars__grid {
@@ -519,7 +534,7 @@ img {
 }
 
 .jh-home-section-link {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .jh-home-story {
@@ -544,6 +559,8 @@ img {
 
 .jh-home-story__card {
   height: 100%;
+  background: rgba(255, 251, 246, 0.62);
+  box-shadow: none;
 }
 
 .jh-product-grid {
