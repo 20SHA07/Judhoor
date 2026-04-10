@@ -7,7 +7,7 @@ export const boxCatalog = [
     name: "The Past Box",
     tagline: "Memory & Reflection",
     theme: "sand",
-    price: 420,
+    price: 280,
     summary:
       "A nostalgic box built around scent, sound, handwriting, and personal storytelling so elders can revisit meaningful parts of their lives with family.",
     items: [
@@ -60,7 +60,7 @@ export const boxCatalog = [
     name: "Balance Box",
     tagline: "Health & Wellbeing",
     theme: "sage",
-    price: 390,
+    price: 280,
     summary:
       "A soothing box that encourages healthy daily habits, gentle movement, hydration, comfort, and emotional calm through familiar premium objects.",
     items: [
@@ -113,7 +113,7 @@ export const boxCatalog = [
     name: "My Kit Box",
     tagline: "Creative Activities",
     theme: "terracotta",
-    price: 450,
+    price: 280,
     summary:
       "A creative toolkit for painting, puzzles, coloring, tea moments, and tactile making, all designed for comfortable elderly use.",
     items: [
@@ -171,7 +171,7 @@ export const boxCatalog = [
     name: "You Are Important Box",
     tagline: "Connection & Love",
     theme: "rose",
-    price: 480,
+    price: 280,
     summary:
       "An emotionally rich box built around letters, photographs, voice messages, keepsakes, and shared writing to deepen intergenerational love.",
     items: [
@@ -223,7 +223,7 @@ export const boxCatalog = [
     name: "Adventure Box",
     tagline: "Discovery & Culture",
     theme: "midnight",
-    price: 520,
+    price: 280,
     summary:
       "A travel-inspired concept box that brings exploration, heritage, stories, and sensory discovery into a premium Judhoor experience.",
     items: [
