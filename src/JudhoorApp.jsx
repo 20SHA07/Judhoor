@@ -1,8 +1,52 @@
 import { useEffect, useState } from "react";
-import { NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { boxCatalog, conceptMoments, journeySteps } from "./judhoorData";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+const formatPrice = (amount) => `AED ${amount}`;
+
+function getCartLines(cart) {
+  return boxCatalog
+    .filter((box) => cart[box.slug] > 0)
+    .map((box) => ({
+      ...box,
+      quantity: cart[box.slug],
+      total: box.price * cart[box.slug],
+    }));
+}
+
+function CartSummary({ subtotal, shipping, total, compact = false }) {
+  return (
+    <div className={`jh-order-summary ${compact ? "jh-order-summary--compact" : ""}`}>
+      <div>
+        <span>Subtotal</span>
+        <strong>{formatPrice(subtotal)}</strong>
+      </div>
+      <div>
+        <span>Shipping</span>
+        <strong>{shipping === 0 ? "Free demo" : formatPrice(shipping)}</strong>
+      </div>
+      <div className="jh-order-summary__total">
+        <span>Total</span>
+        <strong>{formatPrice(total)}</strong>
+      </div>
+    </div>
+  );
+}
+
+function QuantityControl({ quantity, onDecrease, onIncrease }) {
+  return (
+    <div className="jh-counter">
+      <button type="button" onClick={onDecrease} aria-label="Decrease quantity">
+        -
+      </button>
+      <span>{quantity}</span>
+      <button type="button" onClick={onIncrease} aria-label="Increase quantity">
+        +
+      </button>
+    </div>
+  );
+}
 
 function IntroScreen({ onFinish }) {
   useEffect(() => {
@@ -146,7 +190,7 @@ function Shell({ cartCount, children, onReplayIntro }) {
           <button type="button" className="jh-replay" onClick={onReplayIntro}>
             Replay intro
           </button>
-          <NavLink to="/shop" className="jh-cart-pill">
+          <NavLink to="/cart" className="jh-cart-pill">
             Basket {cartCount}
           </NavLink>
         </nav>
@@ -503,17 +547,18 @@ function ExperiencePage() {
   );
 }
 
-function ShopPage({ cart, onAddToCart, onUpdateQuantity, subtotal }) {
-  const filledCart = boxCatalog.filter((box) => cart[box.slug] > 0);
+function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
+  const cartLines = getCartLines(cart);
+  const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
 
   return (
     <section className="jh-page jh-animate jh-animate--up">
       <div className="jh-section__head">
-        <p className="jh-eyebrow">Demo Purchase Flow</p>
-        <h1>A polished sample checkout experience for the Judhoor boxes.</h1>
+        <p className="jh-eyebrow">Shop</p>
+        <h1>Choose the boxes you want, then continue through a polished demo checkout.</h1>
         <p>
-          This is a demo storefront layout showing how families or partners
-          could review boxes, adjust quantities, and request a guided order.
+          Browse the Judhoor collection, add boxes to the basket, and move
+          through a complete demo purchase journey.
         </p>
       </div>
       <div className="jh-shop-layout">
@@ -527,79 +572,339 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity, subtotal }) {
                 <p className="jh-eyebrow">{box.arabicName}</p>
                 <h3>{box.name}</h3>
                 <p>{box.summary}</p>
+                <div className="jh-shop-card__badges">
+                  <span>{box.tagline}</span>
+                  <span>{box.items.length} curated items</span>
+                </div>
                 <div className="jh-shop-card__row">
-                  <strong>AED {box.price}</strong>
+                  <strong>{formatPrice(box.price)}</strong>
                   <button
                     type="button"
                     className="jh-button jh-button--small"
                     onClick={() => onAddToCart(box.slug)}
                   >
-                    Add box
+                    Add to cart
                   </button>
                 </div>
+                {cart[box.slug] > 0 ? (
+                  <div className="jh-shop-card__inline-cart">
+                    <span>In cart</span>
+                    <QuantityControl
+                      quantity={cart[box.slug]}
+                      onDecrease={() => onUpdateQuantity(box.slug, -1)}
+                      onIncrease={() => onUpdateQuantity(box.slug, 1)}
+                    />
+                  </div>
+                ) : null}
               </div>
             </article>
           ))}
         </div>
 
         <aside className="jh-checkout">
-          <h2>Your demo basket</h2>
-          {filledCart.length === 0 ? (
+          <h2>Your basket</h2>
+          {cartLines.length === 0 ? (
             <p className="jh-checkout__empty">
-              Add a box to preview the purchase experience.
+              Add a box to start the demo checkout flow.
             </p>
           ) : (
             <div className="jh-checkout__items">
-              {filledCart.map((box) => (
+              {cartLines.map((box) => (
                 <div key={box.slug} className="jh-checkout__item">
                   <div>
                     <strong>{box.name}</strong>
-                    <span>AED {box.price}</span>
+                    <span>{box.quantity} x {formatPrice(box.price)}</span>
                   </div>
-                  <div className="jh-counter">
-                    <button type="button" onClick={() => onUpdateQuantity(box.slug, -1)}>
-                      -
-                    </button>
-                    <span>{cart[box.slug]}</span>
-                    <button type="button" onClick={() => onUpdateQuantity(box.slug, 1)}>
-                      +
-                    </button>
-                  </div>
+                  <QuantityControl
+                    quantity={box.quantity}
+                    onDecrease={() => onUpdateQuantity(box.slug, -1)}
+                    onIncrease={() => onUpdateQuantity(box.slug, 1)}
+                  />
                 </div>
               ))}
             </div>
           )}
-          <div className="jh-checkout__summary">
-            <div>
-              <span>Subtotal</span>
-              <strong>AED {subtotal}</strong>
-            </div>
-            <div>
-              <span>Delivery</span>
-              <strong>Demo</strong>
-            </div>
+          <CartSummary subtotal={subtotal} shipping={0} total={subtotal} compact />
+          <div className="jh-checkout__actions">
+            <NavLink to="/cart" className="jh-button jh-button--ghost jh-button--full">
+              Review cart
+            </NavLink>
+            <NavLink
+              to={cartLines.length === 0 ? "/shop" : "/checkout"}
+              className="jh-button jh-button--solid jh-button--full"
+            >
+              Go to checkout
+            </NavLink>
           </div>
-          <form className="jh-form">
-            <label>
-              Name
-              <input type="text" placeholder="Family or organization name" />
-            </label>
-            <label>
-              Email
-              <input type="email" placeholder="hello@example.com" />
-            </label>
-            <label>
-              Notes
-              <textarea
-                rows="4"
-                placeholder="Tell us whether this order is for home use, gifting, clinics, or partnerships."
-              />
-            </label>
-            <button type="button" className="jh-button jh-button--solid jh-button--full">
-              Submit demo order
-            </button>
-          </form>
         </aside>
+      </div>
+    </section>
+  );
+}
+
+function CartPage({ cart, onUpdateQuantity }) {
+  const cartLines = getCartLines(cart);
+  const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
+
+  return (
+    <section className="jh-page jh-animate jh-animate--up">
+      <div className="jh-section__head">
+        <p className="jh-eyebrow">Cart</p>
+        <h1>Review your basket before heading to checkout.</h1>
+        <p>Adjust quantities, keep browsing, or move straight to the demo payment page.</p>
+      </div>
+
+      {cartLines.length === 0 ? (
+        <div className="jh-empty-state">
+          <h2>Your basket is empty.</h2>
+          <p>Start with a Judhoor box and come back here when you are ready to check out.</p>
+          <NavLink to="/shop" className="jh-button jh-button--solid">
+            Browse the shop
+          </NavLink>
+        </div>
+      ) : (
+        <div className="jh-cart-layout">
+          <div className="jh-cart-list">
+            {cartLines.map((item) => (
+              <article key={item.slug} className="jh-cart-item">
+                <figure className="jh-cart-item__media">
+                  <img src={item.images[0]} alt={item.name} />
+                </figure>
+                <div className="jh-cart-item__copy">
+                  <p className="jh-eyebrow">{item.arabicName}</p>
+                  <h2>{item.name}</h2>
+                  <p>{item.summary}</p>
+                  <div className="jh-cart-item__meta">
+                    <span>{item.tagline}</span>
+                    <span>{item.items.length} curated items</span>
+                  </div>
+                </div>
+                <div className="jh-cart-item__controls">
+                  <strong>{formatPrice(item.price)}</strong>
+                  <QuantityControl
+                    quantity={item.quantity}
+                    onDecrease={() => onUpdateQuantity(item.slug, -1)}
+                    onIncrease={() => onUpdateQuantity(item.slug, 1)}
+                  />
+                  <span className="jh-cart-item__line-total">{formatPrice(item.total)}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <aside className="jh-cart-sidebar">
+            <div className="jh-checkout">
+              <h2>Order summary</h2>
+              <CartSummary subtotal={subtotal} shipping={0} total={subtotal} />
+              <div className="jh-checkout__actions">
+                <NavLink to="/shop" className="jh-button jh-button--ghost jh-button--full">
+                  Keep shopping
+                </NavLink>
+                <NavLink to="/checkout" className="jh-button jh-button--solid jh-button--full">
+                  Continue to checkout
+                </NavLink>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CheckoutPage({ cart, onSubmitDemoOrder }) {
+  const navigate = useNavigate();
+  const cartLines = getCartLines(cart);
+  const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
+  const shipping = cartLines.length > 0 ? 35 : 0;
+  const total = subtotal + shipping;
+
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (cartLines.length === 0) {
+      navigate("/shop");
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    const orderDetails = {
+      customerName: formData.get("customerName"),
+      email: formData.get("email"),
+      city: formData.get("city"),
+      total,
+      itemCount: cartLines.reduce((sum, item) => sum + item.quantity, 0),
+    };
+
+    onSubmitDemoOrder(orderDetails);
+    navigate("/checkout/success");
+  }
+
+  if (cartLines.length === 0) {
+    return (
+      <section className="jh-page jh-animate jh-animate--up">
+        <div className="jh-empty-state">
+          <h1>There’s nothing to check out yet.</h1>
+          <p>Add a box to your basket first, then return here for the demo payment flow.</p>
+          <NavLink to="/shop" className="jh-button jh-button--solid">
+            Go to shop
+          </NavLink>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="jh-page jh-animate jh-animate--up">
+      <div className="jh-section__head">
+        <p className="jh-eyebrow">Checkout Demo</p>
+        <h1>A complete demo checkout experience with delivery and card details.</h1>
+        <p>
+          This page is for presentation only. No payment is processed, but the flow is
+          designed to feel like a real purchase journey.
+        </p>
+      </div>
+
+      <div className="jh-checkout-page">
+        <form className="jh-payment-form" onSubmit={handleSubmit}>
+          <section className="jh-payment-card">
+            <div className="jh-payment-card__head">
+              <p className="jh-eyebrow">Contact</p>
+              <h2>Customer details</h2>
+            </div>
+            <div className="jh-form-grid">
+              <label>
+                Full name
+                <input name="customerName" type="text" placeholder="Aisha Al Mansoori" required />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" placeholder="aisha@example.com" required />
+              </label>
+              <label>
+                Phone
+                <input name="phone" type="tel" placeholder="+971 50 000 0000" required />
+              </label>
+              <label>
+                City
+                <input name="city" type="text" placeholder="Dubai" required />
+              </label>
+            </div>
+          </section>
+
+          <section className="jh-payment-card">
+            <div className="jh-payment-card__head">
+              <p className="jh-eyebrow">Delivery</p>
+              <h2>Shipping information</h2>
+            </div>
+            <div className="jh-form-grid">
+              <label className="jh-form-grid__full">
+                Address line
+                <input name="address" type="text" placeholder="Villa 12, Jumeirah 1" required />
+              </label>
+              <label>
+                Emirate / Region
+                <input name="region" type="text" placeholder="Dubai" required />
+              </label>
+              <label>
+                Postal code
+                <input name="postalCode" type="text" placeholder="00000" />
+              </label>
+              <label className="jh-form-grid__full">
+                Delivery notes
+                <textarea
+                  name="notes"
+                  rows="4"
+                  placeholder="Add any gift note, family message, or delivery instruction."
+                />
+              </label>
+            </div>
+          </section>
+
+          <section className="jh-payment-card">
+            <div className="jh-payment-card__head">
+              <p className="jh-eyebrow">Payment</p>
+              <h2>Card details</h2>
+            </div>
+            <div className="jh-demo-card">
+              <span>Demo Visa</span>
+              <strong>4242 4242 4242 4242</strong>
+              <small>No real transaction will be made</small>
+            </div>
+            <div className="jh-form-grid">
+              <label className="jh-form-grid__full">
+                Card number
+                <input name="cardNumber" type="text" inputMode="numeric" placeholder="4242 4242 4242 4242" required />
+              </label>
+              <label>
+                Name on card
+                <input name="cardName" type="text" placeholder="Aisha Al Mansoori" required />
+              </label>
+              <label>
+                Expiry
+                <input name="expiry" type="text" placeholder="08/29" required />
+              </label>
+              <label>
+                CVV
+                <input name="cvv" type="text" inputMode="numeric" placeholder="123" required />
+              </label>
+            </div>
+          </section>
+
+          <button type="submit" className="jh-button jh-button--solid jh-button--full">
+            Place demo order
+          </button>
+        </form>
+
+        <aside className="jh-cart-sidebar">
+          <div className="jh-checkout">
+            <h2>Your order</h2>
+            <div className="jh-checkout__items">
+              {cartLines.map((item) => (
+                <div key={item.slug} className="jh-checkout__item">
+                  <div>
+                    <strong>{item.name}</strong>
+                    <span>{item.quantity} x {formatPrice(item.price)}</span>
+                  </div>
+                  <strong>{formatPrice(item.total)}</strong>
+                </div>
+              ))}
+            </div>
+            <CartSummary subtotal={subtotal} shipping={shipping} total={total} />
+            <p className="jh-demo-disclaimer">
+              Demo only. Card fields are for presentation and do not charge the customer.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
+function CheckoutSuccessPage({ lastOrder }) {
+  return (
+    <section className="jh-page jh-animate jh-animate--up">
+      <div className="jh-success-card">
+        <p className="jh-eyebrow">Order complete</p>
+        <h1>Your demo order has been placed.</h1>
+        <p>
+          {lastOrder?.customerName
+            ? `A confirmation experience has been prepared for ${lastOrder.customerName}.`
+            : "A confirmation experience has been prepared for this demo checkout."}
+        </p>
+        <div className="jh-success-card__details">
+          <span>{lastOrder?.email || "demo@judhoor.com"}</span>
+          <span>{lastOrder?.city || "Dubai"}</span>
+          <span>{formatPrice(lastOrder?.total || 0)}</span>
+        </div>
+        <div className="jh-success-card__actions">
+          <NavLink to="/shop" className="jh-button jh-button--ghost">
+            Continue shopping
+          </NavLink>
+          <NavLink to="/" className="jh-button jh-button--solid">
+            Return home
+          </NavLink>
+        </div>
       </div>
     </section>
   );
@@ -608,6 +913,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity, subtotal }) {
 export default function JudhoorApp() {
   const [showIntro, setShowIntro] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [lastOrder, setLastOrder] = useState(null);
   const [cart, setCart] = useState(() =>
     Object.fromEntries(boxCatalog.map((box) => [box.slug, 0])),
   );
@@ -620,10 +926,6 @@ export default function JudhoorApp() {
   }, [showIntro]);
 
   const cartCount = Object.values(cart).reduce((sum, value) => sum + value, 0);
-  const subtotal = Object.entries(cart).reduce((sum, [slug, quantity]) => {
-    const box = boxCatalog.find((entry) => entry.slug === slug);
-    return sum + (box ? box.price * quantity : 0);
-  }, 0);
 
   function handleAddToCart(slug) {
     setCart((current) => ({
@@ -637,6 +939,11 @@ export default function JudhoorApp() {
       ...current,
       [slug]: Math.max(0, current[slug] + delta),
     }));
+  }
+
+  function handleSubmitDemoOrder(orderDetails) {
+    setLastOrder(orderDetails);
+    setCart(Object.fromEntries(boxCatalog.map((box) => [box.slug, 0])));
   }
 
   function replayIntro() {
@@ -670,9 +977,25 @@ export default function JudhoorApp() {
                 cart={cart}
                 onAddToCart={handleAddToCart}
                 onUpdateQuantity={handleUpdateQuantity}
-                subtotal={subtotal}
               />
             }
+          />
+          <Route
+            path="/cart"
+            element={<CartPage cart={cart} onUpdateQuantity={handleUpdateQuantity} />}
+          />
+          <Route
+            path="/checkout"
+            element={
+              <CheckoutPage
+                cart={cart}
+                onSubmitDemoOrder={handleSubmitDemoOrder}
+              />
+            }
+          />
+          <Route
+            path="/checkout/success"
+            element={<CheckoutSuccessPage lastOrder={lastOrder} />}
           />
           <Route path="*" element={<HomePage onAddToCart={handleAddToCart} />} />
         </Routes>
