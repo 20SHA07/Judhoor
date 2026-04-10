@@ -775,19 +775,48 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
             <div className="jh-form-grid">
               <label>
                 Full name
-                <input name="customerName" type="text" placeholder="Aisha Al Mansoori" required />
+                <input
+                  name="customerName"
+                  type="text"
+                  placeholder="Omar Al Mansoori"
+                  autoComplete="name"
+                  maxLength="50"
+                  required
+                />
               </label>
               <label>
                 Email
-                <input name="email" type="email" placeholder="aisha@example.com" required />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="omar@example.com"
+                  autoComplete="email"
+                  maxLength="80"
+                  required
+                />
               </label>
               <label>
                 Phone
-                <input name="phone" type="tel" placeholder="+971 50 000 0000" required />
+                <input
+                  name="phone"
+                  type="tel"
+                  placeholder="+971 50 000 0000"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  maxLength="18"
+                  required
+                />
               </label>
               <label>
                 City
-                <input name="city" type="text" placeholder="Dubai" required />
+                <input
+                  name="city"
+                  type="text"
+                  placeholder="Dubai"
+                  autoComplete="address-level2"
+                  maxLength="40"
+                  required
+                />
               </label>
             </div>
           </section>
@@ -800,15 +829,35 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
             <div className="jh-form-grid">
               <label className="jh-form-grid__full">
                 Address line
-                <input name="address" type="text" placeholder="Villa 12, Jumeirah 1" required />
+                <input
+                  name="address"
+                  type="text"
+                  placeholder="Villa 12, Jumeirah 1"
+                  autoComplete="street-address"
+                  maxLength="120"
+                  required
+                />
               </label>
               <label>
                 Emirate / Region
-                <input name="region" type="text" placeholder="Dubai" required />
+                <input
+                  name="region"
+                  type="text"
+                  placeholder="Dubai"
+                  autoComplete="address-level1"
+                  maxLength="40"
+                  required
+                />
               </label>
               <label>
                 Postal code
-                <input name="postalCode" type="text" placeholder="00000" />
+                <input
+                  name="postalCode"
+                  type="text"
+                  placeholder="00000"
+                  inputMode="numeric"
+                  maxLength="10"
+                />
               </label>
               <label className="jh-form-grid__full">
                 Delivery notes
@@ -816,6 +865,7 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
                   name="notes"
                   rows="4"
                   placeholder="Add any gift note, family message, or delivery instruction."
+                  maxLength="300"
                 />
               </label>
             </div>
@@ -834,19 +884,53 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
             <div className="jh-form-grid">
               <label className="jh-form-grid__full">
                 Card number
-                <input name="cardNumber" type="text" inputMode="numeric" placeholder="4242 4242 4242 4242" required />
+                <input
+                  name="cardNumber"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="cc-number"
+                  placeholder="4242 4242 4242 4242"
+                  maxLength="19"
+                  pattern="[0-9 ]{13,19}"
+                  required
+                />
               </label>
               <label>
                 Name on card
-                <input name="cardName" type="text" placeholder="Aisha Al Mansoori" required />
+                <input
+                  name="cardName"
+                  type="text"
+                  autoComplete="cc-name"
+                  placeholder="Omar Al Mansoori"
+                  maxLength="50"
+                  required
+                />
               </label>
               <label>
                 Expiry
-                <input name="expiry" type="text" placeholder="08/29" required />
+                <input
+                  name="expiry"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="cc-exp"
+                  placeholder="08/29"
+                  maxLength="5"
+                  pattern="(0[1-9]|1[0-2])\/([0-9]{2})"
+                  required
+                />
               </label>
               <label>
                 CVV
-                <input name="cvv" type="text" inputMode="numeric" placeholder="123" required />
+                <input
+                  name="cvv"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="cc-csc"
+                  placeholder="123"
+                  maxLength="4"
+                  pattern="[0-9]{3,4}"
+                  required
+                />
               </label>
             </div>
           </section>
