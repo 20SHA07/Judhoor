@@ -191,7 +191,7 @@ function Shell({ cartCount, children, onReplayIntro }) {
             Replay intro
           </button>
           <NavLink to="/cart" className="jh-cart-pill">
-            Basket {cartCount}
+            Cart {cartCount}
           </NavLink>
         </nav>
       </header>
@@ -371,7 +371,7 @@ function HomePage({ onAddToCart }) {
                   className="jh-button jh-button--small"
                   onClick={() => onAddToCart(box.slug)}
                 >
-                  Add to demo basket
+                  Add to cart
                 </button>
               </div>
             </article>
@@ -441,7 +441,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem }) {
                   className="jh-button jh-button--solid"
                   onClick={() => onAddToCart(box.slug)}
                 >
-                  Add to demo basket
+                  Add to cart
                 </button>
               </div>
             </div>
@@ -557,7 +557,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
         <p className="jh-eyebrow">Shop</p>
         <h1>Choose the boxes you want, then continue through a polished demo checkout.</h1>
         <p>
-          Browse the Judhoor collection, add boxes to the basket, and move
+          Browse the Judhoor collection, add boxes to the cart, and move
           through a complete demo purchase journey.
         </p>
       </div>
@@ -602,7 +602,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
         </div>
 
         <aside className="jh-checkout">
-          <h2>Your basket</h2>
+          <h2>Your cart</h2>
           {cartLines.length === 0 ? (
             <p className="jh-checkout__empty">
               Add a box to start the demo checkout flow.
@@ -650,13 +650,13 @@ function CartPage({ cart, onUpdateQuantity }) {
     <section className="jh-page jh-animate jh-animate--up">
       <div className="jh-section__head">
         <p className="jh-eyebrow">Cart</p>
-        <h1>Review your basket before heading to checkout.</h1>
+        <h1>Review your cart before heading to checkout.</h1>
         <p>Adjust quantities, keep browsing, or move straight to the demo payment page.</p>
       </div>
 
       {cartLines.length === 0 ? (
         <div className="jh-empty-state">
-          <h2>Your basket is empty.</h2>
+          <h2>Your cart is empty.</h2>
           <p>Start with a Judhoor box and come back here when you are ready to check out.</p>
           <NavLink to="/shop" className="jh-button jh-button--solid">
             Browse the shop
@@ -745,7 +745,7 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
       <section className="jh-page jh-animate jh-animate--up">
         <div className="jh-empty-state">
           <h1>There’s nothing to check out yet.</h1>
-          <p>Add a box to your basket first, then return here for the demo payment flow.</p>
+          <p>Add a box to your cart first, then return here for the demo payment flow.</p>
           <NavLink to="/shop" className="jh-button jh-button--solid">
             Go to shop
           </NavLink>
