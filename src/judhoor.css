@@ -817,7 +817,10 @@ img {
 }
 
 .jh-modal__card--demo {
-  width: min(1140px, 100%);
+  width: min(1280px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: clamp(18px, 2vw, 28px);
 }
 
 .jh-modal__close {
@@ -841,15 +844,15 @@ img {
 
 .jh-demo-modal {
   display: grid;
-  grid-template-columns: 1.08fr 0.92fr;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.16fr) minmax(320px, 0.84fr);
+  gap: clamp(20px, 2vw, 30px);
   align-items: center;
   margin-top: 12px;
 }
 
 .jh-demo-stage {
   position: relative;
-  min-height: 620px;
+  min-height: min(72vh, 760px);
   border-radius: 32px;
   overflow: hidden;
   border: 1px solid rgba(86, 70, 53, 0.08);
@@ -893,7 +896,7 @@ img {
 
 .jh-demo-box {
   position: relative;
-  width: min(82%, 620px);
+  width: min(92%, 760px);
   aspect-ratio: 1 / 1;
   transform-style: preserve-3d;
   transition: transform 360ms ease;
@@ -1020,12 +1023,14 @@ img {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.72rem;
+  z-index: 2;
 }
 
 .jh-demo-copy {
   display: grid;
   gap: 18px;
   align-content: start;
+  padding-right: 6px;
 }
 
 .jh-demo-copy > span {
@@ -2328,6 +2333,11 @@ body {
   .jh-product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .jh-modal__card--demo {
+    width: min(1100px, calc(100vw - 24px));
+    max-height: calc(100vh - 24px);
+  }
 }
 
 @media (max-width: 900px) {
@@ -2372,11 +2382,11 @@ body {
   }
 
   .jh-demo-stage {
-    min-height: 420px;
+    min-height: min(56vh, 520px);
   }
 
   .jh-demo-box {
-    width: min(88%, 460px);
+    width: min(90%, 560px);
   }
 }
 
@@ -2504,11 +2514,17 @@ body {
   }
 
   .jh-demo-stage {
-    min-height: 340px;
+    min-height: min(46vh, 420px);
   }
 
   .jh-demo-box__card {
     border-radius: 18px;
+  }
+
+  .jh-modal__card--demo {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    padding: 16px;
   }
 }
 

@@ -347,6 +347,10 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
     }
     dragStateRef.current = null;
     setIsDragging(false);
+    setTilt((current) => ({
+      rotateX: current.rotateX * 0.7,
+      rotateY: current.rotateY * 0.7,
+    }));
   }
 
   function resetTilt() {
@@ -376,7 +380,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
             onPointerDown={handlePointerDown}
             onMouseMove={handlePointerMove}
             onMouseLeave={resetTilt}
-            onPointerUp={resetTilt}
+            onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
             onDoubleClick={() => setIsOpen((current) => !current)}
           >
