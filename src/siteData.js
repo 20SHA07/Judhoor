@@ -113,7 +113,7 @@ export const productBoxes = [
       "Family guide card",
     ],
     images: [
-      assetPath("/mockups/travel-box-hero-4k.png"),
+      assetPath("/mockups/travel-box-hero.png"),
       assetPath("/mockups/travel-box-items.png"),
     ],
   },
@@ -190,6 +190,6 @@ export const conceptGallery = [
     title: "Adventure-led expansion",
     description:
       "The Adventure Box extends the brand into discovery, culture, and joyful family interaction.",
-    image: assetPath("/mockups/travel-box-hero-4k.png"),
+    image: assetPath("/mockups/travel-box-hero.png"),
   },
 ];
