@@ -123,8 +123,8 @@ export const productBoxes = [
       "Story scroll and family guide",
     ],
     images: [
-      assetPath("/mockups/travel-box-hero-new.png"),
-      assetPath("/mockups/travel-box-hero-new.png"),
+      assetPath("/mockups/travel-box-hero-4k.png"),
+      assetPath("/mockups/travel-box-hero-4k.png"),
     ],
   },
 ];
@@ -200,6 +200,6 @@ export const conceptGallery = [
     title: "Travel-led expansion",
     description:
       "The Travel Box extends the brand into discovery, culture, and joyful family interaction.",
-    image: assetPath("/mockups/travel-box-hero-new.png"),
+    image: assetPath("/mockups/travel-box-hero-4k.png"),
   },
 ];
