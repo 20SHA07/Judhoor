@@ -4,6 +4,7 @@ import { boxCatalog, conceptMoments, journeySteps } from "./judhoorData";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 const formatPrice = (amount) => `AED ${amount}`;
+const getItemCount = (box) => box.itemCount ?? box.items?.length ?? 0;
 
 function getCartLines(cart) {
   return boxCatalog
@@ -574,7 +575,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
                 <p>{box.summary}</p>
                 <div className="jh-shop-card__badges">
                   <span>{box.tagline}</span>
-                  <span>{box.itemCount} curated items</span>
+                  <span>{getItemCount(box)} curated items</span>
                 </div>
                 <div className="jh-shop-card__row">
                   <strong>{formatPrice(box.price)}</strong>
@@ -676,7 +677,7 @@ function CartPage({ cart, onUpdateQuantity }) {
                   <p>{item.summary}</p>
                   <div className="jh-cart-item__meta">
                     <span>{item.tagline}</span>
-                    <span>{item.itemCount} curated items</span>
+                    <span>{getItemCount(item)} curated items</span>
                   </div>
                 </div>
                 <div className="jh-cart-item__controls">
@@ -966,20 +967,41 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
 }
 
 function CheckoutSuccessPage({ lastOrder }) {
+  if (!lastOrder) {
+    return (
+      <section className="jh-page jh-animate jh-animate--up">
+        <div className="jh-empty-state">
+          <h1>No recent demo order found.</h1>
+          <p>
+            Complete the checkout flow from your cart first, and we will show the full
+            confirmation here.
+          </p>
+          <div className="jh-success-card__actions">
+            <NavLink to="/shop" className="jh-button jh-button--ghost">
+              Browse boxes
+            </NavLink>
+            <NavLink to="/cart" className="jh-button jh-button--solid">
+              Go to cart
+            </NavLink>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="jh-page jh-animate jh-animate--up">
       <div className="jh-success-card">
         <p className="jh-eyebrow">Order complete</p>
         <h1>Your demo order has been placed.</h1>
         <p>
-          {lastOrder?.customerName
-            ? `A confirmation experience has been prepared for ${lastOrder.customerName}.`
-            : "A confirmation experience has been prepared for this demo checkout."}
+          A confirmation experience has been prepared for {lastOrder.customerName}.
         </p>
         <div className="jh-success-card__details">
-          <span>{lastOrder?.email || "demo@judhoor.com"}</span>
-          <span>{lastOrder?.city || "Dubai"}</span>
-          <span>{formatPrice(lastOrder?.total || 0)}</span>
+          <span>{lastOrder.email}</span>
+          <span>{lastOrder.city}</span>
+          <span>{lastOrder.itemCount} item{lastOrder.itemCount === 1 ? "" : "s"}</span>
+          <span>{formatPrice(lastOrder.total)}</span>
         </div>
         <div className="jh-success-card__actions">
           <NavLink to="/shop" className="jh-button jh-button--ghost">
