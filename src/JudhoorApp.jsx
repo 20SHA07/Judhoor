@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { boxCatalog, conceptMoments, journeySteps } from "./judhoorData";
 
@@ -275,6 +275,9 @@ function ItemPreviewModal({ item, onClose }) {
 
 function BoxDemoModal({ box, onClose, onAddToCart }) {
   const [tilt, setTilt] = useState({ rotateX: -8, rotateY: 10 });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStateRef = useRef(null);
 
   useEffect(() => {
     if (!box) {
@@ -291,6 +294,15 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [box, onClose]);
 
+  useEffect(() => {
+    if (box) {
+      setTilt({ rotateX: -8, rotateY: 10 });
+      setIsOpen(false);
+      setIsDragging(false);
+      dragStateRef.current = null;
+    }
+  }, [box]);
+
   if (!box) {
     return null;
   }
@@ -299,6 +311,16 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
   const [heroImage, sideImage, detailImage] = gallery;
 
   function handlePointerMove(event) {
+    if (dragStateRef.current) {
+      const deltaX = event.clientX - dragStateRef.current.startX;
+      const deltaY = event.clientY - dragStateRef.current.startY;
+      setTilt({
+        rotateX: Math.max(-30, Math.min(24, dragStateRef.current.baseX - deltaY * 0.12)),
+        rotateY: Math.max(-34, Math.min(34, dragStateRef.current.baseY + deltaX * 0.14)),
+      });
+      return;
+    }
+
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - bounds.left) / bounds.width;
     const y = (event.clientY - bounds.top) / bounds.height;
@@ -308,8 +330,32 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
     });
   }
 
+  function handlePointerDown(event) {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragStateRef.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      baseX: tilt.rotateX,
+      baseY: tilt.rotateY,
+    };
+    setIsDragging(true);
+  }
+
+  function handlePointerUp(event) {
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragStateRef.current = null;
+    setIsDragging(false);
+  }
+
   function resetTilt() {
-    setTilt({ rotateX: -8, rotateY: 10 });
+    dragStateRef.current = null;
+    setIsDragging(false);
+    setTilt((current) => ({
+      rotateX: current.rotateX * 0.55,
+      rotateY: current.rotateY * 0.55,
+    }));
   }
 
   return (
@@ -326,19 +372,24 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
         </button>
         <div className="jh-demo-modal">
           <div
-            className="jh-demo-stage"
+            className={`jh-demo-stage ${isDragging ? "jh-demo-stage--dragging" : ""}`}
+            onPointerDown={handlePointerDown}
             onMouseMove={handlePointerMove}
             onMouseLeave={resetTilt}
             onPointerUp={resetTilt}
+            onPointerCancel={handlePointerUp}
+            onDoubleClick={() => setIsOpen((current) => !current)}
           >
             <div
-              className="jh-demo-stage__scene"
+              className={`jh-demo-stage__scene ${isOpen ? "jh-demo-stage__scene--open" : ""}`}
               style={{
                 transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
               }}
             >
               <span className="jh-demo-stage__glow" />
-              <div className={`jh-demo-box jh-demo-box--${box.theme}`}>
+              <div
+                className={`jh-demo-box jh-demo-box--${box.theme} ${isOpen ? "jh-demo-box--open" : ""}`}
+              >
                 <div className="jh-demo-box__shadow" />
                 <div className="jh-demo-box__base" />
                 <div
@@ -359,7 +410,9 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                 />
               </div>
             </div>
-            <p className="jh-demo-stage__hint">Move your cursor to explore the box in 3D.</p>
+            <p className="jh-demo-stage__hint">
+              Drag to rotate. Double-click to {isOpen ? "close" : "open"} the box.
+            </p>
           </div>
           <div className="jh-demo-copy">
             <p className="jh-eyebrow">Interactive Demo</p>
@@ -380,13 +433,20 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
             <div className="jh-showcase-card__cta">
               <button
                 type="button"
+                className="jh-button jh-button--ghost"
+                onClick={() => setIsOpen((current) => !current)}
+              >
+                {isOpen ? "Close box" : "Open box"}
+              </button>
+              <button
+                type="button"
                 className="jh-button jh-button--solid"
                 onClick={() => onAddToCart(box.slug)}
               >
                 Add to cart
               </button>
-              <span className="jh-modal__hint">Demo view only. No WebGL required.</span>
             </div>
+            <span className="jh-modal__hint">Dragable demo view with layered motion. No WebGL required.</span>
           </div>
         </div>
       </div>
