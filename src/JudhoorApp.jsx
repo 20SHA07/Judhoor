@@ -204,7 +204,7 @@ function Shell({ cartCount, children, onReplayIntro }) {
             <strong>Judhoor</strong>
             <p>
               Thoughtfully crafted boxes that support memory, wellbeing,
-              creativity, and connection.
+              discovery, and connection.
             </p>
           </div>
         </div>
@@ -304,7 +304,7 @@ function HomePage({ onAddToCart }) {
           <h1>Calm, dignified care in a beautifully made box.</h1>
           <p className="jh-hero__text">
             Premium activity boxes for elders, designed around memory,
-            wellbeing, creativity, and connection.
+            wellbeing, discovery, and connection.
           </p>
           <div className="jh-hero__actions">
             <NavLink to="/shop" className="jh-button jh-button--solid">
