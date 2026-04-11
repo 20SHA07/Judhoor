@@ -8,6 +8,7 @@ export const boxCatalog = [
     tagline: "Memory & Reflection",
     theme: "sand",
     price: 280,
+    itemCount: 9,
     summary:
       "A nostalgic box built around scent, sound, handwriting, and personal storytelling so elders can revisit meaningful parts of their lives with family.",
     items: [
@@ -61,6 +62,7 @@ export const boxCatalog = [
     tagline: "Health & Wellbeing",
     theme: "sage",
     price: 280,
+    itemCount: 9,
     summary:
       "A soothing box that encourages healthy daily habits, gentle movement, hydration, comfort, and emotional calm through familiar premium objects.",
     items: [
@@ -114,6 +116,7 @@ export const boxCatalog = [
     tagline: "Connection & Love",
     theme: "rose",
     price: 280,
+    itemCount: 11,
     summary:
       "An emotionally rich box built around letters, photographs, voice messages, keepsakes, and shared writing to deepen intergenerational love.",
     items: [
@@ -163,45 +166,40 @@ export const boxCatalog = [
     slug: "travel-box",
     arabicName: "صندوق المغامرة",
     name: "Adventure Box",
-    tagline: "Discovery & Culture",
+    tagline: "Travel & Discovery",
     theme: "midnight",
     price: 280,
+    itemCount: 5,
     summary:
       "A travel-inspired concept box that brings exploration, heritage, stories, and sensory discovery into a premium Judhoor experience.",
     items: [
       {
-        name: "Illustrated destination cards",
-        note: "A set of visual story cards that introduce places, architecture, and atmosphere through a collectible format.",
+        name: "Personalized boarding pass",
+        note: "A premium keepsake boarding pass with the elder's name and chosen destination to make the experience feel personal from the first moment.",
         sprite: assetPath("/mockups/travel-box-items.png"),
         position: "left top",
       },
       {
-        name: "Cultural map",
-        note: "A printed destination map that turns the experience into something tactile, educational, and visually rich.",
+        name: "Destination postcard set",
+        note: "A set of themed postcards featuring landmarks and cultural scenes designed to encourage conversation and visual discovery.",
         sprite: assetPath("/mockups/travel-box-items.png"),
         position: "left center",
       },
       {
-        name: "Voice guide card",
-        note: "A scannable audio companion that adds spoken storytelling to the box experience.",
+        name: "Music QR code",
+        note: "An elegant QR card linking to a curated playlist inspired by the selected country or city.",
         sprite: assetPath("/mockups/travel-box-items.png"),
         position: "right center",
       },
       {
-        name: "Tea and snack pairing",
-        note: "A sensory tasting component that deepens the place-based experience with familiar ritual.",
+        name: "Destination-inspired snacks",
+        note: "A small selection of snacks chosen to reflect the local culture and create a more immersive experience.",
         sprite: assetPath("/mockups/travel-box-items.png"),
         position: "right top",
       },
       {
-        name: "Story scroll",
-        note: "A premium scroll element that frames the box as a guided cultural journey rather than a simple kit.",
-        sprite: assetPath("/mockups/travel-box-items.png"),
-        position: "right top",
-      },
-      {
-        name: "Discovery guide",
-        note: "A printed overview that ties the objects together into one coherent themed moment.",
+        name: "Simple recipe card",
+        note: "An easy family activity card for one local drink or dish that extends the destination experience beyond the box.",
         sprite: assetPath("/mockups/travel-box-items.png"),
         position: "center bottom",
       },
@@ -224,7 +222,7 @@ export const conceptMoments = [
     title: "Objects that invite interaction",
     description:
       "Every object is tactile, accessible, and selected to create a gentle moment rather than a forced task.",
-    image: assetPath("/mockups/creative-box-items.png"),
+    image: assetPath("/mockups/important-box-items.png"),
   },
   {
     title: "A wider brand world",

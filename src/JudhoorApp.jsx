@@ -482,8 +482,8 @@ function ExperiencePage() {
       title: "The experience moves between calm activity and shared presence.",
       text:
         "Some moments are reflective and solitary. Others are designed for family participation. Together they create a rhythm that feels supportive rather than demanding.",
-      image: assetPath("/mockups/creative-box-items.png"),
-      alt: "Judhoor creative and calming activity set",
+      image: assetPath("/mockups/important-box-items.png"),
+      alt: "Judhoor connection and family interaction set",
     },
     {
       title: "Every box becomes a repeatable ritual of care.",
@@ -574,7 +574,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
                 <p>{box.summary}</p>
                 <div className="jh-shop-card__badges">
                   <span>{box.tagline}</span>
-                  <span>{box.items.length} curated items</span>
+                  <span>{box.itemCount} curated items</span>
                 </div>
                 <div className="jh-shop-card__row">
                   <strong>{formatPrice(box.price)}</strong>
@@ -676,7 +676,7 @@ function CartPage({ cart, onUpdateQuantity }) {
                   <p>{item.summary}</p>
                   <div className="jh-cart-item__meta">
                     <span>{item.tagline}</span>
-                    <span>{item.items.length} curated items</span>
+                    <span>{item.itemCount} curated items</span>
                   </div>
                 </div>
                 <div className="jh-cart-item__controls">

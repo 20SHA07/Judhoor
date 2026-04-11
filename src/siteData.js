@@ -1,4 +1,4 @@
-const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+﻿const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
 export const heroHighlights = [
   {
@@ -17,7 +17,7 @@ export const heroHighlights = [
 
 export const featuredMetrics = [
   { value: "4", label: "signature boxes" },
-  { value: "39", label: "carefully chosen items" },
+  { value: "34", label: "carefully chosen items" },
   { value: "60+", label: "intended age group" },
   { value: "1", label: "cohesive respectful brand world" },
 ];
@@ -30,16 +30,16 @@ export const productBoxes = [
     tagline: "Memory & Reflection",
     itemCount: 9,
     purpose:
-      "Supports memory recall, nostalgia, personal storytelling, and meaningful family conversation.",
+      "Helps elders reflect on their life, spark meaningful family conversations, and support memory recall through nostalgia and personal storytelling.",
     summary:
-      "A nostalgic box built around scent, sound, handwriting, and storytelling so elders can revisit meaningful parts of their lives with the people they love.",
+      "A nostalgic box built around scent, sound, handwriting, and personal storytelling so elders can revisit meaningful parts of their lives with family.",
     sampleItems: [
       "Customized photo album",
       "\"My Story\" notebook",
       "Memory question cards",
-      "Vintage-style mini radio",
-      "USB with curated 70s Arabic songs",
-      "Bakhoor memory scent sample",
+      "Classic small radio",
+      "USB with 70s songs",
+      "Bakhoor incense sample",
     ],
     images: [
       assetPath("/mockups/past-box-hero-new.png"),
@@ -54,44 +54,21 @@ export const productBoxes = [
     tagline: "Health & Wellbeing",
     itemCount: 9,
     purpose:
-      "Encourages healthy routines, gentle movement, calm, and emotional comfort.",
+      "Supports physical and emotional wellbeing, gentle daily habits, and greater comfort in the body and emotions.",
     summary:
-      "A soothing box that supports daily habits and physical ease through objects that feel familiar, safe, and quietly motivating.",
+      "A soothing box that encourages healthy daily habits, gentle movement, hydration, comfort, and emotional calm through familiar premium objects.",
     sampleItems: [
       "Stress ball",
-      "Stretching bands",
+      "Stretching band",
       "Customized water bottle",
       "Daily wellbeing cards",
       "Prayer beads",
-      "Linen sleep mask",
+      "Aromatherapy sachet",
     ],
     images: [
       assetPath("/mockups/balance-box-hero.png"),
       assetPath("/mockups/balance-box-items.png"),
       assetPath("/mockups/balance-box-detail.png"),
-    ],
-  },
-  {
-    slug: "my-kit-box",
-    arabicName: "صندوق أدواتي",
-    name: "My Kit Box",
-    tagline: "Creative Activities",
-    itemCount: 10,
-    purpose:
-      "Keeps minds active and hands engaged through accessible creative work and gentle cognitive exercises.",
-    summary:
-      "A creative toolkit for painting, puzzles, coloring, tea moments, and tactile making, all designed with comfort and accessibility in mind.",
-    sampleItems: [
-      "Painting kit",
-      "Mini canvas",
-      "Large-print Sudoku book",
-      "Adult coloring book",
-      "Customized puzzle",
-      "Knitting starter kit",
-    ],
-    images: [
-      assetPath("/mockups/creative-box-hero.png"),
-      assetPath("/mockups/creative-box-items.png"),
     ],
   },
   {
@@ -101,20 +78,43 @@ export const productBoxes = [
     tagline: "Connection & Love",
     itemCount: 11,
     purpose:
-      "Reduces loneliness and deepens intergenerational connection through emotionally powerful keepsakes.",
+      "Reduces loneliness, strengthens family bonds, and helps elders feel seen, celebrated, and deeply loved.",
     summary:
-      "The most intimate box in the range, built around voice, letters, touch, photographs, and family rituals that make an elder feel deeply seen.",
+      "An emotionally rich box built around letters, photographs, voice messages, keepsakes, and shared writing to deepen intergenerational love.",
     sampleItems: [
       "Letters from grandchildren",
       "Family photo frame",
+      "Ceramic candle",
       "\"Reasons We Love You\" jar",
-      "\"Open When\" letter bundle",
       "QR voice message card",
-      "Shared writing journal",
+      "\"We Write Together\" journal",
     ],
     images: [
       assetPath("/mockups/important-box-hero-new.png"),
       assetPath("/mockups/important-box-items.png"),
+    ],
+  },
+  {
+    slug: "travel-box",
+    arabicName: "صندوق المغامرة",
+    name: "Adventure Box",
+    tagline: "Travel & Discovery",
+    itemCount: 5,
+    purpose:
+      "Helps elders experience the feeling of travel from home, spark curiosity, and encourage cultural discovery through sensory and interactive items.",
+    summary:
+      "A travel-inspired box that brings cultural exploration, sensory discovery, and joyful family conversation into a premium Judhoor experience.",
+    sampleItems: [
+      "Personalized boarding pass",
+      "Destination postcard set",
+      "Music QR code",
+      "Destination-inspired snacks",
+      "Simple recipe card",
+      "Family guide card",
+    ],
+    images: [
+      assetPath("/mockups/travel-box-hero-new.png"),
+      assetPath("/mockups/travel-box-items.png"),
     ],
   },
 ];
@@ -123,22 +123,22 @@ export const experienceSteps = [
   {
     title: "Choose the emotional need",
     description:
-      "Start with reflection, wellbeing, creativity, or connection depending on what the elder needs most right now.",
+      "Start with memory, wellbeing, connection, or discovery depending on what the elder needs most right now.",
   },
   {
     title: "Unbox with dignity",
     description:
-      "The materials, typography, and monochromatic palettes are designed to feel premium and calming from the first moment.",
+      "Drawer-style presentation, gold Arabic details, and warm monochromatic palettes make the experience feel honoring from the first moment.",
   },
   {
     title: "Use the guide gently",
     description:
-      "Families and caregivers receive respectful prompts on how to encourage engagement without pressure.",
+      "Every box includes a family guide card with respectful prompts, safe use notes, and dementia-friendly encouragement.",
   },
   {
     title: "Create repeatable rituals",
     description:
-      "The objects are meant to be revisited, turning one beautiful box into many meaningful interactions.",
+      "The objects are meant to be revisited, turning one beautifully designed box into many meaningful interactions.",
   },
 ];
 
@@ -177,19 +177,19 @@ export const conceptGallery = [
   {
     title: "Four-box elderly wellbeing line",
     description:
-      "The main Judhoor system built around memory, health, creativity, and connection.",
+      "The current Judhoor line is built around memory, health, connection, and travel discovery.",
     image: assetPath("/mockups/past-box-hero-new.png"),
   },
   {
-    title: "Crafted item ecosystems",
+    title: "Emotionally rich item ecosystems",
     description:
       "Every box contains premium tactile objects designed to be used, revisited, and cherished.",
-    image: assetPath("/mockups/creative-box-items.png"),
+    image: assetPath("/mockups/important-box-items.png"),
   },
   {
-    title: "Additional concept experience",
+    title: "Adventure-led expansion",
     description:
-      "A travel-themed Judhoor box concept shown as part of the wider visual brand world.",
+      "The Adventure Box extends the brand into discovery, culture, and joyful family interaction.",
     image: assetPath("/mockups/travel-box-hero-new.png"),
   },
 ];
