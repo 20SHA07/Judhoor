@@ -108,7 +108,7 @@ export const productBoxes = [
   {
     slug: "travel-box",
     arabicName: "صندوق المغامرة",
-    name: "Adventure Box",
+    name: "Travel Box",
     tagline: "Travel & Discovery",
     itemCount: 5,
     purpose:
@@ -123,8 +123,8 @@ export const productBoxes = [
       "Story scroll and family guide",
     ],
     images: [
-      assetPath("/mockups/travel-box-items.png"),
-      assetPath("/mockups/travel-box-items.png"),
+      assetPath("/mockups/travel-box-hero-new.png"),
+      assetPath("/mockups/travel-box-hero-new.png"),
     ],
   },
 ];
@@ -197,9 +197,9 @@ export const conceptGallery = [
     image: assetPath("/mockups/important-box-items.png"),
   },
   {
-    title: "Adventure-led expansion",
+    title: "Travel-led expansion",
     description:
-      "The Adventure Box extends the brand into discovery, culture, and joyful family interaction.",
-    image: assetPath("/mockups/travel-box-items.png"),
+      "The Travel Box extends the brand into discovery, culture, and joyful family interaction.",
+    image: assetPath("/mockups/travel-box-hero-new.png"),
   },
 ];

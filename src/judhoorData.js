@@ -231,7 +231,7 @@ export const boxCatalog = [
   {
     slug: "travel-box",
     arabicName: "صندوق المغامرة",
-    name: "Adventure Box",
+    name: "Travel Box",
     tagline: "Travel & Discovery",
     theme: "midnight",
     price: 280,
@@ -242,37 +242,37 @@ export const boxCatalog = [
       {
         name: "Illustrated destination postcard set",
         note: "A curated set of destination cards that introduces landmarks, colors, and cultural scenes in a way that feels inviting rather than overwhelming.",
-        sprite: assetPath("/mockups/travel-box-items.png"),
+        sprite: assetPath("/mockups/travel-box-hero-new.png"),
         position: "left top",
       },
       {
         name: "Cultural map sheet",
         note: "A beautifully printed map that gives the box a sense of place and helps families talk through routes, cities, and stories together.",
-        sprite: assetPath("/mockups/travel-box-items.png"),
+        sprite: assetPath("/mockups/travel-box-hero-new.png"),
         position: "left center",
       },
       {
         name: "Music and story guide card",
         note: "A Judhoor guide card that links the destination to songs, stories, or spoken prompts for a more immersive cultural moment.",
-        sprite: assetPath("/mockups/travel-box-items.png"),
+        sprite: assetPath("/mockups/travel-box-hero-new.png"),
         position: "right center",
       },
       {
         name: "Destination tea and snack pairing",
         note: "A sensory pairing chosen to reflect the featured destination and add taste and aroma to the experience.",
-        sprite: assetPath("/mockups/travel-box-items.png"),
+        sprite: assetPath("/mockups/travel-box-hero-new.png"),
         position: "right top",
       },
       {
         name: "Story scroll and family guide",
         note: "A decorative story scroll with a gentle family guide so the box becomes a shared ritual of discovery rather than just a display piece.",
-        sprite: assetPath("/mockups/travel-box-items.png"),
+        sprite: assetPath("/mockups/travel-box-hero-new.png"),
         position: "center bottom",
       },
     ],
     images: [
-      assetPath("/mockups/travel-box-items.png"),
-      assetPath("/mockups/travel-box-items.png"),
+      assetPath("/mockups/travel-box-hero-new.png"),
+      assetPath("/mockups/travel-box-hero-new.png"),
     ],
   },
 ];
@@ -294,7 +294,7 @@ export const conceptMoments = [
     title: "A wider brand world",
     description:
       "The travel-themed concept set shows how the Judhoor visual identity can extend into future themed experiences.",
-    image: assetPath("/mockups/travel-box-items.png"),
+    image: assetPath("/mockups/travel-box-hero-new.png"),
   },
 ];
 
