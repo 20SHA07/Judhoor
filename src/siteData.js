@@ -42,7 +42,7 @@ export const productBoxes = [
       "Bakhoor memory scent sample",
     ],
     images: [
-      assetPath("/mockups/past-box-hero.png"),
+      assetPath("/mockups/past-box-hero-new.png"),
       assetPath("/mockups/past-box-items.png"),
       assetPath("/mockups/past-box-detail.png"),
     ],
@@ -113,7 +113,7 @@ export const productBoxes = [
       "Shared writing journal",
     ],
     images: [
-      assetPath("/mockups/important-box-hero.png"),
+      assetPath("/mockups/important-box-hero-new.png"),
       assetPath("/mockups/important-box-items.png"),
     ],
   },
@@ -178,7 +178,7 @@ export const conceptGallery = [
     title: "Four-box elderly wellbeing line",
     description:
       "The main Judhoor system built around memory, health, creativity, and connection.",
-    image: assetPath("/mockups/past-box-hero.png"),
+    image: assetPath("/mockups/past-box-hero-new.png"),
   },
   {
     title: "Crafted item ecosystems",
@@ -190,6 +190,6 @@ export const conceptGallery = [
     title: "Additional concept experience",
     description:
       "A travel-themed Judhoor box concept shown as part of the wider visual brand world.",
-    image: assetPath("/mockups/travel-box-hero.png"),
+    image: assetPath("/mockups/travel-box-hero-new.png"),
   },
 ];

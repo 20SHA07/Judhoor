@@ -49,7 +49,7 @@ export const boxCatalog = [
       },
     ],
     images: [
-      assetPath("/mockups/past-box-hero.png"),
+      assetPath("/mockups/past-box-hero-new.png"),
       assetPath("/mockups/past-box-items.png"),
       assetPath("/mockups/past-box-detail.png"),
     ],
@@ -155,7 +155,7 @@ export const boxCatalog = [
       },
     ],
     images: [
-      assetPath("/mockups/important-box-hero.png"),
+      assetPath("/mockups/important-box-hero-new.png"),
       assetPath("/mockups/important-box-items.png"),
     ],
   },
@@ -207,7 +207,7 @@ export const boxCatalog = [
       },
     ],
     images: [
-      assetPath("/mockups/travel-box-hero.png"),
+      assetPath("/mockups/travel-box-hero-new.png"),
       assetPath("/mockups/travel-box-items.png"),
     ],
   },
@@ -218,7 +218,7 @@ export const conceptMoments = [
     title: "Packaging that feels ceremonial",
     description:
       "The drawer-style presentation and foil details make every unboxing feel intentional and honoring.",
-    image: assetPath("/mockups/past-box-hero.png"),
+    image: assetPath("/mockups/past-box-hero-new.png"),
   },
   {
     title: "Objects that invite interaction",
@@ -230,7 +230,7 @@ export const conceptMoments = [
     title: "A wider brand world",
     description:
       "The travel-themed concept set shows how the Judhoor visual identity can extend into future themed experiences.",
-    image: assetPath("/mockups/travel-box-hero.png"),
+    image: assetPath("/mockups/travel-box-hero-new.png"),
   },
 ];
 

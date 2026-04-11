@@ -320,7 +320,7 @@ function HomePage({ onAddToCart }) {
         <div className="jh-hero__visual jh-animate jh-animate--float">
           <div className="jh-hero__visual-shell">
             <img
-              src={assetPath("/mockups/past-box-hero.png")}
+              src={assetPath("/mockups/past-box-hero-new.png")}
               alt="Judhoor box presentation"
               className="jh-hero__image"
             />
@@ -468,7 +468,7 @@ function ExperiencePage() {
       title: "Unboxing should feel ceremonial, not clinical.",
       text:
         "The first impression matters. Judhoor boxes are designed to arrive like meaningful gifts, with premium presentation, warm materials, and an immediate sense of care.",
-      image: assetPath("/mockups/important-box-hero.png"),
+      image: assetPath("/mockups/important-box-hero-new.png"),
       alt: "Judhoor ceremonial unboxing presentation",
     },
     {
