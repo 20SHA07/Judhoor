@@ -108,64 +108,6 @@ export const boxCatalog = [
     ],
   },
   {
-    slug: "my-kit-box",
-    arabicName: "صندوق أدواتي",
-    name: "My Kit Box",
-    tagline: "Creative Activities",
-    theme: "terracotta",
-    price: 280,
-    summary:
-      "A creative toolkit for painting, puzzles, coloring, tea moments, and tactile making, all designed for comfortable elderly use.",
-    items: [
-      {
-        name: "Painting kit",
-        note: "A calm, elegant watercolor set that invites gentle making and visual expression.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "left top",
-      },
-      {
-        name: "Mini canvas",
-        note: "A small ready-to-use canvas for a first creative win without overwhelm.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "center top",
-      },
-      {
-        name: "Calming tea box",
-        note: "A tea ritual detail that slows the pace and softens the creative session.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "right top",
-      },
-      {
-        name: "Adult coloring book",
-        note: "Decorative pages designed for focus, calm, and light hand movement.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "left center",
-      },
-      {
-        name: "Large-print Sudoku",
-        note: "A familiar cognitive activity adapted for clarity and comfortable use.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "center center",
-      },
-      {
-        name: "Knitting starter set",
-        note: "A tactile starter activity that keeps the hands engaged with a warm handcrafted feel.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "left bottom",
-      },
-      {
-        name: "Customized puzzle",
-        note: "A slow shared activity built around nostalgic imagery and comfortable piece count.",
-        sprite: assetPath("/mockups/creative-box-items.png"),
-        position: "center bottom",
-      },
-    ],
-    images: [
-      assetPath("/mockups/creative-box-hero.png"),
-      assetPath("/mockups/creative-box-items.png"),
-    ],
-  },
-  {
     slug: "important-box",
     arabicName: "صندوق أنت مهمة",
     name: "You Are Important Box",
