@@ -205,7 +205,7 @@ export const boxCatalog = [
       },
     ],
     images: [
-      assetPath("/mockups/travel-box-hero-new.png"),
+      assetPath("/mockups/travel-box-hero-4k.png"),
       assetPath("/mockups/travel-box-items.png"),
     ],
   },
@@ -228,7 +228,7 @@ export const conceptMoments = [
     title: "A wider brand world",
     description:
       "The travel-themed concept set shows how the Judhoor visual identity can extend into future themed experiences.",
-    image: assetPath("/mockups/travel-box-hero-new.png"),
+    image: assetPath("/mockups/travel-box-hero-4k.png"),
   },
 ];
 
