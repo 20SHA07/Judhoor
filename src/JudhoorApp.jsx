@@ -273,6 +273,127 @@ function ItemPreviewModal({ item, onClose }) {
   );
 }
 
+function BoxDemoModal({ box, onClose, onAddToCart }) {
+  const [tilt, setTilt] = useState({ rotateX: -8, rotateY: 10 });
+
+  useEffect(() => {
+    if (!box) {
+      return undefined;
+    }
+
+    function onKeyDown(event) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [box, onClose]);
+
+  if (!box) {
+    return null;
+  }
+
+  const gallery = box.images.length > 0 ? box.images : [assetPath("/judhoor-logo.png")];
+  const [heroImage, sideImage, detailImage] = gallery;
+
+  function handlePointerMove(event) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+    setTilt({
+      rotateX: (0.5 - y) * 18,
+      rotateY: (x - 0.5) * 24,
+    });
+  }
+
+  function resetTilt() {
+    setTilt({ rotateX: -8, rotateY: 10 });
+  }
+
+  return (
+    <div className="jh-modal" onClick={onClose} role="presentation">
+      <div
+        className="jh-modal__card jh-modal__card--demo"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${box.name} 3D demo`}
+      >
+        <button type="button" className="jh-modal__close" onClick={onClose}>
+          Close
+        </button>
+        <div className="jh-demo-modal">
+          <div
+            className="jh-demo-stage"
+            onMouseMove={handlePointerMove}
+            onMouseLeave={resetTilt}
+            onPointerUp={resetTilt}
+          >
+            <div
+              className="jh-demo-stage__scene"
+              style={{
+                transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+              }}
+            >
+              <span className="jh-demo-stage__glow" />
+              <div className={`jh-demo-box jh-demo-box--${box.theme}`}>
+                <div className="jh-demo-box__shadow" />
+                <div className="jh-demo-box__base" />
+                <div
+                  className="jh-demo-box__panel jh-demo-box__panel--lid"
+                  style={{ backgroundImage: `url(${heroImage})` }}
+                />
+                <div
+                  className="jh-demo-box__panel jh-demo-box__panel--inner"
+                  style={{ backgroundImage: `url(${sideImage || heroImage})` }}
+                />
+                <div
+                  className="jh-demo-box__card jh-demo-box__card--primary"
+                  style={{ backgroundImage: `url(${detailImage || sideImage || heroImage})` }}
+                />
+                <div
+                  className="jh-demo-box__card jh-demo-box__card--secondary"
+                  style={{ backgroundImage: `url(${heroImage})` }}
+                />
+              </div>
+            </div>
+            <p className="jh-demo-stage__hint">Move your cursor to explore the box in 3D.</p>
+          </div>
+          <div className="jh-demo-copy">
+            <p className="jh-eyebrow">Interactive Demo</p>
+            <h2>{box.name}</h2>
+            <span>{box.tagline}</span>
+            <p>{box.summary}</p>
+            <div className="jh-demo-copy__meta">
+              <strong>{formatPrice(box.price)}</strong>
+              <span>{getItemCount(box)} curated items</span>
+            </div>
+            <div className="jh-chip-cloud">
+              {box.items.map((item) => (
+                <span key={item.name} className="jh-chip-button jh-chip-button--static">
+                  {item.name}
+                </span>
+              ))}
+            </div>
+            <div className="jh-showcase-card__cta">
+              <button
+                type="button"
+                className="jh-button jh-button--solid"
+                onClick={() => onAddToCart(box.slug)}
+              >
+                Add to cart
+              </button>
+              <span className="jh-modal__hint">Demo view only. No WebGL required.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function HomePage({ onAddToCart }) {
   const featuredBoxes = boxCatalog.slice(0, 2);
   const calmPillars = [
@@ -408,7 +529,7 @@ function HomePage({ onAddToCart }) {
   );
 }
 
-function ProductLinePage({ onAddToCart, onPreviewItem }) {
+function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
   return (
     <section className="jh-page jh-animate jh-animate--up">
       <div className="jh-section__head">
@@ -437,13 +558,22 @@ function ProductLinePage({ onAddToCart, onPreviewItem }) {
               </div>
               <div className="jh-showcase-card__cta">
                 <strong>AED {box.price}</strong>
-                <button
-                  type="button"
-                  className="jh-button jh-button--solid"
-                  onClick={() => onAddToCart(box.slug)}
-                >
-                  Add to cart
-                </button>
+                <div className="jh-showcase-card__actions">
+                  <button
+                    type="button"
+                    className="jh-button jh-button--ghost"
+                    onClick={() => onPreviewBoxDemo(box)}
+                  >
+                    3D demo
+                  </button>
+                  <button
+                    type="button"
+                    className="jh-button jh-button--solid"
+                    onClick={() => onAddToCart(box.slug)}
+                  >
+                    Add to cart
+                  </button>
+                </div>
               </div>
             </div>
             <div className="jh-gallery">
@@ -1019,6 +1149,7 @@ function CheckoutSuccessPage({ lastOrder }) {
 export default function JudhoorApp() {
   const [showIntro, setShowIntro] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedBoxDemo, setSelectedBoxDemo] = useState(null);
   const [lastOrder, setLastOrder] = useState(null);
   const [cart, setCart] = useState(() =>
     Object.fromEntries(boxCatalog.map((box) => [box.slug, 0])),
@@ -1063,6 +1194,11 @@ export default function JudhoorApp() {
     <>
       {showIntro ? <IntroScreen onFinish={() => setShowIntro(false)} /> : null}
       <ItemPreviewModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+      <BoxDemoModal
+        box={selectedBoxDemo}
+        onClose={() => setSelectedBoxDemo(null)}
+        onAddToCart={handleAddToCart}
+      />
       <Shell cartCount={cartCount} onReplayIntro={replayIntro}>
         <Routes>
           <Route path="/" element={<HomePage onAddToCart={handleAddToCart} />} />
@@ -1072,6 +1208,7 @@ export default function JudhoorApp() {
               <ProductLinePage
                 onAddToCart={handleAddToCart}
                 onPreviewItem={setSelectedItem}
+                onPreviewBoxDemo={setSelectedBoxDemo}
               />
             }
           />

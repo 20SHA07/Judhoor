@@ -816,6 +816,10 @@ img {
   animation: jhSoftRise 0.35s ease both;
 }
 
+.jh-modal__card--demo {
+  width: min(1140px, 100%);
+}
+
 .jh-modal__close {
   margin-left: auto;
   display: inline-flex;
@@ -833,6 +837,195 @@ img {
   gap: 20px;
   align-items: center;
   margin-top: 12px;
+}
+
+.jh-demo-modal {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.jh-demo-stage {
+  position: relative;
+  min-height: 620px;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(86, 70, 53, 0.08);
+  background:
+    radial-gradient(circle at 20% 16%, rgba(255, 252, 246, 0.95), transparent 26%),
+    radial-gradient(circle at 80% 18%, rgba(222, 188, 120, 0.26), transparent 24%),
+    radial-gradient(circle at 50% 74%, rgba(124, 90, 49, 0.2), transparent 34%),
+    linear-gradient(180deg, rgba(254, 250, 244, 0.98), rgba(237, 224, 205, 0.88));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+}
+
+.jh-demo-stage__scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  transition: transform 180ms ease;
+  perspective: 1600px;
+}
+
+.jh-demo-stage__glow {
+  position: absolute;
+  width: min(70%, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(231, 196, 134, 0.46), transparent 72%);
+  transform: translate3d(0, -20px, 10px);
+  filter: blur(18px);
+}
+
+.jh-demo-box {
+  position: relative;
+  width: min(82%, 620px);
+  aspect-ratio: 1 / 1;
+  transform-style: preserve-3d;
+}
+
+.jh-demo-box__shadow {
+  position: absolute;
+  inset: auto 11% 3%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(54, 37, 23, 0.34), transparent 72%);
+  transform: translate3d(0, 54px, -70px) rotateX(78deg);
+  filter: blur(10px);
+}
+
+.jh-demo-box__base {
+  position: absolute;
+  inset: 14% 10% 10%;
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(46, 31, 22, 0.1), rgba(40, 23, 15, 0.16)),
+    linear-gradient(180deg, rgba(255, 251, 246, 0.24), rgba(194, 157, 108, 0.14));
+  transform: translate3d(0, 90px, -55px) rotateX(78deg);
+  border: 1px solid rgba(110, 80, 44, 0.1);
+}
+
+.jh-demo-box__panel,
+.jh-demo-box__card {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.jh-demo-box__panel--lid {
+  inset: 0;
+  transform: translate3d(0, -10px, 130px);
+  filter: drop-shadow(0 22px 32px rgba(57, 34, 14, 0.18));
+}
+
+.jh-demo-box__panel--inner {
+  inset: 12% 12% 8%;
+  opacity: 0.94;
+  transform: translate3d(34px, 36px, 30px) rotateY(-8deg) rotateX(4deg);
+  filter: saturate(1.02) brightness(0.98);
+}
+
+.jh-demo-box__card {
+  width: 34%;
+  aspect-ratio: 4 / 5;
+  border-radius: 24px;
+  background-color: rgba(255, 250, 242, 0.92);
+  border: 1px solid rgba(96, 73, 48, 0.08);
+  box-shadow:
+    0 18px 34px rgba(27, 18, 10, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.54);
+}
+
+.jh-demo-box__card--primary {
+  top: 12%;
+  right: -2%;
+  transform: translate3d(34px, 8px, 180px) rotateY(-20deg) rotateX(6deg);
+}
+
+.jh-demo-box__card--secondary {
+  bottom: 4%;
+  left: -4%;
+  transform: translate3d(-24px, 8px, 100px) rotateY(18deg) rotateX(-4deg);
+}
+
+.jh-demo-box--sand .jh-demo-box__card {
+  background-color: rgba(255, 248, 238, 0.94);
+}
+
+.jh-demo-box--sage .jh-demo-box__card {
+  background-color: rgba(245, 251, 245, 0.94);
+}
+
+.jh-demo-box--rose .jh-demo-box__card {
+  background-color: rgba(255, 244, 243, 0.94);
+}
+
+.jh-demo-box--midnight .jh-demo-box__card {
+  background-color: rgba(243, 247, 252, 0.94);
+}
+
+.jh-demo-stage__hint {
+  position: absolute;
+  left: 24px;
+  bottom: 22px;
+  margin: 0;
+  color: rgba(85, 65, 46, 0.74);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.jh-demo-copy {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.jh-demo-copy > span {
+  color: var(--jh-gold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.jh-demo-copy h2 {
+  margin: 0;
+  font-family: var(--jh-font-display);
+  font-size: clamp(2.6rem, 4vw, 4rem);
+}
+
+.jh-demo-copy p {
+  margin: 0;
+  color: var(--jh-muted);
+  line-height: 1.8;
+}
+
+.jh-demo-copy__meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.jh-chip-button--static {
+  cursor: default;
+}
+
+.jh-chip-button--static:hover {
+  transform: none;
+}
+
+.jh-showcase-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .jh-item-preview {
@@ -2082,6 +2275,7 @@ body {
   .jh-shop-layout,
   .jh-footer,
   .jh-guidance,
+  .jh-demo-modal,
   .jh-modal__layout,
   .jh-story-panel,
   .jh-story-panel--reverse {
@@ -2115,6 +2309,7 @@ body {
   .jh-shop-layout,
   .jh-footer,
   .jh-guidance,
+  .jh-demo-modal,
   .jh-modal__layout,
   .jh-story-panel,
   .jh-story-panel--reverse {
@@ -2134,6 +2329,14 @@ body {
 
   .jh-checkout {
     position: static;
+  }
+
+  .jh-demo-stage {
+    min-height: 420px;
+  }
+
+  .jh-demo-box {
+    width: min(88%, 460px);
   }
 }
 
@@ -2259,6 +2462,14 @@ body {
     min-height: 280px;
     background-size: 260% 260%;
   }
+
+  .jh-demo-stage {
+    min-height: 340px;
+  }
+
+  .jh-demo-box__card {
+    border-radius: 18px;
+  }
 }
 
 @media (max-width: 420px) {
@@ -2287,6 +2498,7 @@ body {
   .jh-scene-card figure,
   .jh-gallery__item,
   .jh-shop-card figure,
+  .jh-demo-stage,
   .jh-item-preview {
     border-radius: 20px;
   }
