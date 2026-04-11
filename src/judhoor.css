@@ -368,13 +368,35 @@ img {
 .jh-gallery__item,
 .jh-shop-card figure {
   margin: 0;
+  position: relative;
   border-radius: 28px;
   background:
-    radial-gradient(circle at 50% 38%, rgba(214, 179, 121, 0.24), transparent 42%),
-    radial-gradient(circle at 50% 70%, rgba(94, 69, 50, 0.08), transparent 62%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.97), rgba(242, 232, 217, 0.82));
-  border: 1px solid rgba(86, 70, 53, 0.08);
+    radial-gradient(circle at 50% 28%, rgba(228, 190, 126, 0.34), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(74, 48, 27, 0.18), transparent 56%),
+    linear-gradient(180deg, #fbf5eb 0%, #ead9c2 100%);
+  border: 1px solid rgba(101, 73, 43, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -18px 30px rgba(120, 83, 45, 0.08);
   overflow: hidden;
+}
+
+.jh-hero__visual-shell::after,
+.jh-product-card__media::after,
+.jh-scene-card figure::after,
+.jh-gallery__item::after,
+.jh-shop-card figure::after,
+.jh-cart-item__media::after {
+  content: "";
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 10%;
+  height: 16%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(78, 52, 31, 0.28), rgba(78, 52, 31, 0));
+  filter: blur(10px);
+  pointer-events: none;
 }
 
 .jh-hero__visual-shell {
@@ -394,8 +416,8 @@ img {
   object-fit: contain;
   display: block;
   filter:
-    drop-shadow(0 18px 24px rgba(55, 37, 22, 0.16))
-    drop-shadow(0 36px 48px rgba(55, 37, 22, 0.1));
+    drop-shadow(0 18px 28px rgba(55, 37, 22, 0.22))
+    drop-shadow(0 40px 56px rgba(55, 37, 22, 0.14));
 }
 
 .jh-hero__image {
@@ -608,9 +630,9 @@ img {
   min-width: 0;
   width: 100%;
   background:
-    radial-gradient(circle at 50% 38%, rgba(214, 179, 121, 0.24), transparent 42%),
-    radial-gradient(circle at 50% 75%, rgba(94, 69, 50, 0.09), transparent 62%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.97), rgba(242, 232, 217, 0.82));
+    radial-gradient(circle at 50% 28%, rgba(228, 190, 126, 0.34), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(74, 48, 27, 0.18), transparent 56%),
+    linear-gradient(180deg, #fbf5eb 0%, #ead9c2 100%);
 }
 
 .jh-product-card__footer {
@@ -757,9 +779,9 @@ img {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 38%, rgba(214, 179, 121, 0.24), transparent 42%),
-    radial-gradient(circle at 50% 75%, rgba(94, 69, 50, 0.09), transparent 62%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.97), rgba(242, 232, 217, 0.82));
+    radial-gradient(circle at 50% 28%, rgba(228, 190, 126, 0.34), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(74, 48, 27, 0.18), transparent 56%),
+    linear-gradient(180deg, #fbf5eb 0%, #ead9c2 100%);
   transition:
     transform 260ms ease,
     box-shadow 260ms ease;
@@ -980,9 +1002,9 @@ img {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 38%, rgba(214, 179, 121, 0.24), transparent 42%),
-    radial-gradient(circle at 50% 75%, rgba(94, 69, 50, 0.09), transparent 62%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.97), rgba(242, 232, 217, 0.82));
+    radial-gradient(circle at 50% 28%, rgba(228, 190, 126, 0.34), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(74, 48, 27, 0.18), transparent 56%),
+    linear-gradient(180deg, #fbf5eb 0%, #ead9c2 100%);
 }
 
 .jh-shop-card__body {
@@ -1149,10 +1171,11 @@ img {
   min-height: 200px;
   padding: 16px;
   border-radius: 24px;
+  position: relative;
   background:
-    radial-gradient(circle at 50% 38%, rgba(214, 179, 121, 0.24), transparent 42%),
-    radial-gradient(circle at 50% 75%, rgba(94, 69, 50, 0.09), transparent 62%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.97), rgba(242, 232, 217, 0.82));
+    radial-gradient(circle at 50% 28%, rgba(228, 190, 126, 0.34), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(74, 48, 27, 0.18), transparent 56%),
+    linear-gradient(180deg, #fbf5eb 0%, #ead9c2 100%);
 }
 
 .jh-cart-item__media img {
