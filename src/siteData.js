@@ -130,7 +130,7 @@ export const productBoxes = [
     ],
     images: [
       assetPath("/mockups/travel-box-hero-4k.png"),
-      assetPath("/mockups/travel-box-items.jpg"),
+      assetPath("/mockups/travel-box-items.png"),
     ],
   },
 ];
@@ -206,6 +206,6 @@ export const conceptGallery = [
     title: "Travel-led expansion",
     description:
       "The Travel Box extends the brand into heritage-led discovery, sensory prompts, and joyful family interaction.",
-    image: assetPath("/mockups/travel-box-items.jpg"),
+    image: assetPath("/mockups/travel-box-items.png"),
   },
 ];

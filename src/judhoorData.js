@@ -264,7 +264,7 @@ export const boxCatalog = [
       {
         name: "Nile flooding story cards",
         note: "A tied deck of cultural cards introducing Nile flooding, agriculture, and heritage prompts for family conversation.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "left top",
         previewPosition: "61% 12%",
         previewSize: "260% 260%",
@@ -272,7 +272,7 @@ export const boxCatalog = [
       {
         name: "Mini felucca boat",
         note: "A small Nile sailboat model that gives the box a tactile travel object and a clear visual sense of place.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "left center",
         previewPosition: "84% 18%",
         previewSize: "300% 300%",
@@ -280,7 +280,7 @@ export const boxCatalog = [
       {
         name: "Sphinx heritage figurine",
         note: "A sculptural keepsake inspired by ancient Egyptian heritage, chosen as a strong memory and storytelling anchor.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "right center",
         previewPosition: "32% 44%",
         previewSize: "270% 270%",
@@ -288,7 +288,7 @@ export const boxCatalog = [
       {
         name: "Ancient stone tablet",
         note: "A textured tablet-style object that adds a tactile archaeological feeling to the travel ritual.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "right top",
         previewPosition: "57% 48%",
         previewSize: "260% 260%",
@@ -296,7 +296,7 @@ export const boxCatalog = [
       {
         name: "Canopic jar miniature set",
         note: "A set of small Egyptian-inspired jars that encourage curiosity, naming, sorting, and shared cultural discussion.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "center bottom",
         previewPosition: "77% 45%",
         previewSize: "275% 275%",
@@ -304,7 +304,7 @@ export const boxCatalog = [
       {
         name: "Engraved Egyptian pen",
         note: "A premium writing object for notes, reflections, or answering the included story prompts.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "right center",
         previewPosition: "82% 55%",
         previewSize: "300% 300%",
@@ -312,7 +312,7 @@ export const boxCatalog = [
       {
         name: "Hieroglyphic leather journal",
         note: "A leather-style travel journal for writing memories, imagined journeys, and family reflections.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "left bottom",
         previewPosition: "13% 72%",
         previewSize: "245% 245%",
@@ -320,7 +320,7 @@ export const boxCatalog = [
       {
         name: "Ancient board game",
         note: "A heritage-inspired game board with pieces, designed to invite gentle play and interaction.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "center bottom",
         previewPosition: "34% 76%",
         previewSize: "255% 255%",
@@ -328,7 +328,7 @@ export const boxCatalog = [
       {
         name: "Egyptian musk bottle",
         note: "A small scent bottle that brings aroma into the travel experience and creates a sensory memory cue.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "left bottom",
         previewPosition: "33% 90%",
         previewSize: "310% 310%",
@@ -336,7 +336,7 @@ export const boxCatalog = [
       {
         name: "Nile water keepsake jar",
         note: "A labeled keepsake jar that adds a playful, museum-like discovery moment to the package.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "center bottom",
         previewPosition: "43% 90%",
         previewSize: "310% 310%",
@@ -344,7 +344,7 @@ export const boxCatalog = [
       {
         name: "Frankincense and myrrh pouch",
         note: "A scented pouch that adds warmth, texture, and a heritage-inspired fragrance ritual.",
-        sprite: assetPath("/mockups/travel-box-items.jpg"),
+        sprite: assetPath("/mockups/travel-box-items.png"),
         position: "right bottom",
         previewPosition: "62% 88%",
         previewSize: "280% 280%",
@@ -352,7 +352,7 @@ export const boxCatalog = [
     ],
     images: [
       assetPath("/mockups/travel-box-hero-4k.png"),
-      assetPath("/mockups/travel-box-items.jpg"),
+      assetPath("/mockups/travel-box-items.png"),
     ],
   },
 ];
@@ -374,7 +374,7 @@ export const conceptMoments = [
     title: "A wider brand world",
     description:
       "The Travel Box extends Judhoor into heritage-led discovery through tactile Egyptian-inspired objects.",
-    image: assetPath("/mockups/travel-box-items.jpg"),
+    image: assetPath("/mockups/travel-box-items.png"),
   },
 ];
 
