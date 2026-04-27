@@ -107,24 +107,30 @@ export const productBoxes = [
   },
   {
     slug: "travel-box",
-    arabicName: "صندوق المغامرة",
+    arabicName: "صندوق السفر",
     name: "Travel Box",
     tagline: "Travel & Discovery",
-    itemCount: 5,
+    itemCount: 11,
     purpose:
-      "Helps elders experience the feeling of travel from home, spark curiosity, and encourage cultural discovery through sensory and interactive items.",
+      "Helps elders experience the feeling of travel from home, spark curiosity, and encourage cultural discovery through tactile Egyptian-inspired items.",
     summary:
-      "A discovery-led box inspired by travel, culture, and heritage, designed to bring curiosity and shared conversation into the home.",
+      "An Egypt-inspired discovery box built around heritage, ancient games, scent, story cards, and keepsake objects that bring travel into the home.",
     sampleItems: [
-      "Illustrated destination postcard set",
-      "Cultural map sheet",
-      "Music and story guide card",
-      "Destination tea and snack pairing",
-      "Story scroll and family guide",
+      "Nile flooding story cards",
+      "Mini felucca boat",
+      "Sphinx heritage figurine",
+      "Ancient stone tablet",
+      "Canopic jar miniature set",
+      "Engraved Egyptian pen",
+      "Hieroglyphic leather journal",
+      "Ancient board game",
+      "Egyptian musk bottle",
+      "Nile water keepsake jar",
+      "Frankincense and myrrh pouch",
     ],
     images: [
       assetPath("/mockups/travel-box-hero-4k.png"),
-      assetPath("/mockups/travel-box-hero-4k.png"),
+      assetPath("/mockups/travel-box-items.jpg"),
     ],
   },
 ];
@@ -199,7 +205,7 @@ export const conceptGallery = [
   {
     title: "Travel-led expansion",
     description:
-      "The Travel Box extends the brand into discovery, culture, and joyful family interaction.",
-    image: assetPath("/mockups/travel-box-hero-4k.png"),
+      "The Travel Box extends the brand into heritage-led discovery, sensory prompts, and joyful family interaction.",
+    image: assetPath("/mockups/travel-box-items.jpg"),
   },
 ];
