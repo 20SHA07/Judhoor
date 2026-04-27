@@ -256,7 +256,8 @@ function ItemPreviewModal({ item, onClose }) {
             className="jh-item-preview"
             style={{
               backgroundImage: `url(${item.sprite})`,
-              backgroundPosition: item.position,
+              backgroundPosition: item.previewPosition ?? item.position,
+              backgroundSize: item.previewSize ?? "300% 300%",
             }}
           />
           <div className="jh-modal__copy">
@@ -450,7 +451,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                 Add to cart
               </button>
             </div>
-            <span className="jh-modal__hint">Dragable demo view with layered motion. No WebGL required.</span>
+            <span className="jh-modal__hint">Draggable demo view with layered motion. No WebGL required.</span>
           </div>
         </div>
       </div>
@@ -643,7 +644,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
             <div className="jh-gallery">
               {box.images.map((image, index) => (
                 <figure
-                  key={image}
+                  key={`${image}-${index}`}
                   className={index === 0 ? "jh-gallery__item jh-gallery__item--hero" : "jh-gallery__item"}
                 >
                   <img src={image} alt={`${box.name} preview ${index + 1}`} />
