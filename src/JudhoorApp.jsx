@@ -239,6 +239,8 @@ function ItemPreviewModal({ item, onClose }) {
     return null;
   }
 
+  const usesFullImagePreview = item.previewSize === "contain";
+
   return (
     <div className="jh-modal" onClick={onClose} role="presentation">
       <div
@@ -253,13 +255,19 @@ function ItemPreviewModal({ item, onClose }) {
         </button>
         <div className="jh-modal__layout">
           <div
-            className="jh-item-preview"
-            style={{
-              backgroundImage: `url(${item.sprite})`,
-              backgroundPosition: item.previewPosition ?? item.position,
-              backgroundSize: item.previewSize ?? "300% 300%",
-            }}
-          />
+            className={`jh-item-preview ${usesFullImagePreview ? "jh-item-preview--image" : ""}`}
+            style={
+              usesFullImagePreview
+                ? undefined
+                : {
+                    backgroundImage: `url(${item.sprite})`,
+                    backgroundPosition: item.previewPosition ?? item.position,
+                    backgroundSize: item.previewSize ?? "300% 300%",
+                  }
+            }
+          >
+            {usesFullImagePreview ? <img src={item.sprite} alt={item.name} /> : null}
+          </div>
           <div className="jh-modal__copy">
             <p className="jh-eyebrow">Product Detail</p>
             <h2>{item.name}</h2>
