@@ -129,7 +129,7 @@ export const productBoxes = [
       "Frankincense and myrrh pouch",
     ],
     images: [
-      assetPath("/mockups/travel-box-hero-4k.png"),
+      assetPath("/mockups/travel-box-hero-transparent.png"),
       assetPath("/mockups/travel-box-items.png"),
     ],
   },
