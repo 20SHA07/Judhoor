@@ -165,7 +165,7 @@ function TranslateWidget() {
           </option>
         ))}
       </select>
-      <div id="jh-translate" />
+      <div id="jh-translate" aria-hidden="true" />
     </div>
   );
 }
