@@ -318,14 +318,16 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
 
   const gallery = box.images.length > 0 ? box.images : [assetPath("/judhoor-logo.png")];
   const [heroImage, sideImage, detailImage] = gallery;
+  const clampTilt = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function handlePointerMove(event) {
     if (dragStateRef.current) {
+      event.preventDefault();
       const deltaX = event.clientX - dragStateRef.current.startX;
       const deltaY = event.clientY - dragStateRef.current.startY;
       setTilt({
-        rotateX: Math.max(-30, Math.min(24, dragStateRef.current.baseX - deltaY * 0.12)),
-        rotateY: Math.max(-34, Math.min(34, dragStateRef.current.baseY + deltaX * 0.14)),
+        rotateX: clampTilt(dragStateRef.current.baseX - deltaY * 0.1, -22, 18),
+        rotateY: clampTilt(dragStateRef.current.baseY + deltaX * 0.12, -26, 26),
       });
       return;
     }
@@ -334,13 +336,18 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
     const x = (event.clientX - bounds.left) / bounds.width;
     const y = (event.clientY - bounds.top) / bounds.height;
     setTilt({
-      rotateX: (0.5 - y) * 18,
-      rotateY: (x - 0.5) * 24,
+      rotateX: clampTilt((0.5 - y) * 14, -10, 10),
+      rotateY: clampTilt((x - 0.5) * 18, -14, 14),
     });
   }
 
   function handlePointerDown(event) {
-    event.currentTarget.setPointerCapture(event.pointerId);
+    if (event.button !== 0 && event.pointerType === "mouse") {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
     dragStateRef.current = {
       startX: event.clientX,
       startY: event.clientY,
@@ -363,12 +370,23 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
   }
 
   function resetTilt() {
+    if (dragStateRef.current) {
+      return;
+    }
+
     dragStateRef.current = null;
     setIsDragging(false);
     setTilt((current) => ({
       rotateX: current.rotateX * 0.55,
       rotateY: current.rotateY * 0.55,
     }));
+  }
+
+  function fullyResetDemo() {
+    dragStateRef.current = null;
+    setIsDragging(false);
+    setIsOpen(false);
+    setTilt({ rotateX: -8, rotateY: 10 });
   }
 
   return (
@@ -387,11 +405,13 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
           <div
             className={`jh-demo-stage ${isDragging ? "jh-demo-stage--dragging" : ""}`}
             onPointerDown={handlePointerDown}
-            onMouseMove={handlePointerMove}
-            onMouseLeave={resetTilt}
+            onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
+            onPointerLeave={resetTilt}
             onDoubleClick={() => setIsOpen((current) => !current)}
+            role="img"
+            aria-label={`Draggable 3D preview of ${box.name}`}
           >
             <div
               className={`jh-demo-stage__scene ${isOpen ? "jh-demo-stage__scene--open" : ""}`}
@@ -424,7 +444,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
               </div>
             </div>
             <p className="jh-demo-stage__hint">
-              Drag to rotate. Double-click to {isOpen ? "close" : "open"} the box.
+              Drag to rotate. Use the buttons to open or reset.
             </p>
           </div>
           <div className="jh-demo-copy">
@@ -450,6 +470,13 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                 onClick={() => setIsOpen((current) => !current)}
               >
                 {isOpen ? "Close box" : "Open box"}
+              </button>
+              <button
+                type="button"
+                className="jh-button jh-button--ghost"
+                onClick={fullyResetDemo}
+              >
+                Reset view
               </button>
               <button
                 type="button"

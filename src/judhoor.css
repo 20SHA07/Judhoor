@@ -852,7 +852,7 @@ img {
 
 .jh-demo-stage {
   position: relative;
-  min-height: min(72vh, 760px);
+  min-height: min(64vh, 680px);
   border-radius: 32px;
   overflow: hidden;
   border: 1px solid rgba(86, 70, 53, 0.08);
@@ -863,7 +863,9 @@ img {
     linear-gradient(180deg, rgba(254, 250, 244, 0.98), rgba(237, 224, 205, 0.88));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
   cursor: grab;
+  perspective: 1500px;
   touch-action: none;
+  user-select: none;
 }
 
 .jh-demo-stage--dragging {
@@ -876,8 +878,7 @@ img {
   display: grid;
   place-items: center;
   transform-style: preserve-3d;
-  transition: transform 180ms ease;
-  perspective: 1600px;
+  transition: transform 160ms ease;
 }
 
 .jh-demo-stage__scene--open .jh-demo-stage__glow {
@@ -896,7 +897,7 @@ img {
 
 .jh-demo-box {
   position: relative;
-  width: min(92%, 760px);
+  width: min(86%, 680px);
   aspect-ratio: 1 / 1;
   transform-style: preserve-3d;
   transition: transform 360ms ease;
@@ -968,34 +969,34 @@ img {
 .jh-demo-box__card--primary {
   top: 12%;
   right: -2%;
-  transform: translate3d(34px, 8px, 180px) rotateY(-20deg) rotateX(6deg);
+  transform: translate3d(24px, 8px, 150px) rotateY(-16deg) rotateX(5deg);
 }
 
 .jh-demo-box__card--secondary {
   bottom: 4%;
   left: -4%;
-  transform: translate3d(-24px, 8px, 100px) rotateY(18deg) rotateX(-4deg);
+  transform: translate3d(-18px, 8px, 90px) rotateY(14deg) rotateX(-3deg);
 }
 
 .jh-demo-box--open .jh-demo-box__panel--lid {
-  transform: translate3d(-18px, -130px, 170px) rotateX(68deg) rotateZ(-8deg);
+  transform: translate3d(-16px, -112px, 150px) rotateX(62deg) rotateZ(-7deg);
   filter: drop-shadow(0 32px 44px rgba(57, 34, 14, 0.22));
 }
 
 .jh-demo-box--open .jh-demo-box__panel--inner {
-  transform: translate3d(26px, 74px, 38px) rotateY(-10deg) rotateX(10deg);
+  transform: translate3d(22px, 62px, 36px) rotateY(-8deg) rotateX(8deg);
   opacity: 0.98;
 }
 
 .jh-demo-box--open .jh-demo-box__card--primary {
-  transform: translate3d(66px, -24px, 228px) rotateY(-28deg) rotateX(10deg);
+  transform: translate3d(46px, -18px, 184px) rotateY(-22deg) rotateX(8deg);
   box-shadow:
     0 24px 42px rgba(27, 18, 10, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.58);
 }
 
 .jh-demo-box--open .jh-demo-box__card--secondary {
-  transform: translate3d(-54px, 34px, 148px) rotateY(26deg) rotateX(-2deg);
+  transform: translate3d(-40px, 28px, 124px) rotateY(20deg) rotateX(-2deg);
 }
 
 .jh-demo-box--sand .jh-demo-box__card {
@@ -2399,11 +2400,11 @@ body {
   }
 
   .jh-demo-stage {
-    min-height: min(56vh, 520px);
+    min-height: min(54vh, 500px);
   }
 
   .jh-demo-box {
-    width: min(90%, 560px);
+    width: min(84%, 500px);
   }
 }
 
@@ -2531,10 +2532,15 @@ body {
   }
 
   .jh-demo-stage {
-    min-height: min(46vh, 420px);
+    min-height: 360px;
+  }
+
+  .jh-demo-box {
+    width: min(82%, 390px);
   }
 
   .jh-demo-box__card {
+    width: 30%;
     border-radius: 18px;
   }
 
@@ -2542,6 +2548,13 @@ body {
     width: calc(100vw - 16px);
     max-height: calc(100vh - 16px);
     padding: 16px;
+  }
+
+  .jh-demo-stage__hint {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    text-align: center;
   }
 }
 
