@@ -273,7 +273,7 @@ function ItemPreviewModal({ item, onClose }) {
             <h2>{item.name}</h2>
             <p>{item.note}</p>
             <span className="jh-modal__hint">
-              Previewed directly from the Judhoor branded mockup set.
+              This is one of the items included inside the selected Judhoor box.
             </span>
           </div>
         </div>
@@ -461,7 +461,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
               </div>
             </div>
             <p className="jh-demo-stage__hint">
-              Drag to rotate. Open the box to preview the real contents.
+              Drag the image to look around, then choose Open box to see what is inside.
             </p>
           </div>
           <div className="jh-demo-copy">
@@ -503,7 +503,9 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                 Add to cart
               </button>
             </div>
-            <span className="jh-modal__hint">Draggable demo view with layered motion. No WebGL required.</span>
+            <span className="jh-modal__hint">
+              Tip: open the box first, then add it to your cart when you are ready.
+            </span>
           </div>
         </div>
       </div>
@@ -1010,10 +1012,10 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
     <section className="jh-page jh-animate jh-animate--up">
       <div className="jh-section__head">
         <p className="jh-eyebrow">Checkout Demo</p>
-        <h1>A complete demo checkout experience with delivery and card details.</h1>
+        <h1>Enter delivery details and complete the demo checkout.</h1>
         <p>
-          This page is for presentation only. No payment is processed, but the flow is
-          designed to feel like a real purchase journey.
+          Fill in the required fields below. This checkout is for demonstration only,
+          so no payment will be processed.
         </p>
       </div>
 
@@ -1131,7 +1133,7 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
             <div className="jh-demo-card">
               <span>Demo Visa</span>
               <strong>4242 4242 4242 4242</strong>
-              <small>No real transaction will be made</small>
+              <small>Use the sample card details below. No payment will be processed.</small>
             </div>
             <div className="jh-form-grid">
               <label className="jh-form-grid__full">
@@ -1208,7 +1210,8 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
             </div>
             <CartSummary subtotal={subtotal} shipping={shipping} total={total} />
             <p className="jh-demo-disclaimer">
-              Demo only. Card fields are for presentation and do not charge the customer.
+              Demo checkout only. Review your order, complete the required fields, and
+              submit to see the confirmation page.
             </p>
           </div>
         </aside>
