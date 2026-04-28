@@ -317,7 +317,8 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
   }
 
   const gallery = box.images.length > 0 ? box.images : [assetPath("/judhoor-logo.png")];
-  const [heroImage, sideImage, detailImage] = gallery;
+  const [heroImage, sideImage] = gallery;
+  const demoItems = box.items.slice(0, 6);
   const clampTilt = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function handlePointerMove(event) {
@@ -420,31 +421,47 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
               }}
             >
               <span className="jh-demo-stage__glow" />
-              <div
-                className={`jh-demo-box jh-demo-box--${box.theme} ${isOpen ? "jh-demo-box--open" : ""}`}
-              >
-                <div className="jh-demo-box__shadow" />
-                <div className="jh-demo-box__base" />
-                <div
-                  className="jh-demo-box__panel jh-demo-box__panel--lid"
-                  style={{ backgroundImage: `url(${heroImage})` }}
+              <div className={`jh-demo-orbit jh-demo-orbit--${box.theme}`}>
+                <span className="jh-demo-orbit__ring" />
+                <img
+                  className="jh-demo-orbit__box"
+                  src={heroImage}
+                  alt={`${box.name} product mockup`}
+                  draggable="false"
                 />
-                <div
-                  className="jh-demo-box__panel jh-demo-box__panel--inner"
-                  style={{ backgroundImage: `url(${sideImage || heroImage})` }}
-                />
-                <div
-                  className="jh-demo-box__card jh-demo-box__card--primary"
-                  style={{ backgroundImage: `url(${detailImage || sideImage || heroImage})` }}
-                />
-                <div
-                  className="jh-demo-box__card jh-demo-box__card--secondary"
-                  style={{ backgroundImage: `url(${heroImage})` }}
-                />
+                {sideImage ? (
+                  <img
+                    className="jh-demo-orbit__contents"
+                    src={sideImage}
+                    alt={`${box.name} contents overview`}
+                    draggable="false"
+                  />
+                ) : null}
+                <div className="jh-demo-orbit__items" aria-hidden={!isOpen}>
+                  {demoItems.map((item, index) => (
+                    <figure
+                      key={item.name}
+                      className={`jh-demo-orbit__item ${
+                        item.previewSize === "contain" ? "jh-demo-orbit__item--image" : ""
+                      }`}
+                      style={{ "--jh-demo-index": index }}
+                    >
+                      <span
+                        className="jh-demo-orbit__item-art"
+                        style={{
+                          backgroundImage: `url(${item.sprite})`,
+                          backgroundPosition: item.previewPosition ?? item.position,
+                          backgroundSize: item.previewSize ?? "300% 300%",
+                        }}
+                      />
+                      <figcaption>{item.name}</figcaption>
+                    </figure>
+                  ))}
+                </div>
               </div>
             </div>
             <p className="jh-demo-stage__hint">
-              Drag to rotate. Use the buttons to open or reset.
+              Drag to rotate. Open the box to preview the real contents.
             </p>
           </div>
           <div className="jh-demo-copy">
