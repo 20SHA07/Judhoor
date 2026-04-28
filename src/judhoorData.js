@@ -237,6 +237,7 @@ export const boxCatalog = [
     images: [
       assetPath("/mockups/important-box-hero-new.png"),
       assetPath("/mockups/important-box-items.png"),
+      assetPath("/mockups/important-box-detail.png"),
     ],
   },
   {
@@ -331,6 +332,7 @@ export const boxCatalog = [
     images: [
       assetPath("/mockups/travel-box-hero-transparent.png"),
       assetPath("/mockups/travel-box-items.png"),
+      assetPath("/mockups/travel-box-detail.png"),
     ],
   },
 ];
