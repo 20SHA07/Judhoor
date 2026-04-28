@@ -90,15 +90,15 @@ export const productBoxes = [
     sampleItems: [
       "Letters from grandchildren",
       "Family photo frame",
-      "Printed family photographs",
+      "Family calendar",
       "Scented comfort candle",
       "\"Reasons We Love You\" jar",
       "QR voice message card",
       "\"Open When\" letter bundle",
       "Shared journal",
-      "Keepsake note cards",
+      "Keepsake handprint card",
       "Memory envelope set",
-      "Family guide card",
+      "Comfort prayer beads",
     ],
     images: [
       assetPath("/mockups/important-box-hero-new.png"),
