@@ -652,6 +652,10 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
       <div className="jh-section__head">
         <p className="jh-eyebrow">Product Line</p>
         <h1>Every Judhoor box has its own ritual, rhythm, and emotional purpose.</h1>
+        <p>
+          Explore the collection through clear product cards, real mockups, and
+          item-level previews designed to feel calm, premium, and easy to scan.
+        </p>
       </div>
       <div className="jh-product-showcase">
         {boxCatalog.map((box) => (
