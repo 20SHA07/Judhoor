@@ -797,7 +797,6 @@ img {
   display: grid;
   gap: 16px;
   align-content: start;
-  height: 100%;
 }
 
 .jh-showcase-card__copy span {
@@ -809,7 +808,6 @@ img {
 }
 
 .jh-showcase-card__cta {
-  margin-top: auto;
   padding-top: 6px;
   justify-content: space-between;
   border-top: 1px solid rgba(86, 70, 53, 0.08);
