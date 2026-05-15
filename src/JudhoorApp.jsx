@@ -175,6 +175,21 @@ function Shell({ cartCount, children, onReplayIntro }) {
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
       <div className="jh-bg jh-bg--two" />
+      <a
+        className="jh-top-announcement"
+        href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20early%20interest"
+        aria-label="Join the early list for the upcoming Father's Day Box"
+      >
+        <div className="jh-top-announcement__track">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <span key={index}>
+              Father&apos;s Day Box coming soon
+              <em>Join the early list</em>
+              <strong>Limited seasonal drop</strong>
+            </span>
+          ))}
+        </div>
+      </a>
       <header className="jh-header">
         <NavLink to="/" className="jh-brand">
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
@@ -692,7 +707,6 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
           item-level previews designed to feel calm, premium, and easy to scan.
         </p>
       </div>
-      <SeasonalAnnouncement compact />
       <div className="jh-product-showcase">
         {boxCatalog.map((box) => (
           <article key={box.slug} className="jh-showcase-card">
