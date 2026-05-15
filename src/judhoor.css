@@ -113,6 +113,9 @@ img {
 }
 
 .jh-top-announcement {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
   width: min(1440px, 100%);
   margin: 0 auto 12px;
   display: block;
@@ -142,7 +145,7 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 18px;
-  padding: 10px 26px;
+  padding: 10px 30px;
   white-space: nowrap;
   font-size: 0.88rem;
   font-weight: 800;
@@ -474,7 +477,7 @@ img {
   bottom: 10%;
   height: 16%;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(78, 52, 31, 0.28), rgba(78, 52, 31, 0));
+  background: radial-gradient(circle, rgba(78, 52, 31, 0.2), rgba(78, 52, 31, 0));
   filter: blur(10px);
   pointer-events: none;
 }
@@ -870,6 +873,7 @@ img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  object-position: center;
 }
 
 .jh-product-card--sand {
@@ -962,7 +966,32 @@ img {
     radial-gradient(circle at 88% 10%, rgba(199, 162, 94, 0.14), transparent 32%);
   transition:
     transform 280ms ease,
-    box-shadow 280ms ease;
+    box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+
+.jh-showcase-card--sand {
+  background:
+    linear-gradient(135deg, rgba(255, 252, 247, 0.94), rgba(235, 213, 184, 0.45)),
+    radial-gradient(circle at 88% 10%, rgba(199, 162, 94, 0.18), transparent 32%);
+}
+
+.jh-showcase-card--sage {
+  background:
+    linear-gradient(135deg, rgba(255, 252, 247, 0.94), rgba(215, 227, 208, 0.42)),
+    radial-gradient(circle at 88% 10%, rgba(112, 137, 103, 0.18), transparent 32%);
+}
+
+.jh-showcase-card--rose {
+  background:
+    linear-gradient(135deg, rgba(255, 252, 247, 0.94), rgba(236, 209, 202, 0.42)),
+    radial-gradient(circle at 88% 10%, rgba(166, 106, 94, 0.16), transparent 32%);
+}
+
+.jh-showcase-card--midnight {
+  background:
+    linear-gradient(135deg, rgba(255, 252, 247, 0.94), rgba(213, 226, 230, 0.44)),
+    radial-gradient(circle at 88% 10%, rgba(21, 91, 99, 0.18), transparent 32%);
 }
 
 .jh-showcase-card::before {
@@ -1034,9 +1063,9 @@ img {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 28%, rgba(228, 190, 126, 0.34), transparent 34%),
-    radial-gradient(circle at 50% 72%, rgba(74, 48, 27, 0.18), transparent 56%),
-    linear-gradient(180deg, #fbf5eb 0%, #ead9c2 100%);
+    radial-gradient(circle at 50% 26%, rgba(255, 242, 214, 0.72), transparent 38%),
+    radial-gradient(circle at 50% 78%, rgba(74, 48, 27, 0.13), transparent 58%),
+    linear-gradient(180deg, #fffaf2 0%, #efdfc8 100%);
   transition:
     transform 260ms ease,
     box-shadow 260ms ease;
@@ -1207,10 +1236,10 @@ img {
 
 .jh-demo-orbit__items {
   position: absolute;
-  inset: auto 2% 0;
+  inset: auto 0 -4px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 9px;
   opacity: 0;
   pointer-events: none;
   transform: translate3d(0, 28px, 130px);
@@ -1229,26 +1258,28 @@ img {
   min-width: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: 44px 1fr;
+  grid-template-columns: 52px 1fr;
   align-items: center;
   gap: 8px;
-  border-radius: 18px;
-  padding: 8px;
-  background: rgba(255, 252, 246, 0.86);
-  border: 1px solid rgba(86, 70, 53, 0.08);
-  box-shadow: 0 12px 24px rgba(50, 34, 19, 0.1);
+  border-radius: 20px;
+  padding: 9px;
+  background: rgba(255, 252, 246, 0.92);
+  border: 1px solid rgba(86, 70, 53, 0.1);
+  box-shadow: 0 14px 28px rgba(50, 34, 19, 0.12);
+  backdrop-filter: blur(10px);
   transform: translateY(calc(var(--jh-demo-index) * -2px));
 }
 
 .jh-demo-orbit__item-art {
   display: block;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   background-color: rgba(255, 250, 242, 0.72);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
+  box-shadow: inset 0 0 0 1px rgba(86, 70, 53, 0.06);
 }
 
 .jh-demo-orbit__item--image .jh-demo-orbit__item-art {
@@ -1347,7 +1378,7 @@ img {
   background-repeat: no-repeat;
   background-size: 300% 300%;
   border: 1px solid rgba(86, 70, 53, 0.08);
-  background-color: rgba(255, 252, 246, 0.94);
+  background-color: rgba(255, 252, 246, 0.96);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.72);
 }
 
@@ -1356,8 +1387,9 @@ img {
   place-items: center;
   padding: clamp(12px, 2vw, 24px);
   background:
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.72), transparent 58%),
-    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(240, 226, 205, 0.9));
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.9), transparent 56%),
+    radial-gradient(circle at 50% 82%, rgba(88, 59, 34, 0.12), transparent 44%),
+    linear-gradient(180deg, rgba(255, 252, 246, 0.98), rgba(240, 226, 205, 0.92));
 }
 
 .jh-item-preview--image img {

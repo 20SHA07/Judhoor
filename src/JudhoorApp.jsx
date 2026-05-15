@@ -443,6 +443,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                   src={heroImage}
                   alt={`${box.name} product mockup`}
                   draggable="false"
+                  loading="lazy"
                 />
                 {sideImage ? (
                   <img
@@ -450,6 +451,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                     src={sideImage}
                     alt={`${box.name} contents overview`}
                     draggable="false"
+                    loading="lazy"
                   />
                 ) : null}
                 <div className="jh-demo-orbit__items" aria-hidden={!isOpen}>
@@ -650,7 +652,7 @@ function HomePage({ onAddToCart }) {
                 <span>{box.tagline}</span>
               </div>
               <div className="jh-product-card__media">
-                <img src={box.images[0]} alt={`${box.name} mockup`} />
+                <img src={box.images[0]} alt={`${box.name} mockup`} loading="lazy" />
               </div>
               <p className="jh-product-card__summary">{box.summary}</p>
               <div className="jh-product-card__footer">
@@ -684,7 +686,7 @@ function HomePage({ onAddToCart }) {
         </div>
         <article className="jh-scene-card jh-home-story__card">
           <figure>
-            <img src={conceptMoments[0].image} alt={conceptMoments[0].title} />
+            <img src={conceptMoments[0].image} alt={conceptMoments[0].title} loading="lazy" />
           </figure>
           <div>
             <h3>{conceptMoments[0].title}</h3>
@@ -709,7 +711,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
       </div>
       <div className="jh-product-showcase">
         {boxCatalog.map((box) => (
-          <article key={box.slug} className="jh-showcase-card">
+          <article key={box.slug} className={`jh-showcase-card jh-showcase-card--${box.theme}`}>
             <div className="jh-showcase-card__copy">
               <p className="jh-eyebrow">{box.arabicName}</p>
               <h2>{box.name}</h2>
@@ -753,7 +755,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
                   key={`${image}-${index}`}
                   className={index === 0 ? "jh-gallery__item jh-gallery__item--hero" : "jh-gallery__item"}
                 >
-                  <img src={image} alt={`${box.name} preview ${index + 1}`} />
+                  <img src={image} alt={`${box.name} preview ${index + 1}`} loading="lazy" />
                 </figure>
               ))}
             </div>
@@ -809,7 +811,7 @@ function ExperiencePage() {
             className={`jh-story-panel ${index % 2 === 1 ? "jh-story-panel--reverse" : ""}`}
           >
             <figure className="jh-story-panel__media">
-              <img src={panel.image} alt={panel.alt} />
+              <img src={panel.image} alt={panel.alt} loading="lazy" />
             </figure>
             <div className="jh-story-panel__copy">
               <p className="jh-eyebrow">{`Chapter 0${index + 1}`}</p>
@@ -868,7 +870,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
           {boxCatalog.map((box) => (
             <article key={box.slug} className="jh-shop-card">
               <figure>
-                <img src={box.images[0]} alt={box.name} />
+                <img src={box.images[0]} alt={box.name} loading="lazy" />
               </figure>
               <div className="jh-shop-card__body">
                 <p className="jh-eyebrow">{box.arabicName}</p>
@@ -970,7 +972,7 @@ function CartPage({ cart, onUpdateQuantity }) {
             {cartLines.map((item) => (
               <article key={item.slug} className="jh-cart-item">
                 <figure className="jh-cart-item__media">
-                  <img src={item.images[0]} alt={item.name} />
+                  <img src={item.images[0]} alt={item.name} loading="lazy" />
                 </figure>
                 <div className="jh-cart-item__copy">
                   <p className="jh-eyebrow">{item.arabicName}</p>
