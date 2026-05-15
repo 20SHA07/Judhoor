@@ -102,7 +102,7 @@ function HomePage() {
         <div className="hero-art">
           <div className="hero-product-frame">
             <img
-              src="/mockups/past-box-hero.png"
+              src="/mockups/past-box-hero-new.png"
               alt="Judhoor The Past Box mockup"
               className="hero-product"
             />

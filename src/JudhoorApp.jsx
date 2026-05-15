@@ -729,7 +729,7 @@ function ExperiencePage() {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: assetPath("/mockups/past-box-items.png"),
+      image: assetPath("/mockups/past-box-items-luxury.png"),
       alt: "Judhoor memory and storytelling objects",
     },
     {
