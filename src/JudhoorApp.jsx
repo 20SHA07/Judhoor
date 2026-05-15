@@ -513,6 +513,37 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
   );
 }
 
+function SeasonalAnnouncement({ compact = false }) {
+  return (
+    <aside className={`jh-seasonal ${compact ? "jh-seasonal--compact" : ""}`}>
+      <div className="jh-seasonal__glow" />
+      <div className="jh-seasonal__copy">
+        <p className="jh-eyebrow">Seasonal Drop</p>
+        <h2>Father&apos;s Day Box coming soon.</h2>
+        <p>
+          A limited Judhoor package for fathers and grandfathers is being prepared
+          with memory prompts, keepsakes, and a warm family ritual.
+        </p>
+      </div>
+      <div className="jh-seasonal__details" aria-label="Father's Day Box announcement details">
+        <span>Preview opening soon</span>
+        <strong>Be ready for the drop</strong>
+        <small>Early interest helps us prepare the right quantity.</small>
+        <div className="jh-seasonal__actions">
+          <a className="jh-button jh-button--solid" href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20early%20interest">
+            Join early list
+          </a>
+          {!compact ? (
+            <NavLink to="/product-line" className="jh-button jh-button--ghost">
+              View current boxes
+            </NavLink>
+          ) : null}
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 function HomePage({ onAddToCart }) {
   const featuredBoxes = boxCatalog.slice(0, 2);
   const calmPillars = [
@@ -569,6 +600,8 @@ function HomePage({ onAddToCart }) {
           <div className="jh-hero__frame-tag">The Past Box | Memory & Reflection</div>
         </div>
       </section>
+
+      <SeasonalAnnouncement />
 
       <section className="jh-home-promise jh-animate jh-animate--fade">
         <div className="jh-section__head">
@@ -659,6 +692,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
           item-level previews designed to feel calm, premium, and easy to scan.
         </p>
       </div>
+      <SeasonalAnnouncement compact />
       <div className="jh-product-showcase">
         {boxCatalog.map((box) => (
           <article key={box.slug} className="jh-showcase-card">
