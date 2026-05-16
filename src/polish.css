@@ -1,0 +1,247 @@
+/* Focused UI polish layered after the main Judhoor stylesheet. */
+
+/* Google Translate injects helper UI outside the app; keep it from peeking into the page chrome. */
+body > .skiptranslate,
+body > iframe.skiptranslate,
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+.goog-te-menu-frame,
+.VIpgJd-ZVi9od-aZ2wEe,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-OiiCO,
+.VIpgJd-yAWNEb-L7lbkb {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html.translated-ltr body,
+html.translated-rtl body,
+body {
+  top: 0 !important;
+}
+
+.jh-header,
+.jh-top-announcement,
+.jh-hero__copy,
+.jh-hero__visual,
+.jh-seasonal,
+.jh-showcase-card,
+.jh-shop-card,
+.jh-checkout,
+.jh-footer {
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.jh-nav a,
+.jh-replay,
+.jh-button,
+.jh-chip-button,
+.jh-language-select {
+  min-height: 44px;
+}
+
+.jh-cart-pill {
+  color: #fff8ef !important;
+}
+
+.jh-top-announcement {
+  isolation: isolate;
+}
+
+.jh-top-announcement__track {
+  will-change: transform;
+}
+
+.jh-hero__copy,
+.jh-hero__visual,
+.jh-seasonal,
+.jh-home-promise,
+.jh-showcase-card,
+.jh-shop-card,
+.jh-checkout,
+.jh-footer {
+  box-shadow: 0 20px 58px rgba(66, 45, 24, 0.1);
+}
+
+@media (max-width: 900px) {
+  .jh-header {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .jh-brand {
+    justify-content: flex-start;
+  }
+
+  .jh-nav {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .jh-app {
+    padding: 10px;
+  }
+
+  .jh-top-announcement {
+    top: 8px;
+    margin-bottom: 8px;
+    border-radius: 999px;
+  }
+
+  .jh-top-announcement__track span {
+    padding: 8px 16px;
+  }
+
+  .jh-header {
+    padding: 12px;
+    border-radius: 24px;
+  }
+
+  .jh-brand {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .jh-brand img {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+  }
+
+  .jh-brand strong {
+    font-size: 1.62rem;
+    line-height: 1;
+  }
+
+  .jh-brand span {
+    display: block;
+    max-width: 14rem;
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .jh-nav {
+    display: flex;
+    grid-template-columns: none;
+    width: 100%;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    justify-content: flex-start;
+    border-radius: 999px;
+    padding: 6px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .jh-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .jh-nav a,
+  .jh-replay,
+  .jh-cart-pill {
+    width: auto;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 9px 13px;
+    white-space: nowrap;
+    font-size: 0.88rem;
+  }
+
+  .jh-hero {
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .jh-hero__copy,
+  .jh-hero__visual,
+  .jh-seasonal,
+  .jh-product-card,
+  .jh-editorial__copy,
+  .jh-scene-card,
+  .jh-showcase-card,
+  .jh-step-card,
+  .jh-guidance,
+  .jh-shop-card,
+  .jh-checkout,
+  .jh-footer {
+    padding: 16px;
+  }
+
+  .jh-hero h1 {
+    font-size: clamp(2.45rem, 11vw, 3.65rem);
+    line-height: 0.98;
+  }
+
+  .jh-hero__visual-shell,
+  .jh-product-card__media,
+  .jh-shop-card figure {
+    min-height: clamp(230px, 66vw, 330px);
+  }
+
+  .jh-section__head {
+    padding-top: 4px;
+  }
+
+  .jh-seasonal__actions .jh-button,
+  .jh-showcase-card__actions .jh-button {
+    min-width: min(100%, 13rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .jh-brand,
+  .jh-footer__brand {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .jh-footer__brand {
+    align-items: center;
+  }
+
+  .jh-footer__brand img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .jh-footer__brand strong {
+    font-size: 1.55rem;
+  }
+
+  .jh-shop-card__inline-cart,
+  .jh-checkout__item,
+  .jh-order-summary > div {
+    gap: 8px;
+  }
+
+  .jh-demo-card strong {
+    font-size: clamp(1.2rem, 7vw, 1.8rem);
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 420px) {
+  .jh-nav {
+    display: flex;
+    grid-template-columns: none;
+  }
+
+  .jh-brand span {
+    max-width: 11rem;
+  }
+
+  .jh-hero__actions .jh-button,
+  .jh-hero__actions .jh-hero__text-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
