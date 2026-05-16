@@ -254,8 +254,6 @@ function ItemPreviewModal({ item, onClose }) {
     return null;
   }
 
-  const usesFullImagePreview = item.previewSize === "contain";
-
   return (
     <div className="jh-modal" onClick={onClose} role="presentation">
       <div
@@ -269,19 +267,8 @@ function ItemPreviewModal({ item, onClose }) {
           Close
         </button>
         <div className="jh-modal__layout">
-          <div
-            className={`jh-item-preview ${usesFullImagePreview ? "jh-item-preview--image" : ""}`}
-            style={
-              usesFullImagePreview
-                ? undefined
-                : {
-                    backgroundImage: `url(${item.sprite})`,
-                    backgroundPosition: item.previewPosition ?? item.position,
-                    backgroundSize: item.previewSize ?? "300% 300%",
-                  }
-            }
-          >
-            {usesFullImagePreview ? <img src={item.sprite} alt={item.name} /> : null}
+          <div className="jh-item-preview jh-item-preview--image">
+            <img src={item.sprite} alt={item.name} />
           </div>
           <div className="jh-modal__copy">
             <p className="jh-eyebrow">Product Detail</p>
@@ -332,8 +319,9 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
   }
 
   const gallery = box.images.length > 0 ? box.images : [assetPath("/judhoor-logo.png")];
-  const [heroImage, sideImage] = gallery;
+  const [heroImage] = gallery;
   const demoItems = box.items.slice(0, 6);
+  const itemCount = getItemCount(box);
   const clampTilt = (value, min, max) => Math.max(min, Math.min(max, value));
 
   function handlePointerMove(event) {
@@ -430,6 +418,24 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
             aria-label={`Draggable 3D preview of ${box.name}`}
           >
             <div
+              className="jh-demo-toolbar"
+              aria-label="3D demo controls"
+              onPointerDown={(event) => event.stopPropagation()}
+              onDoubleClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className={`jh-demo-tool ${isOpen ? "jh-demo-tool--active" : ""}`}
+                aria-pressed={isOpen}
+                onClick={() => setIsOpen((current) => !current)}
+              >
+                {isOpen ? "Close" : "Open"}
+              </button>
+              <button type="button" className="jh-demo-tool" onClick={fullyResetDemo}>
+                Reset
+              </button>
+            </div>
+            <div
               className={`jh-demo-stage__scene ${isOpen ? "jh-demo-stage__scene--open" : ""}`}
               style={{
                 transform: `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
@@ -445,32 +451,16 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                   draggable="false"
                   loading="lazy"
                 />
-                {sideImage ? (
-                  <img
-                    className="jh-demo-orbit__contents"
-                    src={sideImage}
-                    alt={`${box.name} contents overview`}
-                    draggable="false"
-                    loading="lazy"
-                  />
-                ) : null}
                 <div className="jh-demo-orbit__items" aria-hidden={!isOpen}>
                   {demoItems.map((item, index) => (
                     <figure
                       key={item.name}
-                      className={`jh-demo-orbit__item ${
-                        item.previewSize === "contain" ? "jh-demo-orbit__item--image" : ""
-                      }`}
+                      className="jh-demo-orbit__item"
                       style={{ "--jh-demo-index": index }}
                     >
-                      <span
-                        className="jh-demo-orbit__item-art"
-                        style={{
-                          backgroundImage: `url(${item.sprite})`,
-                          backgroundPosition: item.previewPosition ?? item.position,
-                          backgroundSize: item.previewSize ?? "300% 300%",
-                        }}
-                      />
+                      <span className="jh-demo-orbit__item-art">
+                        <img src={item.sprite} alt="" draggable="false" loading="lazy" />
+                      </span>
                       <figcaption>{item.name}</figcaption>
                     </figure>
                   ))}
@@ -478,40 +468,32 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
               </div>
             </div>
             <p className="jh-demo-stage__hint">
-              Drag the image to look around, then choose Open box to see what is inside.
+              {isOpen ? "Contents view" : "Closed view"}
             </p>
           </div>
           <div className="jh-demo-copy">
-            <p className="jh-eyebrow">Interactive Demo</p>
+            <p className="jh-eyebrow">Box Preview</p>
             <h2>{box.name}</h2>
             <span>{box.tagline}</span>
             <p>{box.summary}</p>
             <div className="jh-demo-copy__meta">
-              <strong>{formatPrice(box.price)}</strong>
-              <span>{getItemCount(box)} curated items</span>
+              <div>
+                <small>Price</small>
+                <strong>{formatPrice(box.price)}</strong>
+              </div>
+              <div>
+                <small>Includes</small>
+                <strong>{itemCount} items</strong>
+              </div>
             </div>
-            <div className="jh-chip-cloud">
+            <div className="jh-demo-copy__items" aria-label={`Items in ${box.name}`}>
               {box.items.map((item) => (
                 <span key={item.name} className="jh-chip-button jh-chip-button--static">
                   {item.name}
                 </span>
               ))}
             </div>
-            <div className="jh-showcase-card__cta">
-              <button
-                type="button"
-                className="jh-button jh-button--ghost"
-                onClick={() => setIsOpen((current) => !current)}
-              >
-                {isOpen ? "Close box" : "Open box"}
-              </button>
-              <button
-                type="button"
-                className="jh-button jh-button--ghost"
-                onClick={fullyResetDemo}
-              >
-                Reset view
-              </button>
+            <div className="jh-demo-actions">
               <button
                 type="button"
                 className="jh-button jh-button--solid"
@@ -520,9 +502,6 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                 Add to cart
               </button>
             </div>
-            <span className="jh-modal__hint">
-              Tip: open the box first, then add it to your cart when you are ready.
-            </span>
           </div>
         </div>
       </div>
@@ -725,6 +704,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
                     className="jh-chip-button"
                     onClick={() => onPreviewItem(item)}
                   >
+                    <img src={item.sprite} alt="" />
                     {item.name}
                   </button>
                 ))}
@@ -779,7 +759,7 @@ function ExperiencePage() {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: assetPath("/mockups/past-box-items-luxury.png"),
+      image: assetPath("/mockups/past-box-detail-luxury.png"),
       alt: "Judhoor memory and storytelling objects",
     },
     {

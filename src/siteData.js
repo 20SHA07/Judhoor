@@ -44,7 +44,6 @@ export const productBoxes = [
     ],
     images: [
       assetPath("/mockups/past-box-hero-new.png"),
-      assetPath("/mockups/past-box-items-luxury.png"),
       assetPath("/mockups/past-box-detail-luxury.png"),
     ],
   },
