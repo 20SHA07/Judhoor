@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Judhoor</title>
+    <script>
+      (function () {
+        var repoBase = "/Judhoor";
+        var path = window.location.pathname;
+        var innerPath = path.replace(new RegExp("^" + repoBase + "/?"), "").replace(/^\/+/, "");
+        var target = repoBase + "/#/" + innerPath;
+        window.location.replace(target + window.location.search + window.location.hash);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to Judhoor...</p>
+  </body>
+</html>
