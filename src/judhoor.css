@@ -686,8 +686,8 @@ img {
 .jh-chip-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 11px 14px;
+  gap: 10px;
+  padding: 8px 14px 8px 9px;
   border-radius: 999px;
   background: rgba(255, 252, 246, 0.72);
   border: 1px solid rgba(86, 70, 53, 0.08);
@@ -703,14 +703,17 @@ img {
 }
 
 .jh-chip-button img {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
-  padding: 3px;
-  border-radius: 999px;
+  padding: 4px;
+  border-radius: 12px;
   object-fit: contain;
-  background: rgba(255, 250, 242, 0.82);
-  box-shadow: inset 0 0 0 1px rgba(86, 70, 53, 0.06);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.92), rgba(249, 239, 226, 0.74));
+  box-shadow:
+    inset 0 0 0 1px rgba(86, 70, 53, 0.07),
+    0 6px 12px rgba(54, 36, 20, 0.06);
 }
 
 .jh-chip-button:hover,
@@ -1321,15 +1324,18 @@ img {
   width: 58px;
   height: 58px;
   border-radius: 14px;
-  background-color: rgba(255, 250, 242, 0.72);
-  box-shadow: inset 0 0 0 1px rgba(86, 70, 53, 0.06);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.96), rgba(247, 235, 219, 0.76));
+  box-shadow:
+    inset 0 0 0 1px rgba(86, 70, 53, 0.07),
+    0 8px 16px rgba(54, 36, 20, 0.08);
   overflow: hidden;
 }
 
 .jh-demo-orbit__item-art img {
   width: 100%;
   height: 100%;
-  padding: 4px;
+  padding: 2px;
   object-fit: contain;
   filter: drop-shadow(0 8px 10px rgba(54, 36, 20, 0.12));
 }
@@ -1479,7 +1485,7 @@ img {
 .jh-item-preview--image {
   display: grid;
   place-items: center;
-  padding: clamp(12px, 2vw, 24px);
+  padding: clamp(18px, 2.6vw, 34px);
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.9), transparent 56%),
     radial-gradient(circle at 50% 82%, rgba(88, 59, 34, 0.12), transparent 44%),
@@ -3058,8 +3064,14 @@ body {
   }
 
   .jh-chip-button {
-    padding: 10px 12px;
+    padding: 8px 12px 8px 8px;
     font-size: 0.84rem;
+  }
+
+  .jh-chip-button img {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
   }
 
   .jh-seasonal__actions,
