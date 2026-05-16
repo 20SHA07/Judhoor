@@ -268,7 +268,7 @@ function ItemPreviewModal({ item, onClose }) {
         </button>
         <div className="jh-modal__layout">
           <div className="jh-item-preview jh-item-preview--image">
-            <img src={item.sprite} alt={item.name} />
+            <img src={item.sprite} alt={item.name} decoding="async" />
           </div>
           <div className="jh-modal__copy">
             <p className="jh-eyebrow">Product Detail</p>
@@ -450,6 +450,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                   alt={`${box.name} product mockup`}
                   draggable="false"
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="jh-demo-orbit__items" aria-hidden={!isOpen}>
                   {demoItems.map((item, index) => (
@@ -459,7 +460,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
                       style={{ "--jh-demo-index": index }}
                     >
                       <span className="jh-demo-orbit__item-art">
-                        <img src={item.sprite} alt="" draggable="false" loading="lazy" />
+                        <img src={item.sprite} alt="" draggable="false" loading="lazy" decoding="async" />
                       </span>
                       <figcaption>{item.name}</figcaption>
                     </figure>
@@ -591,6 +592,8 @@ function HomePage({ onAddToCart }) {
               src={assetPath("/mockups/past-box-hero-new.png")}
               alt="Judhoor box presentation"
               className="jh-hero__image"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
           <div className="jh-hero__frame-tag">The Past Box | Memory & Reflection</div>
@@ -631,7 +634,7 @@ function HomePage({ onAddToCart }) {
                 <span>{box.tagline}</span>
               </div>
               <div className="jh-product-card__media">
-                <img src={box.images[0]} alt={`${box.name} mockup`} loading="lazy" />
+                <img src={box.images[0]} alt={`${box.name} mockup`} loading="lazy" decoding="async" />
               </div>
               <p className="jh-product-card__summary">{box.summary}</p>
               <div className="jh-product-card__footer">
@@ -665,7 +668,7 @@ function HomePage({ onAddToCart }) {
         </div>
         <article className="jh-scene-card jh-home-story__card">
           <figure>
-            <img src={conceptMoments[0].image} alt={conceptMoments[0].title} loading="lazy" />
+            <img src={conceptMoments[0].image} alt={conceptMoments[0].title} loading="lazy" decoding="async" />
           </figure>
           <div>
             <h3>{conceptMoments[0].title}</h3>
@@ -704,7 +707,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
                     className="jh-chip-button"
                     onClick={() => onPreviewItem(item)}
                   >
-                    <img src={item.sprite} alt="" />
+                    <img src={item.sprite} alt="" loading="lazy" decoding="async" />
                     {item.name}
                   </button>
                 ))}
@@ -735,7 +738,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
                   key={`${image}-${index}`}
                   className={index === 0 ? "jh-gallery__item jh-gallery__item--hero" : "jh-gallery__item"}
                 >
-                  <img src={image} alt={`${box.name} preview ${index + 1}`} loading="lazy" />
+                  <img src={image} alt={`${box.name} preview ${index + 1}`} loading="lazy" decoding="async" />
                 </figure>
               ))}
             </div>
@@ -791,7 +794,7 @@ function ExperiencePage() {
             className={`jh-story-panel ${index % 2 === 1 ? "jh-story-panel--reverse" : ""}`}
           >
             <figure className="jh-story-panel__media">
-              <img src={panel.image} alt={panel.alt} loading="lazy" />
+              <img src={panel.image} alt={panel.alt} loading="lazy" decoding="async" />
             </figure>
             <div className="jh-story-panel__copy">
               <p className="jh-eyebrow">{`Chapter 0${index + 1}`}</p>
@@ -850,7 +853,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
           {boxCatalog.map((box) => (
             <article key={box.slug} className="jh-shop-card">
               <figure>
-                <img src={box.images[0]} alt={box.name} loading="lazy" />
+                <img src={box.images[0]} alt={box.name} loading="lazy" decoding="async" />
               </figure>
               <div className="jh-shop-card__body">
                 <p className="jh-eyebrow">{box.arabicName}</p>
@@ -952,7 +955,7 @@ function CartPage({ cart, onUpdateQuantity }) {
             {cartLines.map((item) => (
               <article key={item.slug} className="jh-cart-item">
                 <figure className="jh-cart-item__media">
-                  <img src={item.images[0]} alt={item.name} loading="lazy" />
+                  <img src={item.images[0]} alt={item.name} loading="lazy" decoding="async" />
                 </figure>
                 <div className="jh-cart-item__copy">
                   <p className="jh-eyebrow">{item.arabicName}</p>
