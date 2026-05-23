@@ -83,11 +83,11 @@ body {
   width: fit-content;
   max-width: calc(100vw - 32px);
   margin: 14px auto 0;
-  padding: 12px 26px;
+  padding: 15px 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(24px, 4vw, 54px);
+  gap: clamp(32px, 4.6vw, 70px);
   border: 1px solid rgba(210, 196, 189, 0.68);
   border-radius: 999px;
   background: rgba(253, 236, 208, 0.78);
@@ -99,7 +99,7 @@ body {
 .jh-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 13px;
   min-width: auto;
 }
 
@@ -130,7 +130,7 @@ body {
 .jh-nav {
   display: flex;
   align-items: center;
-  gap: clamp(16px, 2.4vw, 30px);
+  gap: clamp(22px, 3vw, 42px);
   width: auto;
   padding: 0;
   overflow: visible;
@@ -151,7 +151,7 @@ body {
   background: transparent;
   box-shadow: none;
   color: var(--jh-muted);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
@@ -163,7 +163,7 @@ body {
 
 .jh-nav a {
   border-bottom: 2px solid transparent;
-  padding-block: 5px;
+  padding: 7px 2px 8px;
 }
 
 .jh-nav a.active,
@@ -208,7 +208,7 @@ body {
 
 .jh-dropdown__button {
   display: inline-flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   justify-content: center;
   width: auto;
@@ -222,7 +222,7 @@ body {
 .jh-header .jh-currency-select--compact .jh-dropdown__button {
   width: auto;
   min-height: auto;
-  padding: 0;
+  padding-inline: 2px;
   background: transparent;
 }
 
@@ -1454,10 +1454,11 @@ body {
     width: min(920px, calc(100vw - 24px));
     max-width: calc(100vw - 24px);
     margin-bottom: 0;
+    padding-inline: 24px;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    gap: clamp(18px, 3vw, 34px);
+    gap: clamp(22px, 3.4vw, 40px);
     border-radius: 32px;
   }
 
@@ -1538,10 +1539,11 @@ body {
     top: 10px;
     width: calc(100vw - 24px);
     max-width: calc(100vw - 24px);
-    padding: 14px 16px;
+    padding: 16px 18px;
     flex-direction: column;
     flex-wrap: wrap;
     align-items: center;
+    gap: 16px;
     overflow: hidden;
   }
 
@@ -1552,7 +1554,7 @@ body {
   .jh-nav {
     width: 100%;
     justify-content: flex-start;
-    gap: 18px;
+    gap: 22px;
     overflow-x: auto;
     scroll-snap-type: x proximity;
   }
@@ -1818,12 +1820,12 @@ body {
 
 @media (max-width: 520px) {
   .jh-header {
-    gap: 10px;
-    padding-inline: 16px;
+    gap: 14px;
+    padding-inline: 18px;
   }
 
   .jh-nav {
-    gap: 10px;
+    gap: 14px;
   }
 
   .jh-nav a,
