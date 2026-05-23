@@ -928,119 +928,133 @@ function HomePage({ currencyCode, onAddToCart }) {
 
 function ProductLinePage({
   currencyCode,
-  onCurrencyChange,
   onAddToCart,
   onPreviewItem,
   onPreviewBoxDemo,
 }) {
   return (
     <section className="jh-page jh-product-line-page jh-animate jh-animate--up">
-      <div className="jh-section__head jh-section__head--split">
-        <div className="jh-section__copy">
-          <p className="jh-eyebrow">Product Line</p>
-          <h1>Every Judhoor box has its own ritual, rhythm, and emotional purpose.</h1>
-          <p>
-            Explore the collection through clear product cards, real mockups, and
-            item-level previews designed to feel calm, premium, and easy to scan.
-          </p>
-        </div>
-        <CurrencyConverter
-          currencyCode={currencyCode}
-          onCurrencyChange={onCurrencyChange}
-        />
+      <div className="jh-product-line-hero">
+        <p className="jh-eyebrow">Our Collection</p>
+        <h1>Ritual, rhythm, and emotional purpose.</h1>
+        <p>
+          Each box is a curated bridge between generations, crafted with
+          artisanal care and designed to nurture the legacy of those we cherish.
+        </p>
       </div>
-      <div className="jh-product-showcase">
-        {boxCatalog.map((box) => (
-          <article key={box.slug} className={`jh-showcase-card jh-showcase-card--${box.theme}`}>
-            <div className="jh-showcase-card__copy">
-              <p className="jh-eyebrow">{box.arabicName}</p>
-              <h2>{box.name}</h2>
-              <span>{box.tagline}</span>
-              <p>{box.summary}</p>
-              <div className="jh-chip-cloud">
-                {box.items.map((item) => (
-                  <button
-                    key={item.name}
-                    type="button"
-                    className="jh-chip-button"
-                    onClick={() => onPreviewItem(item)}
-                  >
-                    <img src={item.sprite} alt="" loading="lazy" decoding="async" />
-                    {item.name}
-                  </button>
-                ))}
-              </div>
-              <div className="jh-showcase-card__cta">
-                <strong>{formatPrice(box.price, currencyCode)}</strong>
-                <div className="jh-showcase-card__actions">
-                  <button
-                    type="button"
-                    className="jh-button jh-button--ghost"
-                    onClick={() => onPreviewBoxDemo(box)}
-                  >
-                    3D demo
-                  </button>
-                  <button
-                    type="button"
-                    className="jh-button jh-button--solid"
-                    onClick={() => onAddToCart(box.slug)}
-                  >
-                    Add to cart
-                  </button>
+
+      <div className="jh-product-line-list">
+        {boxCatalog.map((box, index) => {
+          const featuredItems = box.items.slice(0, 3);
+
+          return (
+            <article
+              key={box.slug}
+              className={`jh-product-row jh-product-row--${box.theme} ${index % 2 === 1 ? "jh-product-row--reverse" : ""}`}
+            >
+              <figure className="jh-product-row__media">
+                <img src={box.images[0]} alt={`${box.name} presentation`} decoding="async" />
+              </figure>
+              <div className="jh-product-row__copy">
+                <p className="jh-product-row__arabic">{box.arabicName}</p>
+                <h2>{box.name}</h2>
+                <p>{box.summary}</p>
+                <div className="jh-product-row__tags" aria-label={`Featured items in ${box.name}`}>
+                  {featuredItems.map((item) => (
+                    <button
+                      key={item.name}
+                      type="button"
+                      className="jh-product-row__tag"
+                      onClick={() => onPreviewItem(item)}
+                    >
+                      <img src={item.sprite} alt="" loading="lazy" decoding="async" />
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="jh-product-row__purchase">
+                  <div className="jh-product-row__price">
+                    <strong>{formatPrice(box.price, currencyCode)}</strong>
+                    <span>{box.tagline}</span>
+                  </div>
+                  <div className="jh-product-row__actions">
+                    <button
+                      type="button"
+                      className="jh-product-row__cart"
+                      onClick={() => onAddToCart(box.slug)}
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      type="button"
+                      className="jh-product-row__demo"
+                      aria-label={`Open ${box.name} 3D demo`}
+                      onClick={() => onPreviewBoxDemo(box)}
+                    >
+                      3D
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="jh-gallery">
-              {box.images.map((image, index) => (
-                <figure
-                  key={`${image}-${index}`}
-                  className={index === 0 ? "jh-gallery__item jh-gallery__item--hero" : "jh-gallery__item"}
-                >
-                  <img src={image} alt={`${box.name} preview ${index + 1}`} loading="lazy" decoding="async" />
-                </figure>
-              ))}
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
+
+      <aside className="jh-product-line-advisor" aria-label="Box selection help">
+        <h2>Can't decide?</h2>
+        <p>
+          Take our heritage quiz to find the perfect ritual for your loved one
+          or schedule a consultation with our curation experts.
+        </p>
+        <div>
+          <a
+            className="jh-product-line-advisor__button jh-product-line-advisor__button--light"
+            href="mailto:hello@judhoor.com?subject=Judhoor%20box%20quiz"
+          >
+            Start the Quiz
+          </a>
+          <a
+            className="jh-product-line-advisor__button"
+            href="mailto:hello@judhoor.com?subject=Judhoor%20consultation"
+          >
+            Book Consultation
+          </a>
+        </div>
+      </aside>
     </section>
   );
 }
 
 function ExperiencePage() {
-  const pastBox = boxCatalog.find((box) => box.slug === "past-box") ?? boxCatalog[0];
-  const balanceBox = boxCatalog.find((box) => box.slug === "balance-box") ?? boxCatalog[1];
-  const importantBox = boxCatalog.find((box) => box.slug === "important-box") ?? boxCatalog[2];
-  const travelBox = boxCatalog.find((box) => box.slug === "travel-box") ?? boxCatalog[3];
-
   const storyPanels = [
     {
       title: "Unboxing should feel ceremonial, not clinical.",
       text:
         "The first impression matters. Judhoor boxes are designed to arrive like meaningful gifts, with premium presentation, warm materials, and an immediate sense of care.",
-      image: pastBox.images[0],
-      alt: `${pastBox.name} ceremonial box presentation`,
+      image: assetPath("/mockups/past-box-hero-new.png"),
+      alt: "The Past Box ceremonial box presentation",
     },
     {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: importantBox.images[1],
-      alt: `${importantBox.name} product objects`,
+      image: assetPath("/mockups/important-box-hero-new.png"),
+      alt: "You Are Important Box presentation",
     },
     {
       title: "The experience moves between calm activity and shared presence.",
       text:
         "Some moments are reflective and solitary. Others are designed for family participation. Together they create a rhythm that feels supportive rather than demanding.",
-      image: balanceBox.images[1],
-      alt: `${balanceBox.name} wellbeing objects`,
+      image: assetPath("/mockups/balance-box-hero.png"),
+      alt: "Balance Box presentation",
     },
     {
       title: "Every box becomes a repeatable ritual of care.",
       text:
         "The goal is not a one-time unboxing. Judhoor is designed to be revisited across days and weeks, turning beautifully made objects into ongoing moments of connection.",
-      image: travelBox.images[1],
-      alt: `${travelBox.name} discovery objects`,
+      image: assetPath("/mockups/travel-box-hero-transparent.png"),
+      alt: "Travel Box presentation",
     },
   ];
 
@@ -1057,7 +1071,7 @@ function ExperiencePage() {
             className={`jh-story-panel ${index % 2 === 1 ? "jh-story-panel--reverse" : ""}`}
           >
             <figure className="jh-story-panel__media">
-              <img src={panel.image} alt={panel.alt} loading="lazy" decoding="async" />
+              <img src={panel.image} alt={panel.alt} decoding="async" />
             </figure>
             <div className="jh-story-panel__copy">
               <p className="jh-eyebrow">{`Chapter 0${index + 1}`}</p>
