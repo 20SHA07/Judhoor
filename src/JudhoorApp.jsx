@@ -744,20 +744,20 @@ function SeasonalAnnouncement({ compact = false }) {
     <aside className={`jh-seasonal ${compact ? "jh-seasonal--compact" : ""}`}>
       <div className="jh-seasonal__glow" />
       <div className="jh-seasonal__copy">
-        <p className="jh-eyebrow">Limited Release</p>
+        <p className="jh-eyebrow">Coming Soon</p>
         <h2>The Father&apos;s Day Heritage Box</h2>
         <p>
-          A curated collection of sensory experiences and memory-sharing tools
-          tailored for the men who built our foundations.
+          A future Judhoor release is being shaped with memory-sharing rituals,
+          keepsakes, and a quiet sense of gratitude for father figures.
         </p>
       </div>
       <div className="jh-seasonal__details" aria-label="Father's Day Box announcement details">
-        <span>Preview opening soon</span>
-        <strong>Be ready for the drop</strong>
-        <small>Early interest helps us prepare the right quantity.</small>
+        <span>Concept in progress</span>
+        <strong>Preview opening soon</strong>
+        <small>Join the early interest list for the first look.</small>
         <div className="jh-seasonal__actions">
           <a className="jh-button jh-button--solid" href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20early%20interest">
-            Reserve Now
+            Notify Me
           </a>
           {!compact ? (
             <NavLink to="/product-line" className="jh-button jh-button--ghost">
@@ -766,12 +766,13 @@ function SeasonalAnnouncement({ compact = false }) {
           ) : null}
         </div>
       </div>
-      <figure className="jh-seasonal__image">
-        <img
-          src={assetPath("/mockups/past-box-hero-new.png")}
-          alt="Judhoor wooden heritage box with memory objects"
-          decoding="async"
-        />
+      <figure className="jh-seasonal__image" aria-label="Silhouette preview of the upcoming Father's Day heritage box">
+        <figcaption className="jh-seasonal__preview-label">Preview in progress</figcaption>
+        <div className="jh-box-silhouette" aria-hidden="true">
+          <span className="jh-box-silhouette__lid" />
+          <span className="jh-box-silhouette__body" />
+          <span className="jh-box-silhouette__seal" />
+        </div>
       </figure>
     </aside>
   );
