@@ -4,7 +4,7 @@
   isolation: isolate;
   z-index: 2000;
   perspective: 1400px;
-  background: linear-gradient(135deg, #f8efe3 0%, #fffaf3 45%, #efe0cd 100%);
+  background: linear-gradient(135deg, #f0e3d2 0%, #f7eee4 45%, #e5d3ba 100%);
 }
 
 .jh-intro::before,
@@ -34,8 +34,8 @@
 .jh-intro__veil {
   z-index: 0;
   background:
-    radial-gradient(ellipse at 50% 48%, rgba(255, 252, 244, 0.96) 0%, rgba(255, 248, 236, 0.76) 34%, transparent 64%),
-    linear-gradient(180deg, rgba(248, 243, 236, 0.98) 0%, rgba(235, 221, 201, 0.9) 100%);
+    radial-gradient(ellipse at 50% 48%, rgba(247, 239, 228, 0.96) 0%, rgba(242, 229, 210, 0.76) 34%, transparent 64%),
+    linear-gradient(180deg, rgba(240, 232, 220, 0.98) 0%, rgba(225, 207, 181, 0.9) 100%);
   backdrop-filter: blur(12px);
   animation: jhIntroVeilLift 4.25s cubic-bezier(0.22, 0.82, 0.2, 1) forwards;
 }
