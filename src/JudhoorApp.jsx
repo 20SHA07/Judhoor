@@ -401,7 +401,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       <div className="jh-bg jh-bg--two" />
       <header className="jh-header">
         <NavLink to="/" className="jh-brand">
-          <img src={assetPath("/judhoor-logo.svg")} alt="Judhoor logo" />
+          <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
             <span>Premium care boxes for cherished elders</span>
@@ -430,7 +430,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       <main className="jh-main">{children}</main>
       <footer className="jh-footer">
         <div className="jh-footer__brand">
-          <img src={assetPath("/judhoor-logo.svg")} alt="Judhoor logo" />
+          <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
             <p>
@@ -945,12 +945,15 @@ function ProductLinePage({
 
       <div className="jh-product-line-list">
         {boxCatalog.map((box, index) => {
-          const featuredItems = box.items.slice(0, 3);
-
           return (
             <article
               key={box.slug}
               className={`jh-product-row jh-product-row--${box.theme} ${index % 2 === 1 ? "jh-product-row--reverse" : ""}`}
+              style={{
+                "--jh-row-index": index,
+                "--jh-row-sheen-delay": `${900 + index * 420}ms`,
+                animationDelay: `${index * 120}ms`,
+              }}
             >
               <figure className="jh-product-row__media">
                 <img src={box.images[0]} alt={`${box.name} presentation`} decoding="async" />
@@ -959,12 +962,13 @@ function ProductLinePage({
                 <p className="jh-product-row__arabic">{box.arabicName}</p>
                 <h2>{box.name}</h2>
                 <p>{box.summary}</p>
-                <div className="jh-product-row__tags" aria-label={`Featured items in ${box.name}`}>
-                  {featuredItems.map((item) => (
+                <div className="jh-product-row__tags" aria-label={`All items in ${box.name}`}>
+                  {box.items.map((item, itemIndex) => (
                     <button
                       key={item.name}
                       type="button"
                       className="jh-product-row__tag"
+                      style={{ animationDelay: `${index * 120 + itemIndex * 28}ms` }}
                       onClick={() => onPreviewItem(item)}
                     >
                       <img src={item.sprite} alt="" loading="lazy" decoding="async" />
