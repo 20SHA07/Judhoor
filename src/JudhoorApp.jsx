@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
-import { boxCatalog, conceptMoments, journeySteps } from "./judhoorData";
+import { boxCatalog, journeySteps } from "./judhoorData";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 const getItemCount = (box) => box.itemCount ?? box.items?.length ?? 0;
@@ -744,11 +744,11 @@ function SeasonalAnnouncement({ compact = false }) {
     <aside className={`jh-seasonal ${compact ? "jh-seasonal--compact" : ""}`}>
       <div className="jh-seasonal__glow" />
       <div className="jh-seasonal__copy">
-        <p className="jh-eyebrow">Seasonal Drop</p>
-        <h2>Father&apos;s Day Box coming soon.</h2>
+        <p className="jh-eyebrow">Limited Release</p>
+        <h2>The Father&apos;s Day Heritage Box</h2>
         <p>
-          A limited Judhoor package for fathers and grandfathers is being prepared
-          with memory prompts, keepsakes, and a warm family ritual.
+          A curated collection of sensory experiences and memory-sharing tools
+          tailored for the men who built our foundations.
         </p>
       </div>
       <div className="jh-seasonal__details" aria-label="Father's Day Box announcement details">
@@ -757,7 +757,7 @@ function SeasonalAnnouncement({ compact = false }) {
         <small>Early interest helps us prepare the right quantity.</small>
         <div className="jh-seasonal__actions">
           <a className="jh-button jh-button--solid" href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20early%20interest">
-            Join early list
+            Reserve Now
           </a>
           {!compact ? (
             <NavLink to="/product-line" className="jh-button jh-button--ghost">
@@ -768,9 +768,8 @@ function SeasonalAnnouncement({ compact = false }) {
       </div>
       <figure className="jh-seasonal__image">
         <img
-          src={redesignVisuals.fathersDay}
-          alt="Leather journal and warm wood details for the upcoming Father's Day heritage box"
-          loading="lazy"
+          src={assetPath("/mockups/past-box-hero-new.png")}
+          alt="Judhoor wooden heritage box with memory objects"
           decoding="async"
         />
       </figure>
@@ -780,26 +779,6 @@ function SeasonalAnnouncement({ compact = false }) {
 
 function HomePage({ currencyCode, onAddToCart }) {
   const featuredBoxes = boxCatalog;
-  const calmPillars = [
-    {
-      kicker: "01",
-      title: "Gentle to begin",
-      description:
-        "A calm first impression with just enough guidance to get started.",
-    },
-    {
-      kicker: "02",
-      title: "Beautifully familiar",
-      description:
-        "Objects, colors, and materials chosen to feel rooted and respectful.",
-    },
-    {
-      kicker: "03",
-      title: "Made to share",
-      description:
-        "Supports elders, families, and caregivers without pressure.",
-    },
-  ];
 
   return (
     <>
@@ -839,79 +818,42 @@ function HomePage({ currencyCode, onAddToCart }) {
 
       <SeasonalAnnouncement />
 
-      <section className="jh-home-promise jh-animate jh-animate--fade">
-        <div className="jh-section__head">
-          <p className="jh-eyebrow">Why It Feels Different</p>
-          <h2>Less like a task. More like a quiet gift of care.</h2>
-          <p>A softer, more welcoming way to support shared moments.</p>
+      <section className="jh-home-collection jh-animate jh-animate--up">
+        <div className="jh-home-collection__head">
+          <div>
+            <p className="jh-eyebrow">Curated Experiences</p>
+            <h2>Discover the Collection</h2>
+          </div>
+          <NavLink to="/product-line" className="jh-home-collection__link">
+            View all products
+          </NavLink>
         </div>
-        <div className="jh-pillars__grid">
-          {calmPillars.map((item) => (
-            <article key={item.title} className="jh-mini-card">
-              <span>{item.kicker}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="jh-section jh-animate jh-animate--up">
-        <div className="jh-section__head">
-          <p className="jh-eyebrow">Featured Boxes</p>
-          <h2>A simple first look at the collection.</h2>
-          <p>Start here, then explore the full range when you are ready.</p>
-        </div>
-        <div className="jh-product-grid jh-product-grid--featured">
+        <div className="jh-home-collection__grid">
           {featuredBoxes.map((box) => (
-            <article key={box.slug} className={`jh-product-card jh-product-card--${box.theme}`}>
-              <div className="jh-product-card__top">
-                <p className="jh-product-card__arabic">{box.arabicName}</p>
-                <h3>{box.name}</h3>
+            <article key={box.slug} className={`jh-home-product-card jh-home-product-card--${box.theme}`}>
+              <figure className="jh-home-product-card__media">
+                <img src={box.images[0]} alt={`${box.name} mockup`} decoding="async" />
                 <span>{box.tagline}</span>
+              </figure>
+              <div className="jh-home-product-card__body">
+                <p className="jh-home-product-card__arabic">{box.arabicName}</p>
+                <h3>{box.name}</h3>
+                <p>{box.summary}</p>
               </div>
-              <div className="jh-product-card__media">
-                <img src={box.images[0]} alt={`${box.name} mockup`} loading="lazy" decoding="async" />
-              </div>
-              <p className="jh-product-card__summary">{box.summary}</p>
-              <div className="jh-product-card__footer">
+              <div className="jh-home-product-card__footer">
                 <strong>{formatPrice(box.price, currencyCode)}</strong>
                 <button
                   type="button"
-                  className="jh-button jh-button--small"
+                  className="jh-home-product-card__cart"
+                  aria-label={`Add ${box.name} to cart`}
                   onClick={() => onAddToCart(box.slug)}
                 >
-                  Add to cart
+                  <span className="jh-home-product-card__cart-icon" aria-hidden="true" />
                 </button>
               </div>
             </article>
           ))}
         </div>
-        <div className="jh-home-section-link">
-          <NavLink to="/product-line" className="jh-button jh-button--ghost">
-            See all boxes
-          </NavLink>
-        </div>
-      </section>
-
-      <section className="jh-home-story jh-animate jh-animate--up">
-        <div className="jh-home-story__copy">
-          <p className="jh-eyebrow">Atmosphere</p>
-          <h2>Quietly elegant by design.</h2>
-          <p>
-            Warm palettes, tactile materials, and culturally familiar details make
-            the experience feel respectful, elevated, and easy on the eye.
-          </p>
-        </div>
-        <article className="jh-scene-card jh-home-story__card">
-          <figure>
-            <img src={redesignVisuals.sharedPresence} alt={conceptMoments[0].title} loading="lazy" decoding="async" />
-          </figure>
-          <div>
-            <h3>{conceptMoments[0].title}</h3>
-            <p>{conceptMoments[0].description}</p>
-          </div>
-        </article>
       </section>
 
       <section className="jh-testimonial jh-animate jh-animate--fade">
