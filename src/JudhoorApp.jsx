@@ -767,7 +767,6 @@ function SeasonalAnnouncement({ compact = false }) {
         </div>
       </div>
       <figure className="jh-seasonal__image" aria-label="Silhouette preview of the upcoming Father's Day heritage box">
-        <figcaption className="jh-seasonal__preview-label">Preview in progress</figcaption>
         <div className="jh-box-silhouette" aria-hidden="true">
           <span className="jh-box-silhouette__lid" />
           <span className="jh-box-silhouette__body" />
