@@ -128,8 +128,8 @@ export const boxCatalog = [
         previewSize: "contain",
       },
       {
-        name: "Comfort tea sachets",
-        note: "A soothing tea pairing that supports a slower daily rhythm and a more grounded routine.",
+        name: "Memory scent sachets",
+        note: "Small fragrance sachets with familiar scents that gently bring back memories of home, family, and earlier days.",
         sprite: assetPath("/mockups/balance-items/comfort-tea-sachets.png"),
         position: "center",
         previewSize: "contain",

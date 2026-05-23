@@ -65,7 +65,7 @@ export const productBoxes = [
       "Prayer beads",
       "Linen sleep mask",
       "Aromatherapy sachet",
-      "Comfort tea sachets",
+      "Memory scent sachets",
       "Family guide card",
     ],
     images: [
