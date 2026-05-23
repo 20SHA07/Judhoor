@@ -757,7 +757,9 @@ body {
   flex-direction: column;
   gap: 18px;
   min-width: 0;
+  isolation: isolate;
   overflow: hidden;
+  contain: layout paint;
   padding: 18px;
   border: 1px solid var(--jh-line);
   border-radius: 32px;
@@ -766,6 +768,7 @@ body {
 }
 
 .jh-scene-card figure {
+  flex: 0 0 auto;
   width: 100%;
   min-height: 0;
   margin: 0;
@@ -778,6 +781,7 @@ body {
 
 .jh-scene-card > div {
   min-width: 0;
+  width: 100%;
   padding: 0 4px 4px;
 }
 
@@ -1404,6 +1408,14 @@ body {
 
   .jh-gallery__item--hero {
     height: clamp(380px, 52vw, 500px);
+  }
+
+  .jh-home-story {
+    grid-template-columns: 1fr;
+  }
+
+  .jh-home-story__card {
+    max-width: 760px;
   }
 }
 
