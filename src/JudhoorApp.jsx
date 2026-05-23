@@ -401,7 +401,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       <div className="jh-bg jh-bg--two" />
       <header className="jh-header">
         <NavLink to="/" className="jh-brand">
-          <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
+          <img src={assetPath("/judhoor-logo.svg")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
             <span>Premium care boxes for cherished elders</span>
@@ -430,7 +430,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       <main className="jh-main">{children}</main>
       <footer className="jh-footer">
         <div className="jh-footer__brand">
-          <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
+          <img src={assetPath("/judhoor-logo.svg")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
             <p>
