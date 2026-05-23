@@ -143,9 +143,8 @@ export const boxCatalog = [
       },
     ],
     images: [
-      assetPath("/mockups/balance-box-hero.png"),
-      assetPath("/mockups/balance-box-items.png"),
       assetPath("/mockups/balance-box-detail.png"),
+      assetPath("/mockups/balance-box-items.png"),
     ],
   },
   {

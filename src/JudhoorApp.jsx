@@ -1012,7 +1012,7 @@ function ExperiencePage() {
       title: "The experience moves between calm activity and shared presence.",
       text:
         "Some moments are reflective and solitary. Others are designed for family participation. Together they create a rhythm that feels supportive rather than demanding.",
-      image: assetPath("/mockups/balance-box-hero.png"),
+      image: assetPath("/mockups/balance-box-detail.png"),
       alt: "Balance Box presentation",
     },
     {
