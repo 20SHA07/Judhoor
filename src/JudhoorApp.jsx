@@ -740,7 +740,41 @@ function BoxDemoModal({ box, currencyCode, onClose, onAddToCart }) {
 }
 
 function HomePage({ currencyCode, onAddToCart }) {
-  const featuredBoxes = boxCatalog;
+  const featuredBoxes = boxCatalog.map((box) => {
+    const homeDetails = {
+      "past-box": {
+        displayPrice: "AED 450",
+        label: "Memory Care",
+        summary: "A nostalgic journey through scents and sounds designed to spark vivid recollections.",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuB8YNtjjV8eHQAjG3nmRCn8-o3eh0k2S48qRTFw0w_N9MSaPGdxeyzQeqjpwnybT4fdH5VNbxbqMR5uquuGuVCsXgvLFJ8r6sFlYHv0i03Oq3IEFohD3u9F0dRk1TAOS5PZXbYCrSvwr6_SDAVl8vP_KycbkDARw8r5I1E1IHm4Dzp2agikIfMiW-J2u4G044ITqX0Xu0uC9HY0amwnWi0lgINQD01Enx8dP8QrEB5wWSCjKJAbfjdZXKa8YsNSCLzHUjabtfoEQKw",
+      },
+      "balance-box": {
+        displayPrice: "AED 385",
+        summary: "Gentle physical activities and mindfulness tools for daily equilibrium.",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuCF0n-CZE2Ysogb8hUPSobn1f7tpOc_lvdjSkW96nIurE38UzHusKfOfs3FZdqNPZEU7DP3JvQK2_WPHpZWmJ5MK6msrvZxzK4vAbDET7Q1dhqaj-T4jy8HW8LHpryMF6S9H1c4F25Q7mQ8RzkXFNetp4g66LGO00FGj4poRGG2ic362aCaq6avGZ5qOFcv-gGyAO2Q-dFQilRpO1mVnsteoJpeqX7TCNPgGZvh5wvwD0I-S6i9FH1A-n2IXNa5d-_ut_-_k5bAAaE",
+      },
+      "important-box": {
+        displayName: "You Are Important",
+        displayPrice: "AED 420",
+        summary: "A gratitude-focused kit featuring guided reflection and legacy journaling.",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ93eM2xl2ZuvlO-ZsM90rA3JFkPg8DeJhbzMoL3KybNFeF1E0XvqC4fZhTTE0YR0YJBafJHDjG7AdzyCs7-QetL2Vw5H1TpC5d3H1vPmDp86IUBzv8X-eI3GWQfEoUin1ZWfgxoqSjIdSVjSJS3SciXdqJGheeiO-5ukkvCjfSollUutTv_aS6Cq1QIcNLQ6AwoyP7pWrWpaYt2lXRMYcftoiGwHaIckJ4gYAKiq2pah8KAItse5EPWSpOElXB0HVJiLx7d8Thi0",
+      },
+      "travel-box": {
+        displayPrice: "AED 510",
+        summary: "Bringing the world to the home through scents, textures, and maps from distant lands.",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuBKNwWwv1eVtZMkLh1mAffo-MeWW8piBqzk0NVvKgcHb8kzUOoMmDgkfCCccn3ztFebgLGXoI1CrLlP6HkzYNKSPxdd2bgRt174WnKMvTi5uHiI0Hy1Udp8s_HuuL9fx_jzipti8QwY-vTNB8lDpOiTL6kTV0haeiHpX2e-_hgK6ofwfgvmyC3y56TVXIB14oDhYqpAwyCIFvJJ3f7PhECuKWM3KtBYEuH8oJOf6yVoNesyIWjJ4OhBFKQXhho0jauQIZe6TH4r488",
+      },
+    };
+
+    return {
+      ...box,
+      home: homeDetails[box.slug] ?? {},
+    };
+  });
 
   return (
     <>
@@ -818,16 +852,16 @@ function HomePage({ currencyCode, onAddToCart }) {
           {featuredBoxes.map((box) => (
             <article key={box.slug} className={`jh-home-product-card jh-home-product-card--${box.theme}`}>
               <figure className="jh-home-product-card__media">
-                <img src={box.images[0]} alt={`${box.name} mockup`} decoding="async" />
-                <span>{box.tagline}</span>
+                <img src={box.home.image ?? box.images[0]} alt={`${box.name} mockup`} decoding="async" />
+                {box.home.label ? <span>{box.home.label}</span> : null}
               </figure>
               <div className="jh-home-product-card__body">
                 <p className="jh-home-product-card__arabic">{box.arabicName}</p>
-                <h3>{box.name}</h3>
-                <p>{box.summary}</p>
+                <h3>{box.home.displayName ?? box.name}</h3>
+                <p>{box.home.summary ?? box.summary}</p>
               </div>
               <div className="jh-home-product-card__footer">
-                <strong>{formatPrice(box.price, currencyCode)}</strong>
+                <strong>{box.home.displayPrice ?? formatPrice(box.price, currencyCode)}</strong>
                 <button
                   type="button"
                   className="jh-home-product-card__cart"
