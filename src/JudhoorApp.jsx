@@ -3,8 +3,121 @@ import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { boxCatalog, conceptMoments, journeySteps } from "./judhoorData";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
-const formatPrice = (amount) => `AED ${amount}`;
 const getItemCount = (box) => box.itemCount ?? box.items?.length ?? 0;
+const DEFAULT_CURRENCY = "AED";
+const currencyOptions = [
+  {
+    code: "AED",
+    label: "AED",
+    name: "UAE dirham",
+    locale: "en-AE",
+    rate: 1,
+  },
+  {
+    code: "USD",
+    label: "USD",
+    name: "US dollar",
+    locale: "en-US",
+    rate: 1 / 3.6725,
+  },
+  {
+    code: "SAR",
+    label: "SAR",
+    name: "Saudi riyal",
+    locale: "en-SA",
+    rate: 3.75 / 3.6725,
+  },
+  {
+    code: "QAR",
+    label: "QAR",
+    name: "Qatari riyal",
+    locale: "en-QA",
+    rate: 3.64 / 3.6725,
+  },
+];
+
+const getCurrency = (currencyCode) =>
+  currencyOptions.find((currency) => currency.code === currencyCode) ?? currencyOptions[0];
+
+function formatPrice(amount, currencyCode = DEFAULT_CURRENCY, options = {}) {
+  const currency = getCurrency(currencyCode);
+  const convertedAmount = amount * currency.rate;
+  const fractionDigits = options.precise ? 2 : 0;
+
+  return new Intl.NumberFormat(currency.locale, {
+    style: "currency",
+    currency: currency.code,
+    maximumFractionDigits: fractionDigits,
+    minimumFractionDigits: options.precise ? 2 : 0,
+  }).format(convertedAmount);
+}
+
+function CurrencySelector({ currencyCode, onCurrencyChange, compact = false }) {
+  const selectedCurrency = getCurrency(currencyCode);
+
+  return (
+    <label className={`jh-currency-select ${compact ? "jh-currency-select--compact" : ""}`}>
+      <span>{compact ? "Currency" : "Display currency"}</span>
+      <select
+        value={selectedCurrency.code}
+        onChange={(event) => onCurrencyChange(event.target.value)}
+        aria-label="Display currency"
+      >
+        {currencyOptions.map((currency) => (
+          <option key={currency.code} value={currency.code}>
+            {currency.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function CurrencyConverter({ currencyCode, onCurrencyChange }) {
+  const [amount, setAmount] = useState("280");
+  const numericAmount = Number(amount) || 0;
+  const selectedCurrency = getCurrency(currencyCode);
+  const convertedAmount = formatPrice(numericAmount, selectedCurrency.code, { precise: true });
+
+  function handleAmountChange(event) {
+    const nextValue = event.target.value;
+    if (/^\d{0,5}(\.\d{0,2})?$/.test(nextValue)) {
+      setAmount(nextValue);
+    }
+  }
+
+  return (
+    <aside className="jh-currency-card" aria-label="Currency converter">
+      <div className="jh-currency-card__head">
+        <p className="jh-eyebrow">Currency Converter</p>
+        <h2>View prices your way.</h2>
+      </div>
+      <div className="jh-currency-card__controls">
+        <CurrencySelector
+          currencyCode={currencyCode}
+          onCurrencyChange={onCurrencyChange}
+        />
+        <label className="jh-currency-input">
+          <span>AED amount</span>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={amount}
+            onChange={handleAmountChange}
+            aria-label="AED amount to convert"
+          />
+        </label>
+      </div>
+      <div className="jh-currency-card__result">
+        <span>{formatPrice(numericAmount, DEFAULT_CURRENCY)}</span>
+        <strong>{convertedAmount}</strong>
+      </div>
+      <small>
+        Estimates use AED as the base price. The checkout remains a demo flow.
+      </small>
+    </aside>
+  );
+}
 
 function getCartLines(cart) {
   return boxCatalog
@@ -16,20 +129,26 @@ function getCartLines(cart) {
     }));
 }
 
-function CartSummary({ subtotal, shipping, total, compact = false }) {
+function CartSummary({
+  subtotal,
+  shipping,
+  total,
+  currencyCode = DEFAULT_CURRENCY,
+  compact = false,
+}) {
   return (
     <div className={`jh-order-summary ${compact ? "jh-order-summary--compact" : ""}`}>
       <div>
         <span>Subtotal</span>
-        <strong>{formatPrice(subtotal)}</strong>
+        <strong>{formatPrice(subtotal, currencyCode)}</strong>
       </div>
       <div>
         <span>Shipping</span>
-        <strong>{shipping === 0 ? "Free demo" : formatPrice(shipping)}</strong>
+        <strong>{shipping === 0 ? "Free demo" : formatPrice(shipping, currencyCode)}</strong>
       </div>
       <div className="jh-order-summary__total">
         <span>Total</span>
-        <strong>{formatPrice(total)}</strong>
+        <strong>{formatPrice(total, currencyCode)}</strong>
       </div>
     </div>
   );
@@ -170,7 +289,7 @@ function TranslateWidget() {
   );
 }
 
-function Shell({ cartCount, children, onReplayIntro }) {
+function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
   return (
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
@@ -203,6 +322,11 @@ function Shell({ cartCount, children, onReplayIntro }) {
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
           <NavLink to="/shop">Shop</NavLink>
+          <CurrencySelector
+            currencyCode={currencyCode}
+            onCurrencyChange={onCurrencyChange}
+            compact
+          />
           <button type="button" className="jh-replay" onClick={onReplayIntro}>
             Replay intro
           </button>
@@ -284,7 +408,7 @@ function ItemPreviewModal({ item, onClose }) {
   );
 }
 
-function BoxDemoModal({ box, onClose, onAddToCart }) {
+function BoxDemoModal({ box, currencyCode, onClose, onAddToCart }) {
   const [tilt, setTilt] = useState({ rotateX: -8, rotateY: 10 });
   const [isOpen, setIsOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -480,7 +604,7 @@ function BoxDemoModal({ box, onClose, onAddToCart }) {
             <div className="jh-demo-copy__meta">
               <div>
                 <small>Price</small>
-                <strong>{formatPrice(box.price)}</strong>
+                <strong>{formatPrice(box.price, currencyCode)}</strong>
               </div>
               <div>
                 <small>Includes</small>
@@ -541,7 +665,7 @@ function SeasonalAnnouncement({ compact = false }) {
   );
 }
 
-function HomePage({ onAddToCart }) {
+function HomePage({ currencyCode, onAddToCart }) {
   const featuredBoxes = boxCatalog.slice(0, 2);
   const calmPillars = [
     {
@@ -638,7 +762,7 @@ function HomePage({ onAddToCart }) {
               </div>
               <p className="jh-product-card__summary">{box.summary}</p>
               <div className="jh-product-card__footer">
-                <strong>AED {box.price}</strong>
+                <strong>{formatPrice(box.price, currencyCode)}</strong>
                 <button
                   type="button"
                   className="jh-button jh-button--small"
@@ -680,16 +804,28 @@ function HomePage({ onAddToCart }) {
   );
 }
 
-function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
+function ProductLinePage({
+  currencyCode,
+  onCurrencyChange,
+  onAddToCart,
+  onPreviewItem,
+  onPreviewBoxDemo,
+}) {
   return (
     <section className="jh-page jh-animate jh-animate--up">
-      <div className="jh-section__head">
-        <p className="jh-eyebrow">Product Line</p>
-        <h1>Every Judhoor box has its own ritual, rhythm, and emotional purpose.</h1>
-        <p>
-          Explore the collection through clear product cards, real mockups, and
-          item-level previews designed to feel calm, premium, and easy to scan.
-        </p>
+      <div className="jh-section__head jh-section__head--split">
+        <div className="jh-section__copy">
+          <p className="jh-eyebrow">Product Line</p>
+          <h1>Every Judhoor box has its own ritual, rhythm, and emotional purpose.</h1>
+          <p>
+            Explore the collection through clear product cards, real mockups, and
+            item-level previews designed to feel calm, premium, and easy to scan.
+          </p>
+        </div>
+        <CurrencyConverter
+          currencyCode={currencyCode}
+          onCurrencyChange={onCurrencyChange}
+        />
       </div>
       <div className="jh-product-showcase">
         {boxCatalog.map((box) => (
@@ -713,7 +849,7 @@ function ProductLinePage({ onAddToCart, onPreviewItem, onPreviewBoxDemo }) {
                 ))}
               </div>
               <div className="jh-showcase-card__cta">
-                <strong>AED {box.price}</strong>
+                <strong>{formatPrice(box.price, currencyCode)}</strong>
                 <div className="jh-showcase-card__actions">
                   <button
                     type="button"
@@ -834,7 +970,7 @@ function ExperiencePage() {
   );
 }
 
-function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
+function ShopPage({ cart, currencyCode, onAddToCart, onUpdateQuantity }) {
   const cartLines = getCartLines(cart);
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
 
@@ -864,7 +1000,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
                   <span>{getItemCount(box)} curated items</span>
                 </div>
                 <div className="jh-shop-card__row">
-                  <strong>{formatPrice(box.price)}</strong>
+                  <strong>{formatPrice(box.price, currencyCode)}</strong>
                   <button
                     type="button"
                     className="jh-button jh-button--small"
@@ -900,7 +1036,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
                 <div key={box.slug} className="jh-checkout__item">
                   <div>
                     <strong>{box.name}</strong>
-                    <span>{box.quantity} x {formatPrice(box.price)}</span>
+                    <span>{box.quantity} x {formatPrice(box.price, currencyCode)}</span>
                   </div>
                   <QuantityControl
                     quantity={box.quantity}
@@ -911,7 +1047,13 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
               ))}
             </div>
           )}
-          <CartSummary subtotal={subtotal} shipping={0} total={subtotal} compact />
+          <CartSummary
+            subtotal={subtotal}
+            shipping={0}
+            total={subtotal}
+            currencyCode={currencyCode}
+            compact
+          />
           <div className="jh-checkout__actions">
             <NavLink to="/cart" className="jh-button jh-button--ghost jh-button--full">
               Review cart
@@ -929,7 +1071,7 @@ function ShopPage({ cart, onAddToCart, onUpdateQuantity }) {
   );
 }
 
-function CartPage({ cart, onUpdateQuantity }) {
+function CartPage({ cart, currencyCode, onUpdateQuantity }) {
   const cartLines = getCartLines(cart);
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
 
@@ -967,13 +1109,15 @@ function CartPage({ cart, onUpdateQuantity }) {
                   </div>
                 </div>
                 <div className="jh-cart-item__controls">
-                  <strong>{formatPrice(item.price)}</strong>
+                  <strong>{formatPrice(item.price, currencyCode)}</strong>
                   <QuantityControl
                     quantity={item.quantity}
                     onDecrease={() => onUpdateQuantity(item.slug, -1)}
                     onIncrease={() => onUpdateQuantity(item.slug, 1)}
                   />
-                  <span className="jh-cart-item__line-total">{formatPrice(item.total)}</span>
+                  <span className="jh-cart-item__line-total">
+                    {formatPrice(item.total, currencyCode)}
+                  </span>
                 </div>
               </article>
             ))}
@@ -982,7 +1126,12 @@ function CartPage({ cart, onUpdateQuantity }) {
           <aside className="jh-cart-sidebar">
             <div className="jh-checkout">
               <h2>Order summary</h2>
-              <CartSummary subtotal={subtotal} shipping={0} total={subtotal} />
+              <CartSummary
+                subtotal={subtotal}
+                shipping={0}
+                total={subtotal}
+                currencyCode={currencyCode}
+              />
               <div className="jh-checkout__actions">
                 <NavLink to="/shop" className="jh-button jh-button--ghost jh-button--full">
                   Keep shopping
@@ -999,7 +1148,7 @@ function CartPage({ cart, onUpdateQuantity }) {
   );
 }
 
-function CheckoutPage({ cart, onSubmitDemoOrder }) {
+function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
   const navigate = useNavigate();
   const cartLines = getCartLines(cart);
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
@@ -1235,13 +1384,18 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
                 <div key={item.slug} className="jh-checkout__item">
                   <div>
                     <strong>{item.name}</strong>
-                    <span>{item.quantity} x {formatPrice(item.price)}</span>
+                    <span>{item.quantity} x {formatPrice(item.price, currencyCode)}</span>
                   </div>
-                  <strong>{formatPrice(item.total)}</strong>
+                  <strong>{formatPrice(item.total, currencyCode)}</strong>
                 </div>
               ))}
             </div>
-            <CartSummary subtotal={subtotal} shipping={shipping} total={total} />
+            <CartSummary
+              subtotal={subtotal}
+              shipping={shipping}
+              total={total}
+              currencyCode={currencyCode}
+            />
             <p className="jh-demo-disclaimer">
               Demo checkout only. Review your order, complete the required fields, and
               submit to see the confirmation page.
@@ -1253,7 +1407,7 @@ function CheckoutPage({ cart, onSubmitDemoOrder }) {
   );
 }
 
-function CheckoutSuccessPage({ lastOrder }) {
+function CheckoutSuccessPage({ lastOrder, currencyCode }) {
   if (!lastOrder) {
     return (
       <section className="jh-page jh-animate jh-animate--up">
@@ -1288,7 +1442,7 @@ function CheckoutSuccessPage({ lastOrder }) {
           <span>{lastOrder.email}</span>
           <span>{lastOrder.city}</span>
           <span>{lastOrder.itemCount} item{lastOrder.itemCount === 1 ? "" : "s"}</span>
-          <span>{formatPrice(lastOrder.total)}</span>
+          <span>{formatPrice(lastOrder.total, currencyCode)}</span>
         </div>
         <div className="jh-success-card__actions">
           <NavLink to="/shop" className="jh-button jh-button--ghost">
@@ -1307,6 +1461,7 @@ export default function JudhoorApp() {
   const [showIntro, setShowIntro] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBoxDemo, setSelectedBoxDemo] = useState(null);
+  const [currencyCode, setCurrencyCode] = useState(DEFAULT_CURRENCY);
   const [lastOrder, setLastOrder] = useState(null);
   const [cart, setCart] = useState(() =>
     Object.fromEntries(boxCatalog.map((box) => [box.slug, 0])),
@@ -1353,16 +1508,32 @@ export default function JudhoorApp() {
       <ItemPreviewModal item={selectedItem} onClose={() => setSelectedItem(null)} />
       <BoxDemoModal
         box={selectedBoxDemo}
+        currencyCode={currencyCode}
         onClose={() => setSelectedBoxDemo(null)}
         onAddToCart={handleAddToCart}
       />
-      <Shell cartCount={cartCount} onReplayIntro={replayIntro}>
+      <Shell
+        cartCount={cartCount}
+        currencyCode={currencyCode}
+        onCurrencyChange={setCurrencyCode}
+        onReplayIntro={replayIntro}
+      >
         <Routes>
-          <Route path="/" element={<HomePage onAddToCart={handleAddToCart} />} />
+          <Route
+            path="/"
+            element={
+              <HomePage
+                currencyCode={currencyCode}
+                onAddToCart={handleAddToCart}
+              />
+            }
+          />
           <Route
             path="/product-line"
             element={
               <ProductLinePage
+                currencyCode={currencyCode}
+                onCurrencyChange={setCurrencyCode}
                 onAddToCart={handleAddToCart}
                 onPreviewItem={setSelectedItem}
                 onPreviewBoxDemo={setSelectedBoxDemo}
@@ -1375,6 +1546,7 @@ export default function JudhoorApp() {
             element={
               <ShopPage
                 cart={cart}
+                currencyCode={currencyCode}
                 onAddToCart={handleAddToCart}
                 onUpdateQuantity={handleUpdateQuantity}
               />
@@ -1382,22 +1554,42 @@ export default function JudhoorApp() {
           />
           <Route
             path="/cart"
-            element={<CartPage cart={cart} onUpdateQuantity={handleUpdateQuantity} />}
+            element={
+              <CartPage
+                cart={cart}
+                currencyCode={currencyCode}
+                onUpdateQuantity={handleUpdateQuantity}
+              />
+            }
           />
           <Route
             path="/checkout"
             element={
               <CheckoutPage
                 cart={cart}
+                currencyCode={currencyCode}
                 onSubmitDemoOrder={handleSubmitDemoOrder}
               />
             }
           />
           <Route
             path="/checkout/success"
-            element={<CheckoutSuccessPage lastOrder={lastOrder} />}
+            element={
+              <CheckoutSuccessPage
+                lastOrder={lastOrder}
+                currencyCode={currencyCode}
+              />
+            }
           />
-          <Route path="*" element={<HomePage onAddToCart={handleAddToCart} />} />
+          <Route
+            path="*"
+            element={
+              <HomePage
+                currencyCode={currencyCode}
+                onAddToCart={handleAddToCart}
+              />
+            }
+          />
         </Routes>
       </Shell>
     </>
