@@ -756,6 +756,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-width: 0;
   overflow: hidden;
   padding: 18px;
   border: 1px solid var(--jh-line);
