@@ -39,16 +39,8 @@ const currencyOptions = [
 const redesignVisuals = {
   homeHero:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuChiYH9pyf0OhkR43JYyguO9S2T9JZ1Z-mjVw7IVyyH3YybJa5W4fKG-9dCuX0DDWIslYt72pyiJ64zKAALpXSaGWy2GtaObsyi0Ekp9GVuknR37eHegxETqpJeI3_5eoAZrmGlEQvx7IwiZ-TIoYswuFsA9v1sgubGZ2RLRgxpuM68fqTgD9oxTD58m_hXme0jemOsHuYTOxsYwFV1ejN9tZcwTG-19Wu8uI9E_kiJs37P6o3uYnJ-D9WuHEVD98lXbxQuQoxQtoU",
-  fathersDay:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBZvbJw95oY87V1bc-CZb3hDCozD8fKjuP7tSrqjlbpCQksVIkXuIkEtxCdNVpuTv-RJzy3tltljDyUNdewz0BwB354eQBH6kRYUP_brlSDpJSsD4Zifjr7YuKr53_CtYHSoKKXTH9m9vcjPTPpLmg9bPDAVbVCQAUUdkw5mVt0T3l12WzAf79deSqZd4U-Tcgy0Jr-cXuK184KOXsovrnyjhnO-IfhoOU9TihlcnrzqKbuv-dPQVFL8Thchp0kVVnIRLTGQHv2JPQ",
-  packaging:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDF9gWor4HrZJ1b0nj9oRDR37gtnb648h5EsC_nbySc083XQRhFAuopoQB2qo-Zgr9byr-pw9Kpbg8tNTpesedoahJb169e946-gwDik5eUp2gdDxp27Inh9A3UoUYaRkZ7qX1_4Uyfew1HwZOeHqiwCi7xmVeJzuO9HdrnQlcFj8zZo3jEqahxFNQq11VzYe6JMn7KkRIk1KLiXHs0a6KBbyr2PQ_0ByNgL-v2JDwqC2pFtkixV67LF8pPFXy9DW25a3cd897-VH8",
-  objects:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDVQOdRSklp1bikpAG2sdRUB7xHey2ulsREgTF35CEHR924xkO4d9gm3xqNyjYOUGRMdJIpFYcFabUj1zLWLj1t6XxG7Pjc6kiAdM0kEq0d-TJ0_J0YLdHs_5Tr3R9TZyRTHUErj_MRhmzU5K-NzvtHcAWYd1Qgb8mwbsxtuhMAWp-sAMP01VrenKHGcwgWX3CPW3uMUdK5NCdF5fMrO2C1nPH6Ucq0ol0T9wWS6SVKyuBkh52-rBI_ktE1JoJkuDX5mNTVDj8LLVM",
-  sharedPresence:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDrnLbxVbikunSQm3b3bfZdJqoKHlm49hHx1rv9aLskXT01tEJx-RrjJ2GIFWRCXCKPaWwCI_ySt-BlHvqGRtwSYxlczi9FUS4B7wOrxWZhbB4eKWuxLARWyWyrrTF2OzRJpLzjf4wtBenb7R9USI1VaJCGD8S0PVIIMIoRabrwLlJQmQk6muKbf9qgvDIhqSD0Q-GKFzk6ABmouUxBlFnCdbk3W0E0OSOUVs40J6idZ9IYxq1ZodvWmw7Y0va-t1N_BXlu2-U9ios",
-  ritualOne:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuD0Sa9L0cAzj_8wSQjGQhu9WN6S2ZT3EUYEdB2-UO-kYIlSR8DkmYwA9E0vX4gywXATVEme-OF__5NCneWD5V23CHXbI48mGZIBZdPtmiD-KWkKX5_X2mnmP_Vp6ZotD6EYSEZzg75Lgpw13x5T3rcSsbGZuDho4LyFz94mpEnTlKQlXIQh2vYMS0LpPxAY_g7X-8E7rARCqzAdXSBhnZVZjOryvo5NpdbGIGFbBoKK75a6m8edcp3m2HmJQAALHsBQoos31WsvgAI",
+  homeHeroFallback: assetPath("/mockups/past-box-detail-luxury.png"),
+  fathersDay: assetPath("/mockups/past-box-detail-luxury.png"),
 };
 
 const getCurrency = (currencyCode) =>
@@ -767,27 +759,23 @@ function HomePage({ currencyCode, onAddToCart }) {
         displayPrice: "AED 450",
         label: "Memory Care",
         summary: "A nostalgic journey through scents and sounds designed to spark vivid recollections.",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuB8YNtjjV8eHQAjG3nmRCn8-o3eh0k2S48qRTFw0w_N9MSaPGdxeyzQeqjpwnybT4fdH5VNbxbqMR5uquuGuVCsXgvLFJ8r6sFlYHv0i03Oq3IEFohD3u9F0dRk1TAOS5PZXbYCrSvwr6_SDAVl8vP_KycbkDARw8r5I1E1IHm4Dzp2agikIfMiW-J2u4G044ITqX0Xu0uC9HY0amwnWi0lgINQD01Enx8dP8QrEB5wWSCjKJAbfjdZXKa8YsNSCLzHUjabtfoEQKw",
+        image: assetPath("/mockups/past-box-hero-new.png"),
       },
       "balance-box": {
         displayPrice: "AED 385",
         summary: "Gentle physical activities and mindfulness tools for daily equilibrium.",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuCF0n-CZE2Ysogb8hUPSobn1f7tpOc_lvdjSkW96nIurE38UzHusKfOfs3FZdqNPZEU7DP3JvQK2_WPHpZWmJ5MK6msrvZxzK4vAbDET7Q1dhqaj-T4jy8HW8LHpryMF6S9H1c4F25Q7mQ8RzkXFNetp4g66LGO00FGj4poRGG2ic362aCaq6avGZ5qOFcv-gGyAO2Q-dFQilRpO1mVnsteoJpeqX7TCNPgGZvh5wvwD0I-S6i9FH1A-n2IXNa5d-_ut_-_k5bAAaE",
+        image: assetPath("/mockups/balance-box-detail.png"),
       },
       "important-box": {
         displayName: "You Are Important",
         displayPrice: "AED 420",
         summary: "A gratitude-focused kit featuring guided reflection and legacy journaling.",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ93eM2xl2ZuvlO-ZsM90rA3JFkPg8DeJhbzMoL3KybNFeF1E0XvqC4fZhTTE0YR0YJBafJHDjG7AdzyCs7-QetL2Vw5H1TpC5d3H1vPmDp86IUBzv8X-eI3GWQfEoUin1ZWfgxoqSjIdSVjSJS3SciXdqJGheeiO-5ukkvCjfSollUutTv_aS6Cq1QIcNLQ6AwoyP7pWrWpaYt2lXRMYcftoiGwHaIckJ4gYAKiq2pah8KAItse5EPWSpOElXB0HVJiLx7d8Thi0",
+        image: assetPath("/mockups/important-box-hero-new.png"),
       },
       "travel-box": {
         displayPrice: "AED 510",
         summary: "Bringing the world to the home through scents, textures, and maps from distant lands.",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuBKNwWwv1eVtZMkLh1mAffo-MeWW8piBqzk0NVvKgcHb8kzUOoMmDgkfCCccn3ztFebgLGXoI1CrLlP6HkzYNKSPxdd2bgRt174WnKMvTi5uHiI0Hy1Udp8s_HuuL9fx_jzipti8QwY-vTNB8lDpOiTL6kTV0haeiHpX2e-_hgK6ofwfgvmyC3y56TVXIB14oDhYqpAwyCIFvJJ3f7PhECuKWM3KtBYEuH8oJOf6yVoNesyIWjJ4OhBFKQXhho0jauQIZe6TH4r488",
+        image: assetPath("/mockups/travel-box-hero-transparent.png"),
       },
     };
 
@@ -824,6 +812,7 @@ function HomePage({ currencyCode, onAddToCart }) {
           <div className="jh-hero__visual-shell">
             <img
               src={redesignVisuals.homeHero}
+              data-fallback-src={redesignVisuals.homeHeroFallback}
               alt="Soft lifestyle detail of elder care, linen texture, and warm light"
               className="jh-hero__image"
               fetchPriority="high"
@@ -1601,6 +1590,27 @@ export default function JudhoorApp() {
       document.body.classList.remove("jh-no-scroll");
     };
   }, [showIntro]);
+
+  useEffect(() => {
+    const defaultFallback = assetPath("/judhoor-logo.png");
+
+    function recoverBrokenImage(event) {
+      const image = event.target;
+
+      if (!(image instanceof HTMLImageElement) || image.dataset.fallbackApplied === "true") {
+        return;
+      }
+
+      image.dataset.fallbackApplied = "true";
+      image.src = image.dataset.fallbackSrc || defaultFallback;
+    }
+
+    document.addEventListener("error", recoverBrokenImage, true);
+
+    return () => {
+      document.removeEventListener("error", recoverBrokenImage, true);
+    };
+  }, []);
 
   const cartCount = Object.values(cart).reduce((sum, value) => sum + value, 0);
 
