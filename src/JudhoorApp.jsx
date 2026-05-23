@@ -420,9 +420,11 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <button type="button" className="jh-replay" onClick={onReplayIntro}>
             Replay intro
           </button>
-          <NavLink to="/cart" className="jh-cart-pill">
-            Cart {cartCount}
-          </NavLink>
+          {cartCount > 0 ? (
+            <NavLink to="/cart" className="jh-cart-pill">
+              Cart {cartCount}
+            </NavLink>
+          ) : null}
         </nav>
       </header>
       <main className="jh-main">{children}</main>
@@ -804,10 +806,14 @@ function HomePage({ currencyCode, onAddToCart }) {
       <section className="jh-hero">
         <div className="jh-hero__copy jh-animate jh-animate--up">
           <p className="jh-eyebrow">Nurturing Legacy</p>
-          <h1>Care that feels like a quiet gift.</h1>
+          <h1>
+            Care that feels like
+            <br className="jh-hero__desktop-break" /> a{" "}
+            <span>quiet gift.</span>
+          </h1>
           <p className="jh-hero__text">
-            Premium activity boxes for elders, designed around memory,
-            wellbeing, discovery, and connection.
+            Premium activity boxes for elders, designed to nourish the mind and
+            celebrate the stories that define us.
           </p>
           <div className="jh-hero__actions">
             <NavLink to="/product-line" className="jh-button jh-button--solid">
@@ -818,7 +824,7 @@ function HomePage({ currencyCode, onAddToCart }) {
             </NavLink>
           </div>
         </div>
-        <div className="jh-hero__visual jh-animate jh-animate--float">
+        <div className="jh-hero__visual">
           <div className="jh-hero__visual-shell">
             <img
               src={redesignVisuals.homeHero}
