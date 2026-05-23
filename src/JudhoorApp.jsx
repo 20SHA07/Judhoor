@@ -52,24 +52,109 @@ function formatPrice(amount, currencyCode = DEFAULT_CURRENCY, options = {}) {
   }).format(convertedAmount);
 }
 
+function Dropdown({
+  options,
+  value,
+  onChange,
+  label,
+  compact = false,
+  className = "",
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const selectedOption =
+    options.find((option) => (option.value ?? option.code) === value) ?? options[0];
+  const selectedValue = selectedOption.value ?? selectedOption.code;
+
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (!dropdownRef.current?.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  function handleSelect(nextValue) {
+    onChange(nextValue);
+    setIsOpen(false);
+  }
+
+  return (
+    <div
+      ref={dropdownRef}
+      className={[
+        "jh-dropdown",
+        compact ? "jh-dropdown--compact" : "",
+        isOpen ? "jh-dropdown--open" : "",
+        className,
+      ].filter(Boolean).join(" ")}
+    >
+      <span className="jh-dropdown__label">{label}</span>
+      <button
+        type="button"
+        className="jh-dropdown__button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <span>{selectedOption.label}</span>
+        <span className="jh-dropdown__chevron" aria-hidden="true" />
+      </button>
+      {isOpen ? (
+        <div className="jh-dropdown__menu" role="listbox" aria-label={label}>
+          {options.map((option) => {
+            const optionValue = option.value ?? option.code;
+            const isSelected = optionValue === selectedValue;
+
+            return (
+              <button
+                key={optionValue || "original"}
+                type="button"
+                className={`jh-dropdown__option ${isSelected ? "jh-dropdown__option--selected" : ""}`}
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => handleSelect(optionValue)}
+              >
+                <span>{option.label}</span>
+                {option.name ? <small>{option.name}</small> : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function CurrencySelector({ currencyCode, onCurrencyChange, compact = false }) {
   const selectedCurrency = getCurrency(currencyCode);
 
   return (
-    <label className={`jh-currency-select ${compact ? "jh-currency-select--compact" : ""}`}>
-      <span>{compact ? "Currency" : "Display currency"}</span>
-      <select
-        value={selectedCurrency.code}
-        onChange={(event) => onCurrencyChange(event.target.value)}
-        aria-label="Display currency"
-      >
-        {currencyOptions.map((currency) => (
-          <option key={currency.code} value={currency.code}>
-            {currency.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <Dropdown
+      className={`jh-currency-select ${compact ? "jh-currency-select--compact" : ""}`}
+      compact={compact}
+      label={compact ? "Currency" : "Display currency"}
+      options={currencyOptions}
+      value={selectedCurrency.code}
+      onChange={onCurrencyChange}
+    />
   );
 }
 
@@ -206,6 +291,7 @@ function IntroScreen({ onFinish }) {
 }
 
 function TranslateWidget() {
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const languages = [
     { code: "", label: "Original" },
     { code: "ar", label: "العربية" },
@@ -222,13 +308,14 @@ function TranslateWidget() {
     { code: "hi", label: "हिन्दी" },
   ];
 
-  function handleChange(event) {
+  function handleChange(value) {
+    setSelectedLanguage(value);
     const combo = document.querySelector("#jh-translate .goog-te-combo");
     if (!combo) {
       return;
     }
 
-    combo.value = event.target.value;
+    combo.value = value;
     combo.dispatchEvent(new Event("change"));
   }
 
@@ -277,13 +364,16 @@ function TranslateWidget() {
   return (
     <div className="jh-translate-card">
       <span>Translate the site</span>
-      <select className="jh-language-select" defaultValue="" onChange={handleChange}>
-        {languages.map((language) => (
-          <option key={language.code || "original"} value={language.code}>
-            {language.label}
-          </option>
-        ))}
-      </select>
+      <Dropdown
+        className="jh-language-dropdown"
+        label="Site language"
+        options={languages.map((language) => ({
+          value: language.code,
+          label: language.label,
+        }))}
+        value={selectedLanguage}
+        onChange={handleChange}
+      />
       <div id="jh-translate" aria-hidden="true" />
     </div>
   );
