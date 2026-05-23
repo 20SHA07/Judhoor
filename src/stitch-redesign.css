@@ -212,18 +212,21 @@ body {
 }
 
 @media (min-width: 981px) {
-  .jh-header--condensed {
+  .jh-header.jh-header--condensed:not(:hover) {
     width: clamp(210px, 18vw, 250px);
+    max-width: clamp(210px, 18vw, 250px);
     padding: 10px 18px;
     gap: 10px;
+    overflow: hidden;
     background: rgba(247, 238, 228, 0.88);
     box-shadow:
       0 18px 44px rgba(39, 24, 15, 0.16),
       inset 0 1px 0 rgba(255, 255, 255, 0.42);
     transform: translateX(-50%) translateY(-2px);
+    transition: none;
   }
 
-  .jh-header--condensed::after {
+  .jh-header.jh-header--condensed::after {
     content: "";
     width: 18px;
     height: 2px;
@@ -239,21 +242,25 @@ body {
       transform 220ms ease;
   }
 
-  .jh-header--condensed .jh-brand {
+  .jh-header.jh-header--condensed .jh-brand {
     gap: 9px;
+    flex: 0 0 auto;
   }
 
-  .jh-header--condensed .jh-brand img {
+  .jh-header.jh-header--condensed .jh-brand img {
     width: 32px;
     height: 32px;
     filter: drop-shadow(0 6px 10px rgba(119, 89, 51, 0.14));
+    transition: none;
   }
 
-  .jh-header--condensed .jh-brand strong {
+  .jh-header.jh-header--condensed .jh-brand strong {
     font-size: clamp(1.6rem, 2vw, 2rem);
+    transition: none;
   }
 
-  .jh-header--condensed .jh-nav {
+  .jh-header.jh-header--condensed:not(:hover) .jh-nav {
+    display: none;
     width: 0;
     max-width: 0;
     height: 0;
@@ -266,28 +273,29 @@ body {
     transform: translateX(-8px) scaleX(0.82);
   }
 
-  .jh-header--condensed .jh-nav > * {
+  .jh-header.jh-header--condensed:not(:hover) .jh-nav > * {
     visibility: hidden;
   }
 
-  .jh-header--condensed:hover {
+  .jh-header.jh-header--condensed:hover {
     width: min(880px, calc(100vw - 32px));
     padding: 12px 28px;
     gap: clamp(20px, 2.4vw, 38px);
+    overflow: visible;
   }
 
-  .jh-header--condensed:hover::after {
+  .jh-header.jh-header--condensed:hover::after {
     width: 0;
     opacity: 0;
     transform: scaleX(0.4);
   }
 
-  .jh-header--condensed:hover .jh-nav {
+  .jh-header.jh-header--condensed:hover .jh-nav {
+    display: flex;
     width: auto;
     max-width: min(660px, calc(100vw - 230px));
     height: auto;
     max-height: 48px;
-    display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: clamp(14px, 1.7vw, 24px);
@@ -297,15 +305,15 @@ body {
     transform: none;
   }
 
-  .jh-header--condensed:hover .jh-nav > * {
+  .jh-header.jh-header--condensed:hover .jh-nav > * {
     flex: 0 0 auto;
     visibility: visible;
   }
 
-  .jh-header--condensed:hover .jh-nav a,
-  .jh-header--condensed:hover .jh-replay,
-  .jh-header--condensed:hover .jh-cart-pill,
-  .jh-header--condensed:hover .jh-dropdown__button {
+  .jh-header.jh-header--condensed:hover .jh-nav a,
+  .jh-header.jh-header--condensed:hover .jh-replay,
+  .jh-header.jh-header--condensed:hover .jh-cart-pill,
+  .jh-header.jh-header--condensed:hover .jh-dropdown__button {
     font-size: 0.84rem;
   }
 }
