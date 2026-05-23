@@ -1008,34 +1008,39 @@ function ProductLinePage({
 }
 
 function ExperiencePage() {
+  const pastBox = boxCatalog.find((box) => box.slug === "past-box") ?? boxCatalog[0];
+  const balanceBox = boxCatalog.find((box) => box.slug === "balance-box") ?? boxCatalog[1];
+  const importantBox = boxCatalog.find((box) => box.slug === "important-box") ?? boxCatalog[2];
+  const travelBox = boxCatalog.find((box) => box.slug === "travel-box") ?? boxCatalog[3];
+
   const storyPanels = [
     {
       title: "Unboxing should feel ceremonial, not clinical.",
       text:
         "The first impression matters. Judhoor boxes are designed to arrive like meaningful gifts, with premium presentation, warm materials, and an immediate sense of care.",
-      image: redesignVisuals.packaging,
-      alt: "Judhoor ceremonial unboxing presentation",
+      image: pastBox.images[0],
+      alt: `${pastBox.name} ceremonial box presentation`,
     },
     {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: redesignVisuals.objects,
-      alt: "Judhoor memory and storytelling objects",
+      image: importantBox.images[1],
+      alt: `${importantBox.name} product objects`,
     },
     {
       title: "The experience moves between calm activity and shared presence.",
       text:
         "Some moments are reflective and solitary. Others are designed for family participation. Together they create a rhythm that feels supportive rather than demanding.",
-      image: redesignVisuals.sharedPresence,
-      alt: "Judhoor connection and family interaction set",
+      image: balanceBox.images[1],
+      alt: `${balanceBox.name} wellbeing objects`,
     },
     {
       title: "Every box becomes a repeatable ritual of care.",
       text:
         "The goal is not a one-time unboxing. Judhoor is designed to be revisited across days and weeks, turning beautifully made objects into ongoing moments of connection.",
-      image: redesignVisuals.ritualOne,
-      alt: "Judhoor wellbeing and routine objects",
+      image: travelBox.images[1],
+      alt: `${travelBox.name} discovery objects`,
     },
   ];
 

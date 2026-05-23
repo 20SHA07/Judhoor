@@ -798,11 +798,18 @@ body {
   max-width: 42rem;
 }
 
-.jh-scene-card img,
-.jh-story-panel img {
+.jh-scene-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.jh-story-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 28px 24px rgba(39, 24, 15, 0.14));
 }
 
 .jh-testimonial {
