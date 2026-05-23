@@ -24,6 +24,8 @@
   --jh-shadow-soft: 0 12px 42px rgba(185, 148, 105, 0.12);
   --jh-page-x: clamp(16px, 5vw, 64px);
   --jh-section-y: clamp(56px, 8vw, 104px);
+  --jh-image-radius: clamp(24px, 2.6vw, 36px);
+  --jh-image-radius-compact: clamp(16px, 1.8vw, 24px);
 }
 
 html,
@@ -1813,4 +1815,48 @@ body {
   .jh-replay {
     display: none;
   }
+}
+
+/* Final image softness pass: keeps every visual surface rounded and premium. */
+.jh-app :is(
+  .jh-seasonal__image,
+  .jh-product-card__media,
+  .jh-scene-card figure,
+  .jh-gallery__item,
+  .jh-shop-card figure,
+  .jh-story-panel__media,
+  .jh-cart-item__media,
+  .jh-item-preview,
+  .jh-item-preview--image,
+  .jh-demo-orbit__item-art
+) {
+  overflow: hidden;
+  border-radius: var(--jh-image-radius);
+}
+
+.jh-app :is(
+  .jh-product-card__media,
+  .jh-shop-card figure,
+  .jh-cart-item__media,
+  .jh-item-preview,
+  .jh-item-preview--image,
+  .jh-demo-orbit__item-art
+) {
+  border-radius: var(--jh-image-radius-compact);
+}
+
+.jh-app :is(
+  .jh-seasonal__image img,
+  .jh-product-card__media img,
+  .jh-scene-card img,
+  .jh-gallery img,
+  .jh-shop-card figure img,
+  .jh-story-panel img,
+  .jh-cart-item__media img,
+  .jh-item-preview img,
+  .jh-demo-orbit__box,
+  .jh-demo-orbit__item-art img,
+  .jh-chip-button img
+) {
+  border-radius: inherit;
 }
