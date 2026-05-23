@@ -395,11 +395,32 @@ function TranslateWidget() {
 }
 
 function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
+  const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
+
+  useEffect(() => {
+    let frameId = 0;
+
+    function updateHeaderState() {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        setIsHeaderCondensed(window.scrollY > 140);
+      });
+    }
+
+    updateHeaderState();
+    window.addEventListener("scroll", updateHeaderState, { passive: true });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", updateHeaderState);
+    };
+  }, []);
+
   return (
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
       <div className="jh-bg jh-bg--two" />
-      <header className="jh-header">
+      <header className={`jh-header${isHeaderCondensed ? " jh-header--condensed" : ""}`}>
         <NavLink to="/" className="jh-brand">
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
@@ -407,7 +428,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
             <span>Premium care boxes for cherished elders</span>
           </div>
         </NavLink>
-        <nav className="jh-nav">
+        <nav className="jh-nav" aria-label="Primary navigation">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>

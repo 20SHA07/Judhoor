@@ -59,13 +59,15 @@ body {
 .jh-app {
   min-height: 100%;
   padding: 0;
-  overflow: clip;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .jh-main {
   width: 100%;
   max-width: none;
   margin: 0;
+  padding-top: clamp(88px, 7vw, 106px);
 }
 
 .jh-section,
@@ -77,12 +79,13 @@ body {
 }
 
 .jh-header {
-  position: sticky;
+  position: fixed;
   top: 14px;
+  left: 50%;
   z-index: 80;
-  width: fit-content;
+  width: min(960px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
-  margin: 14px auto 0;
+  margin: 0;
   padding: 15px 36px;
   display: flex;
   align-items: center;
@@ -94,6 +97,14 @@ body {
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   box-shadow: 0 10px 30px rgba(119, 89, 51, 0.1);
+  transform: translateX(-50%);
+  transition:
+    width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    padding 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    gap 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    background-color 360ms ease,
+    box-shadow 360ms ease,
+    transform 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
 
 .jh-brand {
@@ -101,6 +112,7 @@ body {
   align-items: center;
   gap: 13px;
   min-width: auto;
+  transition: gap 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
 
 .jh-brand img {
@@ -110,6 +122,10 @@ body {
   flex: 0 0 auto;
   object-fit: contain;
   filter: drop-shadow(0 7px 12px rgba(119, 89, 51, 0.16));
+  transition:
+    width 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    height 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    filter 360ms ease;
 }
 
 .jh-brand > div {
@@ -125,6 +141,7 @@ body {
   line-height: 0.92;
   font-weight: 700;
   color: var(--jh-coffee);
+  transition: font-size 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
 
 .jh-nav {
@@ -132,12 +149,19 @@ body {
   align-items: center;
   gap: clamp(22px, 3vw, 42px);
   width: auto;
+  max-width: min(920px, calc(100vw - 280px));
   padding: 0;
   overflow: visible;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  transform-origin: left center;
+  transition:
+    max-width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    gap 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
 
 .jh-nav a,
@@ -155,6 +179,7 @@ body {
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
+  white-space: nowrap;
   transition:
     color 220ms ease,
     border-color 220ms ease,
@@ -183,6 +208,62 @@ body {
 .jh-cart-pill {
   color: var(--jh-coffee) !important;
   font-weight: 800;
+}
+
+@media (min-width: 701px) {
+  .jh-header--condensed:not(:hover):not(:focus-within) {
+    width: clamp(220px, 18vw, 252px);
+    padding: 10px 18px;
+    gap: 12px;
+    background: rgba(247, 238, 228, 0.88);
+    box-shadow:
+      0 18px 44px rgba(39, 24, 15, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  .jh-header--condensed:not(:hover):not(:focus-within)::after {
+    content: "";
+    width: 20px;
+    height: 2px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: rgba(39, 24, 15, 0.46);
+    box-shadow:
+      0 6px 0 rgba(39, 24, 15, 0.32),
+      0 -6px 0 rgba(39, 24, 15, 0.32);
+  }
+
+  .jh-header--condensed:not(:hover):not(:focus-within) .jh-brand {
+    gap: 9px;
+  }
+
+  .jh-header--condensed:not(:hover):not(:focus-within) .jh-brand img {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 6px 10px rgba(119, 89, 51, 0.14));
+  }
+
+  .jh-header--condensed:not(:hover):not(:focus-within) .jh-brand strong {
+    font-size: clamp(1.58rem, 2.25vw, 2.05rem);
+  }
+
+  .jh-header--condensed:not(:hover):not(:focus-within) .jh-nav {
+    width: 0;
+    max-width: 0;
+    height: 0;
+    max-height: 0;
+    flex: 0 1 0;
+    gap: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-8px) scaleX(0.72);
+  }
+
+  .jh-header--condensed:not(:hover):not(:focus-within) .jh-nav > * {
+    visibility: hidden;
+  }
 }
 
 .jh-dropdown {
@@ -1549,6 +1630,10 @@ body {
   :root {
     --jh-page-x: 16px;
     --jh-section-y: 64px;
+  }
+
+  .jh-main {
+    padding-top: 158px;
   }
 
   .jh-header {
