@@ -387,32 +387,11 @@ function TranslateWidget() {
 }
 
 function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
-  const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
-
-  useEffect(() => {
-    let frameId = 0;
-
-    function updateHeaderState() {
-      window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(() => {
-        setIsHeaderCondensed(window.scrollY > 140);
-      });
-    }
-
-    updateHeaderState();
-    window.addEventListener("scroll", updateHeaderState, { passive: true });
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.removeEventListener("scroll", updateHeaderState);
-    };
-  }, []);
-
   return (
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
       <div className="jh-bg jh-bg--two" />
-      <header className={`jh-header${isHeaderCondensed ? " jh-header--condensed" : ""}`}>
+      <header className="jh-header">
         <NavLink to="/" className="jh-brand">
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
