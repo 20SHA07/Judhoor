@@ -5,6 +5,7 @@ import JudhoorApp from "./JudhoorApp";
 import "./judhoor.css";
 import "./polish.css";
 import "./intro-polish.css";
+import "./stitch-redesign.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -36,6 +36,21 @@ const currencyOptions = [
   },
 ];
 
+const redesignVisuals = {
+  homeHero:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuChiYH9pyf0OhkR43JYyguO9S2T9JZ1Z-mjVw7IVyyH3YybJa5W4fKG-9dCuX0DDWIslYt72pyiJ64zKAALpXSaGWy2GtaObsyi0Ekp9GVuknR37eHegxETqpJeI3_5eoAZrmGlEQvx7IwiZ-TIoYswuFsA9v1sgubGZ2RLRgxpuM68fqTgD9oxTD58m_hXme0jemOsHuYTOxsYwFV1ejN9tZcwTG-19Wu8uI9E_kiJs37P6o3uYnJ-D9WuHEVD98lXbxQuQoxQtoU",
+  fathersDay:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBZvbJw95oY87V1bc-CZb3hDCozD8fKjuP7tSrqjlbpCQksVIkXuIkEtxCdNVpuTv-RJzy3tltljDyUNdewz0BwB354eQBH6kRYUP_brlSDpJSsD4Zifjr7YuKr53_CtYHSoKKXTH9m9vcjPTPpLmg9bPDAVbVCQAUUdkw5mVt0T3l12WzAf79deSqZd4U-Tcgy0Jr-cXuK184KOXsovrnyjhnO-IfhoOU9TihlcnrzqKbuv-dPQVFL8Thchp0kVVnIRLTGQHv2JPQ",
+  packaging:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDF9gWor4HrZJ1b0nj9oRDR37gtnb648h5EsC_nbySc083XQRhFAuopoQB2qo-Zgr9byr-pw9Kpbg8tNTpesedoahJb169e946-gwDik5eUp2gdDxp27Inh9A3UoUYaRkZ7qX1_4Uyfew1HwZOeHqiwCi7xmVeJzuO9HdrnQlcFj8zZo3jEqahxFNQq11VzYe6JMn7KkRIk1KLiXHs0a6KBbyr2PQ_0ByNgL-v2JDwqC2pFtkixV67LF8pPFXy9DW25a3cd897-VH8",
+  objects:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDVQOdRSklp1bikpAG2sdRUB7xHey2ulsREgTF35CEHR924xkO4d9gm3xqNyjYOUGRMdJIpFYcFabUj1zLWLj1t6XxG7Pjc6kiAdM0kEq0d-TJ0_J0YLdHs_5Tr3R9TZyRTHUErj_MRhmzU5K-NzvtHcAWYd1Qgb8mwbsxtuhMAWp-sAMP01VrenKHGcwgWX3CPW3uMUdK5NCdF5fMrO2C1nPH6Ucq0ol0T9wWS6SVKyuBkh52-rBI_ktE1JoJkuDX5mNTVDj8LLVM",
+  sharedPresence:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDrnLbxVbikunSQm3b3bfZdJqoKHlm49hHx1rv9aLskXT01tEJx-RrjJ2GIFWRCXCKPaWwCI_ySt-BlHvqGRtwSYxlczi9FUS4B7wOrxWZhbB4eKWuxLARWyWyrrTF2OzRJpLzjf4wtBenb7R9USI1VaJCGD8S0PVIIMIoRabrwLlJQmQk6muKbf9qgvDIhqSD0Q-GKFzk6ABmouUxBlFnCdbk3W0E0OSOUVs40J6idZ9IYxq1ZodvWmw7Y0va-t1N_BXlu2-U9ios",
+  ritualOne:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuD0Sa9L0cAzj_8wSQjGQhu9WN6S2ZT3EUYEdB2-UO-kYIlSR8DkmYwA9E0vX4gywXATVEme-OF__5NCneWD5V23CHXbI48mGZIBZdPtmiD-KWkKX5_X2mnmP_Vp6ZotD6EYSEZzg75Lgpw13x5T3rcSsbGZuDho4LyFz94mpEnTlKQlXIQh2vYMS0LpPxAY_g7X-8E7rARCqzAdXSBhnZVZjOryvo5NpdbGIGFbBoKK75a6m8edcp3m2HmJQAALHsBQoos31WsvgAI",
+};
+
 const getCurrency = (currencyCode) =>
   currencyOptions.find((currency) => currency.code === currencyCode) ?? currencyOptions[0];
 
@@ -384,21 +399,6 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
       <div className="jh-bg jh-bg--two" />
-      <a
-        className="jh-top-announcement"
-        href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20early%20interest"
-        aria-label="Join the early list for the upcoming Father's Day Box"
-      >
-        <div className="jh-top-announcement__track">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <span key={index}>
-              Father&apos;s Day Box coming soon
-              <em>Join the early list</em>
-              <strong>Limited seasonal drop</strong>
-            </span>
-          ))}
-        </div>
-      </a>
       <header className="jh-header">
         <NavLink to="/" className="jh-brand">
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
@@ -437,12 +437,25 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
             </p>
           </div>
         </div>
-        <TranslateWidget />
+        <div className="jh-footer__links">
+          <span>Navigation</span>
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/product-line">Product Line</NavLink>
+          <NavLink to="/experience">Experience</NavLink>
+          <NavLink to="/shop">Shop</NavLink>
+        </div>
+        <div className="jh-footer__links">
+          <span>Client Care</span>
+          <a href="mailto:hello@judhoor.com">Contact</a>
+          <NavLink to="/cart">Cart</NavLink>
+          <NavLink to="/checkout">Checkout</NavLink>
+        </div>
         <div className="jh-footer__meta">
           <span>Demo contact</span>
           <p>hello@judhoor.com</p>
           <p>+971 50 000 0000</p>
         </div>
+        <TranslateWidget />
       </footer>
     </div>
   );
@@ -751,12 +764,20 @@ function SeasonalAnnouncement({ compact = false }) {
           ) : null}
         </div>
       </div>
+      <figure className="jh-seasonal__image">
+        <img
+          src={redesignVisuals.fathersDay}
+          alt="Leather journal and warm wood details for the upcoming Father's Day heritage box"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
     </aside>
   );
 }
 
 function HomePage({ currencyCode, onAddToCart }) {
-  const featuredBoxes = boxCatalog.slice(0, 2);
+  const featuredBoxes = boxCatalog;
   const calmPillars = [
     {
       kicker: "01",
@@ -782,35 +803,31 @@ function HomePage({ currencyCode, onAddToCart }) {
     <>
       <section className="jh-hero">
         <div className="jh-hero__copy jh-animate jh-animate--up">
-          <p className="jh-eyebrow">Judhoor | جذور</p>
-          <h1>Calm, dignified care in a beautifully made box.</h1>
+          <p className="jh-eyebrow">Nurturing Legacy</p>
+          <h1>Care that feels like a quiet gift.</h1>
           <p className="jh-hero__text">
             Premium activity boxes for elders, designed around memory,
             wellbeing, discovery, and connection.
           </p>
           <div className="jh-hero__actions">
-            <NavLink to="/shop" className="jh-button jh-button--solid">
-              View boxes
+            <NavLink to="/product-line" className="jh-button jh-button--solid">
+              Explore the Collection
             </NavLink>
-            <NavLink to="/product-line" className="jh-hero__text-link">
-              Explore the full collection
+            <NavLink to="/experience" className="jh-button jh-button--ghost">
+              Our Story
             </NavLink>
           </div>
-          <p className="jh-hero__note">
-            Designed to feel honoring from the very first moment.
-          </p>
         </div>
         <div className="jh-hero__visual jh-animate jh-animate--float">
           <div className="jh-hero__visual-shell">
             <img
-              src={assetPath("/mockups/past-box-hero-new.png")}
-              alt="Judhoor box presentation"
+              src={redesignVisuals.homeHero}
+              alt="Soft lifestyle detail of elder care, linen texture, and warm light"
               className="jh-hero__image"
               fetchPriority="high"
               decoding="async"
             />
           </div>
-          <div className="jh-hero__frame-tag">The Past Box | Memory & Reflection</div>
         </div>
       </section>
 
@@ -882,13 +899,22 @@ function HomePage({ currencyCode, onAddToCart }) {
         </div>
         <article className="jh-scene-card jh-home-story__card">
           <figure>
-            <img src={conceptMoments[0].image} alt={conceptMoments[0].title} loading="lazy" decoding="async" />
+            <img src={redesignVisuals.sharedPresence} alt={conceptMoments[0].title} loading="lazy" decoding="async" />
           </figure>
           <div>
             <h3>{conceptMoments[0].title}</h3>
             <p>{conceptMoments[0].description}</p>
           </div>
         </article>
+      </section>
+
+      <section className="jh-testimonial jh-animate jh-animate--fade">
+        <span aria-hidden="true">"</span>
+        <p>
+          We believe that elder care isn&apos;t just about utility; it&apos;s about
+          honoring the depth of a lifetime. Every box is a bridge between generations.
+        </p>
+        <small>Judhoor care philosophy</small>
       </section>
     </>
   );
@@ -902,7 +928,7 @@ function ProductLinePage({
   onPreviewBoxDemo,
 }) {
   return (
-    <section className="jh-page jh-animate jh-animate--up">
+    <section className="jh-page jh-product-line-page jh-animate jh-animate--up">
       <div className="jh-section__head jh-section__head--split">
         <div className="jh-section__copy">
           <p className="jh-eyebrow">Product Line</p>
@@ -981,34 +1007,34 @@ function ExperiencePage() {
       title: "Unboxing should feel ceremonial, not clinical.",
       text:
         "The first impression matters. Judhoor boxes are designed to arrive like meaningful gifts, with premium presentation, warm materials, and an immediate sense of care.",
-      image: assetPath("/mockups/important-box-hero-new.png"),
+      image: redesignVisuals.packaging,
       alt: "Judhoor ceremonial unboxing presentation",
     },
     {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: assetPath("/mockups/past-box-detail-luxury.png"),
+      image: redesignVisuals.objects,
       alt: "Judhoor memory and storytelling objects",
     },
     {
       title: "The experience moves between calm activity and shared presence.",
       text:
         "Some moments are reflective and solitary. Others are designed for family participation. Together they create a rhythm that feels supportive rather than demanding.",
-      image: assetPath("/mockups/important-box-items.png"),
+      image: redesignVisuals.sharedPresence,
       alt: "Judhoor connection and family interaction set",
     },
     {
       title: "Every box becomes a repeatable ritual of care.",
       text:
         "The goal is not a one-time unboxing. Judhoor is designed to be revisited across days and weeks, turning beautifully made objects into ongoing moments of connection.",
-      image: assetPath("/mockups/balance-box-items.png"),
+      image: redesignVisuals.ritualOne,
       alt: "Judhoor wellbeing and routine objects",
     },
   ];
 
   return (
-    <section className="jh-page jh-animate jh-animate--up">
+    <section className="jh-page jh-experience-page jh-animate jh-animate--up">
       <div className="jh-section__head">
         <p className="jh-eyebrow">Experience Design</p>
         <h1>Designed to feel calm, intuitive, and emotionally safe from unboxing onward.</h1>
@@ -1065,7 +1091,7 @@ function ShopPage({ cart, currencyCode, onAddToCart, onUpdateQuantity }) {
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
 
   return (
-    <section className="jh-page jh-animate jh-animate--up">
+    <section className="jh-page jh-shop-page jh-animate jh-animate--up">
       <div className="jh-section__head">
         <p className="jh-eyebrow">Shop</p>
         <h1>Choose the boxes you want, then continue through a polished demo checkout.</h1>
@@ -1166,7 +1192,7 @@ function CartPage({ cart, currencyCode, onUpdateQuantity }) {
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
 
   return (
-    <section className="jh-page jh-animate jh-animate--up">
+    <section className="jh-page jh-cart-page jh-animate jh-animate--up">
       <div className="jh-section__head">
         <p className="jh-eyebrow">Cart</p>
         <h1>Review your cart before heading to checkout.</h1>
@@ -1268,7 +1294,7 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
 
   if (cartLines.length === 0) {
     return (
-      <section className="jh-page jh-animate jh-animate--up">
+      <section className="jh-page jh-checkout-route jh-animate jh-animate--up">
         <div className="jh-empty-state">
           <h1>There’s nothing to check out yet.</h1>
           <p>Add a box to your cart first, then return here for the demo payment flow.</p>
@@ -1281,7 +1307,7 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
   }
 
   return (
-    <section className="jh-page jh-animate jh-animate--up">
+    <section className="jh-page jh-checkout-route jh-animate jh-animate--up">
       <div className="jh-section__head">
         <p className="jh-eyebrow">Checkout Demo</p>
         <h1>Enter delivery details and complete the demo checkout.</h1>
@@ -1500,7 +1526,7 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
 function CheckoutSuccessPage({ lastOrder, currencyCode }) {
   if (!lastOrder) {
     return (
-      <section className="jh-page jh-animate jh-animate--up">
+      <section className="jh-page jh-success-page jh-animate jh-animate--up">
         <div className="jh-empty-state">
           <h1>No recent demo order found.</h1>
           <p>
@@ -1521,7 +1547,7 @@ function CheckoutSuccessPage({ lastOrder, currencyCode }) {
   }
 
   return (
-    <section className="jh-page jh-animate jh-animate--up">
+    <section className="jh-page jh-success-page jh-animate jh-animate--up">
       <div className="jh-success-card">
         <p className="jh-eyebrow">Order complete</p>
         <h1>Your demo order has been placed.</h1>
