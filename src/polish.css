@@ -582,3 +582,536 @@ body {
     text-align: center;
   }
 }
+
+/* Premium editorial finish. Keep the brand warm, but make the UI quieter and more intentional. */
+:root {
+  --jh-text: #241a12;
+  --jh-muted: #63584e;
+  --jh-line: rgba(50, 39, 29, 0.1);
+  --jh-line-strong: rgba(50, 39, 29, 0.18);
+  --jh-cream: #fffaf2;
+  --jh-cream-soft: #f4eadb;
+  --jh-shadow: 0 18px 48px rgba(42, 31, 22, 0.1);
+  --jh-shadow-soft: 0 10px 28px rgba(42, 31, 22, 0.08);
+  --jh-sage-deep: #495842;
+  --jh-gold: #a9823f;
+}
+
+body {
+  background:
+    linear-gradient(90deg, rgba(62, 48, 36, 0.022) 0 1px, transparent 1px 84px),
+    linear-gradient(0deg, rgba(62, 48, 36, 0.018) 0 1px, transparent 1px 84px),
+    linear-gradient(180deg, #f5ebdc 0%, #fffaf2 38%, #f2e6d6 100%);
+}
+
+.jh-bg {
+  display: none;
+}
+
+.jh-app {
+  padding: clamp(14px, 1.8vw, 24px);
+}
+
+.jh-header,
+.jh-footer,
+.jh-hero__copy,
+.jh-hero__visual,
+.jh-home-promise,
+.jh-seasonal,
+.jh-product-card,
+.jh-mini-card,
+.jh-scene-card,
+.jh-showcase-card,
+.jh-step-card,
+.jh-guidance,
+.jh-shop-card,
+.jh-checkout,
+.jh-payment-card,
+.jh-empty-state,
+.jh-success-card,
+.jh-translate-card,
+.jh-currency-card {
+  background: rgba(255, 250, 242, 0.82);
+  border-color: rgba(50, 39, 29, 0.1);
+  box-shadow: var(--jh-shadow-soft);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.jh-header {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  border-radius: 22px;
+  background: rgba(255, 250, 242, 0.9);
+}
+
+.jh-brand img,
+.jh-footer__brand img {
+  width: 50px;
+  height: 50px;
+}
+
+.jh-brand strong,
+.jh-footer__brand strong {
+  font-size: 1.85rem;
+}
+
+.jh-brand span,
+.jh-footer p {
+  font-size: 0.95rem;
+}
+
+.jh-nav {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.44);
+}
+
+.jh-nav a,
+.jh-replay,
+.jh-cart-pill,
+.jh-button,
+.jh-dropdown__button,
+.jh-chip-button,
+.jh-top-announcement__track span,
+.jh-top-announcement__track strong,
+.jh-eyebrow,
+.jh-hero__frame-tag,
+.jh-showcase-card__copy span,
+.jh-product-card__top span,
+.jh-modal__hint,
+.jh-seasonal__details span,
+.jh-footer__meta span,
+.jh-currency-select,
+.jh-currency-input,
+.jh-demo-stage__hint,
+.jh-demo-copy > span,
+.jh-demo-copy__meta small {
+  letter-spacing: 0;
+}
+
+.jh-nav a,
+.jh-replay,
+.jh-cart-pill,
+.jh-button,
+.jh-dropdown__button {
+  border-radius: 14px;
+}
+
+.jh-nav a.active,
+.jh-nav a:hover,
+.jh-replay:hover,
+.jh-replay:focus-visible {
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 8px 18px rgba(42, 31, 22, 0.08);
+}
+
+.jh-top-announcement {
+  top: 12px;
+  margin-bottom: 12px;
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, #2c2119, #604a34 52%, #ad884a);
+  box-shadow: 0 12px 30px rgba(42, 31, 22, 0.14);
+}
+
+.jh-top-announcement__track span {
+  padding: 9px 26px;
+  font-size: 0.84rem;
+}
+
+.jh-top-announcement__track strong {
+  border-radius: 10px;
+  font-size: 0.68rem;
+}
+
+.jh-hero {
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.jh-hero__copy,
+.jh-hero__visual,
+.jh-seasonal,
+.jh-home-promise,
+.jh-product-card,
+.jh-showcase-card,
+.jh-step-card,
+.jh-guidance,
+.jh-shop-card,
+.jh-checkout,
+.jh-footer {
+  border-radius: 24px;
+}
+
+.jh-hero__copy,
+.jh-hero__visual {
+  padding: clamp(24px, 3vw, 38px);
+}
+
+.jh-hero h1 {
+  max-width: 760px;
+  font-size: 4.45rem;
+  line-height: 0.96;
+}
+
+.jh-page h1,
+.jh-section__head h2,
+.jh-editorial__copy h2,
+.jh-showcase-card h2,
+.jh-guidance h2,
+.jh-checkout h2 {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.jh-hero__text,
+.jh-section__head p,
+.jh-product-card__summary,
+.jh-mini-card p,
+.jh-scene-card p,
+.jh-showcase-card p,
+.jh-step-card p,
+.jh-guidance p,
+.jh-shop-card p,
+.jh-checkout__empty,
+.jh-checkout__summary span,
+.jh-form label,
+.jh-translate-card span {
+  line-height: 1.62;
+}
+
+.jh-hero__visual,
+.jh-product-card__media,
+.jh-scene-card figure,
+.jh-gallery__item,
+.jh-shop-card figure,
+.jh-cart-item__media,
+.jh-story-panel__media,
+.jh-item-preview--image {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(239, 224, 202, 0.82));
+  border-color: rgba(78, 56, 35, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -14px 26px rgba(86, 61, 36, 0.06),
+    0 12px 28px rgba(42, 31, 22, 0.06);
+}
+
+.jh-hero__visual-shell,
+.jh-product-card__media,
+.jh-scene-card figure,
+.jh-gallery__item,
+.jh-shop-card figure,
+.jh-cart-item__media,
+.jh-story-panel__media,
+.jh-item-preview {
+  border-radius: 18px;
+}
+
+.jh-hero__visual-shell::after,
+.jh-product-card__media::after,
+.jh-scene-card figure::after,
+.jh-gallery__item::after,
+.jh-shop-card figure::after,
+.jh-cart-item__media::after {
+  opacity: 0.55;
+  filter: blur(8px);
+}
+
+.jh-hero__image,
+.jh-product-card__media img,
+.jh-scene-card img,
+.jh-gallery img,
+.jh-shop-card figure img {
+  filter: drop-shadow(0 18px 24px rgba(55, 37, 22, 0.13));
+}
+
+.jh-seasonal {
+  background:
+    linear-gradient(135deg, rgba(48, 36, 27, 0.98), rgba(92, 68, 46, 0.96) 54%, rgba(176, 137, 72, 0.92));
+  box-shadow: 0 22px 56px rgba(42, 31, 22, 0.18);
+}
+
+.jh-seasonal__details {
+  border-radius: 18px;
+  background: rgba(255, 250, 242, 0.9);
+}
+
+.jh-product-showcase,
+.jh-storyline,
+.jh-cart-list,
+.jh-payment-form {
+  gap: 18px;
+}
+
+.jh-showcase-card {
+  padding: clamp(22px, 2.4vw, 30px);
+  grid-template-columns: minmax(320px, 0.86fr) minmax(0, 1.14fr);
+}
+
+.jh-showcase-card::before {
+  inset: 10px;
+  border-radius: 18px;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.jh-gallery {
+  gap: 10px;
+}
+
+.jh-gallery__item {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  min-height: 170px;
+}
+
+.jh-gallery__item--hero {
+  min-height: 320px;
+}
+
+.jh-chip-button {
+  border-radius: 16px;
+  background: rgba(255, 252, 246, 0.82);
+  box-shadow: none;
+}
+
+.jh-chip-button img {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.jh-chip-button:hover,
+.jh-chip-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(42, 31, 22, 0.08);
+}
+
+.jh-product-card,
+.jh-shop-card {
+  overflow: hidden;
+}
+
+.jh-product-card__media,
+.jh-shop-card figure {
+  min-height: 240px;
+}
+
+.jh-shop-card__body h3,
+.jh-product-card h3 {
+  font-size: 2.05rem;
+}
+
+.jh-button {
+  padding: 13px 19px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.jh-button--solid,
+.jh-button--small {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent),
+    linear-gradient(135deg, #3f4c39, #617057);
+  box-shadow: 0 12px 24px rgba(63, 76, 57, 0.16);
+}
+
+.jh-button:hover,
+.jh-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(42, 31, 22, 0.12);
+}
+
+.jh-dropdown__button,
+.jh-currency-input input,
+.jh-form input,
+.jh-form textarea,
+.jh-form-grid input,
+.jh-form-grid textarea {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.jh-dropdown__menu {
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(42, 31, 22, 0.16);
+}
+
+.jh-dropdown__option {
+  border-radius: 12px;
+}
+
+.jh-checkout__item,
+.jh-checkout__summary,
+.jh-shop-card__badges span,
+.jh-cart-item__meta span,
+.jh-success-card__details span,
+.jh-demo-copy__meta div,
+.jh-demo-orbit__item {
+  border-radius: 14px;
+}
+
+.jh-footer {
+  margin-top: 22px;
+  grid-template-columns: 1.15fr 0.95fr 0.85fr;
+}
+
+.jh-translate-card {
+  border-radius: 18px;
+}
+
+@media (max-width: 900px) {
+  .jh-hero,
+  .jh-editorial,
+  .jh-home-story,
+  .jh-seasonal,
+  .jh-seasonal--compact,
+  .jh-showcase-card,
+  .jh-cart-layout,
+  .jh-checkout-page,
+  .jh-shop-layout,
+  .jh-footer,
+  .jh-guidance,
+  .jh-demo-modal,
+  .jh-modal__layout,
+  .jh-story-panel,
+  .jh-story-panel--reverse {
+    grid-template-columns: 1fr;
+  }
+
+  .jh-hero h1 {
+    font-size: 3.4rem;
+  }
+
+  .jh-page h1,
+  .jh-section__head h2,
+  .jh-editorial__copy h2,
+  .jh-showcase-card h2,
+  .jh-guidance h2,
+  .jh-checkout h2 {
+    font-size: 2.55rem;
+  }
+
+  .jh-section__head--split {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 100%;
+  }
+
+  .jh-section__head,
+  .jh-section__copy,
+  .jh-currency-card,
+  .jh-showcase-card,
+  .jh-gallery {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .jh-gallery,
+  .jh-product-grid,
+  .jh-shop-grid,
+  .jh-step-grid,
+  .jh-stat-bar,
+  .jh-form-grid,
+  .jh-currency-card__controls {
+    grid-template-columns: 1fr;
+  }
+
+  .jh-app {
+    padding: 10px;
+  }
+
+  .jh-top-announcement__track {
+    animation: none;
+    transform: none;
+    justify-content: center;
+  }
+
+  .jh-top-announcement__track span:nth-child(n + 2) {
+    display: none;
+  }
+
+  .jh-top-announcement__track span {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+    padding-inline: 14px;
+  }
+
+  .jh-top-announcement__track strong {
+    display: none;
+  }
+
+  .jh-header,
+  .jh-hero__copy,
+  .jh-hero__visual,
+  .jh-seasonal,
+  .jh-product-card,
+  .jh-editorial__copy,
+  .jh-scene-card,
+  .jh-showcase-card,
+  .jh-step-card,
+  .jh-guidance,
+  .jh-shop-card,
+  .jh-checkout,
+  .jh-footer {
+    border-radius: 20px;
+  }
+
+  .jh-hero h1 {
+    font-size: 2.9rem;
+  }
+
+  .jh-page h1,
+  .jh-section__head h2,
+  .jh-editorial__copy h2,
+  .jh-showcase-card h2,
+  .jh-guidance h2,
+  .jh-checkout h2 {
+    font-size: 2.02rem;
+    line-height: 1.08;
+  }
+
+  .jh-page h1,
+  .jh-section__head h1,
+  .jh-section__head h2,
+  .jh-showcase-card h2,
+  .jh-currency-card h2 {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .jh-gallery__item,
+  .jh-gallery__item--hero {
+    min-height: 240px;
+  }
+
+  .jh-product-card__media,
+  .jh-shop-card figure {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 420px) {
+  .jh-hero h1 {
+    font-size: 2.55rem;
+  }
+
+  .jh-page h1,
+  .jh-section__head h2,
+  .jh-editorial__copy h2,
+  .jh-showcase-card h2,
+  .jh-guidance h2,
+  .jh-checkout h2 {
+    font-size: 1.82rem;
+    line-height: 1.08;
+  }
+
+  .jh-section__head p,
+  .jh-section__copy p:last-child,
+  .jh-showcase-card p {
+    font-size: 0.98rem;
+  }
+}

@@ -338,3 +338,107 @@
     line-height: 1;
   }
 }
+
+/* Premium intro refinement: slower, more tactile, less synthetic. */
+.jh-intro {
+  background:
+    linear-gradient(90deg, rgba(50, 37, 27, 0.035) 0 1px, transparent 1px 72px),
+    linear-gradient(0deg, rgba(50, 37, 27, 0.025) 0 1px, transparent 1px 72px),
+    radial-gradient(ellipse at 50% 42%, rgba(255, 250, 239, 0.96), rgba(245, 233, 214, 0.62) 46%, rgba(225, 207, 180, 0.92) 100%),
+    linear-gradient(135deg, #f7ecdc 0%, #fffaf3 48%, #e8d7bf 100%);
+}
+
+.jh-intro::before {
+  opacity: 0.42;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0) 18%, rgba(255, 252, 240, 0.42) 42%, rgba(255, 255, 255, 0) 64%),
+    repeating-linear-gradient(90deg, rgba(69, 50, 34, 0.028) 0 1px, transparent 1px 92px);
+  animation: jhIntroFieldFade 4.65s ease forwards;
+}
+
+.jh-intro::after {
+  background:
+    radial-gradient(ellipse at 50% 52%, transparent 0 46%, rgba(43, 31, 22, 0.08) 100%),
+    linear-gradient(120deg, transparent 16%, rgba(255, 252, 242, 0.44) 48%, transparent 72%);
+  animation: jhIntroLightPass 4.65s cubic-bezier(0.18, 0.86, 0.2, 1) forwards;
+}
+
+.jh-intro__veil {
+  backdrop-filter: blur(10px);
+  animation: jhIntroVeilLift 4.65s cubic-bezier(0.2, 0.86, 0.2, 1) forwards;
+}
+
+.jh-intro__stage {
+  gap: clamp(14px, 1.6vw, 20px);
+  animation: jhIntroStageSettle 4.65s cubic-bezier(0.18, 0.86, 0.2, 1) forwards;
+}
+
+.jh-intro__halo {
+  border-color: rgba(130, 101, 62, 0.18);
+  background:
+    radial-gradient(circle, transparent 0 52%, rgba(150, 116, 70, 0.12) 53% 54%, transparent 55%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.26) 0 28%, transparent 68%);
+  animation: jhIntroHaloSpin 4.65s cubic-bezier(0.18, 0.86, 0.2, 1) forwards;
+}
+
+.jh-intro__box {
+  filter: drop-shadow(0 30px 40px rgba(64, 43, 24, 0.14));
+  animation: jhIntroBoxArrive 4.65s cubic-bezier(0.18, 0.86, 0.2, 1) forwards;
+}
+
+.jh-intro__base,
+.jh-intro__lid {
+  border-color: rgba(91, 63, 34, 0.18);
+}
+
+.jh-intro__base {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.3), transparent 34%),
+    linear-gradient(155deg, #ead9bd 0%, #c7a06b 45%, #8f6338 100%);
+  box-shadow:
+    0 24px 42px rgba(85, 58, 33, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -30px 46px rgba(72, 43, 20, 0.18);
+}
+
+.jh-intro__lid {
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.38), transparent 36%),
+    linear-gradient(145deg, #f1ddb9 0%, #c89c64 52%, #946538 100%);
+}
+
+.jh-intro__label {
+  letter-spacing: 0.18em;
+}
+
+.jh-intro__title {
+  max-width: min(92vw, 760px);
+  font-size: clamp(2.3rem, 4.2vw, 4.7rem);
+  line-height: 0.94;
+}
+
+@keyframes jhIntroStageSettle {
+  0% { opacity: 0; transform: translateY(26px) rotateX(6deg) scale(0.96); }
+  20%, 76% { opacity: 1; transform: translateY(0) rotateX(0deg) scale(1); }
+  100% { opacity: 0; transform: translateY(-14px) rotateX(-2deg) scale(1.018); }
+}
+
+@keyframes jhIntroBoxArrive {
+  0% { opacity: 0; transform: translate3d(0, 34px, -80px) rotateX(12deg) rotateY(-10deg) scale(0.9); }
+  18% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(4deg) rotateY(-3deg) scale(1); }
+  56% { opacity: 1; transform: translate3d(0, -6px, 20px) rotateX(0deg) rotateY(3deg) scale(1.012); }
+  82% { opacity: 1; transform: translate3d(0, -4px, 30px) rotateX(0deg) rotateY(0deg) scale(1.012); }
+  100% { opacity: 0; transform: translate3d(0, -20px, 54px) rotateX(-2deg) scale(1.03); }
+}
+
+@keyframes jhIntroHaloSpin {
+  0% { opacity: 0; transform: rotate(-10deg) scale(0.84); }
+  24% { opacity: 0.7; }
+  76% { opacity: 0.44; transform: rotate(54deg) scale(1); }
+  100% { opacity: 0; transform: rotate(82deg) scale(1.08); }
+}
+
+@keyframes jhIntroVeilLift {
+  0%, 78% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.045); }
+}

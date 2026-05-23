@@ -269,7 +269,7 @@ img {
   padding: 14px 22px;
   cursor: pointer;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   transition:
     transform 220ms ease,
     box-shadow 220ms ease,
@@ -1048,7 +1048,7 @@ img {
   min-height: 42px;
   color: var(--jh-text);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .jh-product-card__arabic,

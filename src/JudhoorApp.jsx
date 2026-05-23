@@ -255,7 +255,7 @@ function QuantityControl({ quantity, onDecrease, onIncrease }) {
 
 function IntroScreen({ onFinish }) {
   useEffect(() => {
-    const timer = window.setTimeout(onFinish, 4300);
+    const timer = window.setTimeout(onFinish, 4700);
     return () => window.clearTimeout(timer);
   }, [onFinish]);
 
