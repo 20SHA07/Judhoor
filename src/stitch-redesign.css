@@ -753,16 +753,44 @@ body {
 }
 
 .jh-scene-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   overflow: hidden;
-  border: 0;
-  border-radius: 28px;
-  background: transparent;
-  box-shadow: none;
+  padding: 18px;
+  border: 1px solid var(--jh-line);
+  border-radius: 32px;
+  background: rgba(255, 249, 239, 0.62);
+  box-shadow: var(--jh-shadow-soft);
 }
 
 .jh-scene-card figure {
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
   aspect-ratio: 16 / 10;
-  border-radius: 28px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 22px;
+}
+
+.jh-scene-card > div {
+  min-width: 0;
+  padding: 0 4px 4px;
+}
+
+.jh-scene-card h3 {
+  margin: 0 0 8px;
+  color: var(--jh-coffee);
+  font-family: var(--jh-font-display);
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+  line-height: 1.08;
+}
+
+.jh-scene-card p {
+  margin: 0;
+  max-width: 42rem;
 }
 
 .jh-scene-card img,
