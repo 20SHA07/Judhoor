@@ -39,8 +39,6 @@ const currencyOptions = [
 const redesignVisuals = {
   homeHero:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuChiYH9pyf0OhkR43JYyguO9S2T9JZ1Z-mjVw7IVyyH3YybJa5W4fKG-9dCuX0DDWIslYt72pyiJ64zKAALpXSaGWy2GtaObsyi0Ekp9GVuknR37eHegxETqpJeI3_5eoAZrmGlEQvx7IwiZ-TIoYswuFsA9v1sgubGZ2RLRgxpuM68fqTgD9oxTD58m_hXme0jemOsHuYTOxsYwFV1ejN9tZcwTG-19Wu8uI9E_kiJs37P6o3uYnJ-D9WuHEVD98lXbxQuQoxQtoU",
-  fathersDay:
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuBZvbJw95oY87V1bc-CZb3hDCozD8fKjuP7tSrqjlbpCQksVIkXuIkEtxCdNVpuTv-RJzy3tltljDyUNdewz0BwB354eQBH6kRYUP_brlSDpJSsD4Zifjr7YuKr53_CtYHSoKKXTH9m9vcjPTPpLmg9bPDAVbVCQAUUdkw5mVt0T3l12WzAf79deSqZd4U-Tcgy0Jr-cXuK184KOXsovrnyjhnO-IfhoOU9TihlcnrzqKbuv-dPQVFL8Thchp0kVVnIRLTGQHv2JPQ",
   packaging:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuDF9gWor4HrZJ1b0nj9oRDR37gtnb648h5EsC_nbySc083XQRhFAuopoQB2qo-Zgr9byr-pw9Kpbg8tNTpesedoahJb169e946-gwDik5eUp2gdDxp27Inh9A3UoUYaRkZ7qX1_4Uyfew1HwZOeHqiwCi7xmVeJzuO9HdrnQlcFj8zZo3jEqahxFNQq11VzYe6JMn7KkRIk1KLiXHs0a6KBbyr2PQ_0ByNgL-v2JDwqC2pFtkixV67LF8pPFXy9DW25a3cd897-VH8",
   objects:
@@ -739,44 +737,6 @@ function BoxDemoModal({ box, currencyCode, onClose, onAddToCart }) {
   );
 }
 
-function SeasonalAnnouncement({ compact = false }) {
-  return (
-    <aside className={`jh-seasonal ${compact ? "jh-seasonal--compact" : ""}`}>
-      <div className="jh-seasonal__glow" />
-      <div className="jh-seasonal__copy">
-        <p className="jh-eyebrow">Coming Soon</p>
-        <h2>The Father&apos;s Day Heritage Box</h2>
-        <p>
-          A future Judhoor release is being shaped with memory-sharing rituals,
-          keepsakes, and a quiet sense of gratitude for father figures.
-        </p>
-      </div>
-      <div className="jh-seasonal__details" aria-label="Father's Day Box announcement details">
-        <span>Concept in progress</span>
-        <strong>Preview opening soon</strong>
-        <small>Join the early interest list for the first look.</small>
-        <div className="jh-seasonal__actions">
-          <a className="jh-button jh-button--solid" href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20early%20interest">
-            Notify Me
-          </a>
-          {!compact ? (
-            <NavLink to="/product-line" className="jh-button jh-button--ghost">
-              View current boxes
-            </NavLink>
-          ) : null}
-        </div>
-      </div>
-      <figure className="jh-seasonal__image" aria-label="Silhouette preview of the upcoming Father's Day heritage box">
-        <div className="jh-box-silhouette" aria-hidden="true">
-          <span className="jh-box-silhouette__lid" />
-          <span className="jh-box-silhouette__body" />
-          <span className="jh-box-silhouette__seal" />
-        </div>
-      </figure>
-    </aside>
-  );
-}
-
 function HomePage({ currencyCode, onAddToCart }) {
   const featuredBoxes = boxCatalog;
 
@@ -815,8 +775,6 @@ function HomePage({ currencyCode, onAddToCart }) {
           </div>
         </div>
       </section>
-
-      <SeasonalAnnouncement />
 
       <section className="jh-home-collection jh-animate jh-animate--up">
         <div className="jh-home-collection__head">
