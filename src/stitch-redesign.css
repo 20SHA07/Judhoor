@@ -1278,7 +1278,7 @@ body {
 }
 
 .jh-experience-page > .jh-section__head {
-  min-height: 680px;
+  min-height: clamp(540px, 58vh, 600px);
   display: flex;
   flex-direction: column;
   justify-content: center;
