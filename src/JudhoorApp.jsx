@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { boxCatalog, journeySteps } from "./judhoorData";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
@@ -147,6 +147,34 @@ function Dropdown({
       ) : null}
     </div>
   );
+}
+
+function RouteScrollReset() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (!("scrollRestoration" in window.history)) {
+      return undefined;
+    }
+
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = previousRestoration;
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    if (typeof window.scrollTo === "function") {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }, [pathname]);
+
+  return null;
 }
 
 function CurrencySelector({ currencyCode, onCurrencyChange, compact = false }) {
@@ -1629,6 +1657,7 @@ export default function JudhoorApp() {
 
   return (
     <>
+      <RouteScrollReset />
       {showIntro ? <IntroScreen onFinish={() => setShowIntro(false)} /> : null}
       <ItemPreviewModal item={selectedItem} onClose={() => setSelectedItem(null)} />
       <BoxDemoModal
