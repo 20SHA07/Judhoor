@@ -2747,94 +2747,12 @@ body {
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 28%, rgba(253, 236, 208, 0.2), transparent 32%),
+    radial-gradient(circle at 50% 50%, rgba(253, 236, 208, 0.13), transparent 34%),
     linear-gradient(135deg, #231007 0%, #3e2416 52%, #6f5236 100%);
 }
 
-.jh-home-feature__media--soon::before {
-  content: "";
-  position: absolute;
-  inset: 9%;
-  z-index: -1;
-  border: 1px solid rgba(253, 236, 208, 0.16);
-  border-radius: 30px;
-  background:
-    linear-gradient(135deg, rgba(253, 236, 208, 0.08), transparent 48%),
-    rgba(255, 250, 242, 0.035);
-  box-shadow: inset 0 1px 0 rgba(255, 250, 242, 0.16);
-}
-
-.jh-home-feature__media--soon::after {
-  content: "";
-  position: absolute;
-  inset: auto 13% 13%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(253, 236, 208, 0.26), transparent);
-}
-
-.jh-home-feature__silhouette {
-  position: relative;
-  width: min(68%, 430px);
-  aspect-ratio: 1.38;
-  filter: drop-shadow(0 34px 38px rgba(17, 8, 4, 0.34));
-}
-
-.jh-home-feature__silhouette::before {
-  content: "";
-  position: absolute;
-  inset: 38% 11% 8%;
-  border-radius: 0 0 28px 28px;
-  background: linear-gradient(145deg, rgba(253, 236, 208, 0.14), rgba(253, 236, 208, 0.04));
-  border: 1px solid rgba(253, 236, 208, 0.2);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 250, 242, 0.18),
-    inset 0 -18px 42px rgba(17, 8, 4, 0.22);
-}
-
-.jh-home-feature__silhouette::after {
-  content: "";
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 18%;
-  height: 31%;
-  border-radius: 24px;
-  background: linear-gradient(145deg, rgba(255, 250, 242, 0.18), rgba(253, 236, 208, 0.06));
-  border: 1px solid rgba(253, 236, 208, 0.24);
-  transform: skewX(-7deg);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 250, 242, 0.18),
-    0 16px 28px rgba(17, 8, 4, 0.22);
-}
-
-.jh-home-feature__silhouette-lid,
-.jh-home-feature__silhouette-base {
-  position: absolute;
-  left: 50%;
-  display: block;
-  border-radius: 999px;
-  background: rgba(253, 236, 208, 0.2);
-  transform: translateX(-50%);
-}
-
-.jh-home-feature__silhouette-lid {
-  top: 50%;
-  width: 66%;
-  height: 2px;
-}
-
-.jh-home-feature__silhouette-base {
-  bottom: 20%;
-  width: 46%;
-  height: 1px;
-  opacity: 0.72;
-}
-
 .jh-home-feature__soon-label {
-  position: absolute;
-  right: clamp(24px, 4vw, 52px);
-  bottom: clamp(24px, 4vw, 48px);
-  padding: 7px 12px;
+  padding: 9px 15px;
   border: 1px solid rgba(253, 236, 208, 0.24);
   border-radius: 999px;
   background: rgba(253, 236, 208, 0.1);

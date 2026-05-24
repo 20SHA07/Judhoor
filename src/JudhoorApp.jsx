@@ -843,10 +843,6 @@ function HomePage({ currencyCode, onAddToCart }) {
           </a>
         </div>
         <figure className="jh-home-feature__media jh-home-feature__media--soon">
-          <div className="jh-home-feature__silhouette" aria-hidden="true">
-            <span className="jh-home-feature__silhouette-lid" />
-            <span className="jh-home-feature__silhouette-base" />
-          </div>
           <figcaption className="jh-home-feature__soon-label">
             Coming Soon
           </figcaption>
