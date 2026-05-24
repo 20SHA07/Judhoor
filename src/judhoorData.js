@@ -149,7 +149,7 @@ export const boxCatalog = [
   },
   {
     slug: "important-box",
-    arabicName: "صندوق أنت مهمة",
+    arabicName: "صندوق أنت مهم",
     name: "You Are Important Box",
     tagline: "Connection & Love",
     theme: "rose",
