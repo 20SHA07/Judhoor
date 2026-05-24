@@ -415,7 +415,13 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
       <div className="jh-bg jh-bg--two" />
-      <header className={`jh-header${isHeaderCondensed ? " jh-header--condensed" : ""}`}>
+      <header
+        className={[
+          "jh-header",
+          isHeaderCondensed ? "jh-header--condensed" : "",
+          cartCount > 0 && !isHeaderCondensed ? "jh-header--has-cart" : "",
+        ].filter(Boolean).join(" ")}
+      >
         <NavLink to="/" className="jh-brand">
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>

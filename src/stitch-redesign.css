@@ -83,14 +83,14 @@ body {
   top: 14px;
   left: 50%;
   z-index: 80;
-  width: min(960px, calc(100vw - 32px));
+  width: min(1040px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
   margin: 0;
   padding: 15px 36px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: clamp(32px, 4.6vw, 70px);
+  justify-content: flex-start;
+  gap: clamp(24px, 3.2vw, 52px);
   border: 1px solid rgba(210, 196, 189, 0.68);
   border-radius: 999px;
   background: rgba(253, 236, 208, 0.78);
@@ -111,6 +111,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 13px;
+  flex: 0 0 auto;
   min-width: auto;
   transition: gap 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
 }
@@ -148,9 +149,12 @@ body {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  gap: clamp(22px, 3vw, 42px);
+  justify-content: flex-end;
+  gap: clamp(16px, 2vw, 32px);
+  flex: 1 1 auto;
+  min-width: 0;
   width: auto;
-  max-width: min(920px, calc(100vw - 280px));
+  max-width: none;
   padding: 0;
   overflow: visible;
   border: 0;
@@ -211,26 +215,53 @@ body {
   font-weight: 800;
 }
 
-@media (min-width: 981px) {
-  .jh-header.jh-header--condensed:not(:hover) {
+@keyframes jhHeaderCondense {
+  from {
+    width: min(1040px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    padding: 15px 36px;
+    gap: clamp(24px, 3.2vw, 52px);
+    transform: translateX(-50%);
+  }
+
+  to {
     width: clamp(210px, 18vw, 250px);
     max-width: clamp(210px, 18vw, 250px);
     padding: 10px 18px;
     gap: 10px;
-    overflow: hidden;
-    background: rgba(247, 238, 228, 0.88);
+    transform: translateX(-50%) translateY(-2px);
+  }
+}
+
+.jh-header.jh-header--has-cart {
+  gap: clamp(18px, 2.3vw, 36px);
+}
+
+.jh-header.jh-header--has-cart .jh-nav {
+  gap: clamp(14px, 1.65vw, 28px);
+}
+
+@media (min-width: 981px) {
+  .jh-header.jh-header--condensed:not(:hover) {
+    width: clamp(210px, 18vw, 250px) !important;
+    max-width: clamp(210px, 18vw, 250px) !important;
+    padding: 10px 18px !important;
+    gap: 10px !important;
+    overflow: hidden !important;
+    background: rgba(247, 238, 228, 0.88) !important;
     box-shadow:
       0 18px 44px rgba(39, 24, 15, 0.16),
       inset 0 1px 0 rgba(255, 255, 255, 0.42);
-    transform: translateX(-50%) translateY(-2px);
-    transition:
-      width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
-      max-width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
-      padding 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
-      gap 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
-      background-color 360ms ease,
-      box-shadow 360ms ease,
-      transform 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
+    transform: translateX(-50%) translateY(-2px) !important;
+    animation: jhHeaderCondense 420ms cubic-bezier(0.2, 0.72, 0.18, 1) both;
+    transition: none !important;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(:hover) {
+    width: clamp(210px, 18vw, 250px) !important;
+    max-width: clamp(210px, 18vw, 250px) !important;
+    padding: 10px 18px !important;
+    gap: 10px !important;
   }
 
   .jh-header.jh-header--condensed::after {
@@ -250,23 +281,21 @@ body {
   }
 
   .jh-header.jh-header--condensed .jh-brand {
-    gap: 9px;
+    gap: 9px !important;
     flex: 0 0 auto;
+    transition: none !important;
   }
 
   .jh-header.jh-header--condensed .jh-brand img {
-    width: 32px;
-    height: 32px;
+    width: 32px !important;
+    height: 32px !important;
     filter: drop-shadow(0 6px 10px rgba(119, 89, 51, 0.14));
-    transition:
-      width 300ms cubic-bezier(0.2, 0.72, 0.18, 1),
-      height 300ms cubic-bezier(0.2, 0.72, 0.18, 1),
-      filter 300ms ease;
+    transition: none !important;
   }
 
   .jh-header.jh-header--condensed .jh-brand strong {
-    font-size: clamp(1.6rem, 2vw, 2rem);
-    transition: font-size 300ms cubic-bezier(0.2, 0.72, 0.18, 1);
+    font-size: clamp(1.6rem, 2vw, 2rem) !important;
+    transition: none !important;
   }
 
   .jh-header.jh-header--condensed:not(:hover) .jh-nav {
@@ -294,10 +323,16 @@ body {
   }
 
   .jh-header.jh-header--condensed:hover {
-    width: min(880px, calc(100vw - 32px));
+    animation: none;
+    width: min(980px, calc(100vw - 32px));
     padding: 12px 28px;
     gap: clamp(20px, 2.4vw, 38px);
     overflow: visible;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--has-cart:hover {
+    width: min(1080px, calc(100vw - 32px));
+    gap: clamp(18px, 2vw, 32px);
   }
 
   .jh-header.jh-header--condensed:hover::after {
@@ -309,7 +344,7 @@ body {
   .jh-header.jh-header--condensed:hover .jh-nav {
     display: flex;
     width: auto;
-    max-width: min(660px, calc(100vw - 230px));
+    max-width: min(760px, calc(100vw - 230px));
     height: auto;
     max-height: 48px;
     flex-direction: row;
@@ -319,6 +354,11 @@ body {
     opacity: 1;
     pointer-events: auto;
     transform: none;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--has-cart:hover .jh-nav {
+    max-width: min(840px, calc(100vw - 230px));
+    gap: clamp(12px, 1.35vw, 22px);
   }
 
   .jh-header.jh-header--condensed:hover .jh-nav > * {
