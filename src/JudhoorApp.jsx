@@ -40,7 +40,6 @@ const redesignVisuals = {
   homeHero:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuChiYH9pyf0OhkR43JYyguO9S2T9JZ1Z-mjVw7IVyyH3YybJa5W4fKG-9dCuX0DDWIslYt72pyiJ64zKAALpXSaGWy2GtaObsyi0Ekp9GVuknR37eHegxETqpJeI3_5eoAZrmGlEQvx7IwiZ-TIoYswuFsA9v1sgubGZ2RLRgxpuM68fqTgD9oxTD58m_hXme0jemOsHuYTOxsYwFV1ejN9tZcwTG-19Wu8uI9E_kiJs37P6o3uYnJ-D9WuHEVD98lXbxQuQoxQtoU",
   homeHeroFallback: assetPath("/mockups/past-box-detail-luxury.png"),
-  fathersDay: assetPath("/mockups/past-box-detail-luxury.png"),
 };
 
 const getCurrency = (currencyCode) =>
@@ -828,27 +827,29 @@ function HomePage({ currencyCode, onAddToCart }) {
 
       <section className="jh-home-feature jh-animate jh-animate--up" aria-labelledby="home-feature-title">
         <div className="jh-home-feature__copy">
-          <p className="jh-home-feature__badge">Limited Release</p>
+          <p className="jh-home-feature__badge">Coming Soon</p>
           <h2 id="home-feature-title">
             The Father&apos;s Day Heritage Box
           </h2>
           <p>
-            A curated collection of sensory experiences and memory-sharing tools
-            tailored for the men who built our foundations.
+            A reserved concept for a future collection of sensory experiences
+            and memory-sharing tools tailored for the men who built our foundations.
           </p>
           <a
             className="jh-home-feature__button"
-            href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20reservation"
+            href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20waitlist"
           >
-            Reserve Now
+            Notify Me
           </a>
         </div>
-        <figure className="jh-home-feature__media">
-          <img
-            src={redesignVisuals.fathersDay}
-            alt="Leather heritage journal on a warm wooden table"
-            decoding="async"
-          />
+        <figure className="jh-home-feature__media jh-home-feature__media--soon">
+          <div className="jh-home-feature__silhouette" aria-hidden="true">
+            <span className="jh-home-feature__silhouette-lid" />
+            <span className="jh-home-feature__silhouette-base" />
+          </div>
+          <figcaption className="jh-home-feature__soon-label">
+            Coming Soon
+          </figcaption>
         </figure>
       </section>
 
