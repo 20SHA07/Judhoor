@@ -790,6 +790,14 @@ function HomePage({ currencyCode, onAddToCart }) {
 
   return (
     <>
+      <section className="jh-home-drop-banner jh-animate jh-animate--up" aria-label="Father's Day Box coming soon">
+        <span>Father&apos;s Day Drop</span>
+        <strong>Father&apos;s Day Box Coming Soon</strong>
+        <a href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20waitlist">
+          Notify Me
+        </a>
+      </section>
+
       <section className="jh-hero">
         <div className="jh-hero__copy jh-animate jh-animate--up">
           <p className="jh-eyebrow">Nurturing Legacy</p>
@@ -823,30 +831,6 @@ function HomePage({ currencyCode, onAddToCart }) {
             />
           </div>
         </div>
-      </section>
-
-      <section className="jh-home-feature jh-animate jh-animate--up" aria-labelledby="home-feature-title">
-        <div className="jh-home-feature__copy">
-          <p className="jh-home-feature__badge">Coming Soon</p>
-          <h2 id="home-feature-title">
-            The Father&apos;s Day Heritage Box
-          </h2>
-          <p>
-            A reserved concept for a future collection of sensory experiences
-            and memory-sharing tools tailored for the men who built our foundations.
-          </p>
-          <a
-            className="jh-home-feature__button"
-            href="mailto:hello@judhoor.com?subject=Father's%20Day%20Box%20waitlist"
-          >
-            Notify Me
-          </a>
-        </div>
-        <figure className="jh-home-feature__media jh-home-feature__media--soon">
-          <figcaption className="jh-home-feature__soon-label">
-            Coming Soon
-          </figcaption>
-        </figure>
       </section>
 
       <section className="jh-home-collection jh-animate jh-animate--up">
