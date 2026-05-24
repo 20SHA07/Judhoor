@@ -223,7 +223,14 @@ body {
       0 18px 44px rgba(39, 24, 15, 0.16),
       inset 0 1px 0 rgba(255, 255, 255, 0.42);
     transform: translateX(-50%) translateY(-2px);
-    transition: none;
+    transition:
+      width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      max-width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      padding 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      gap 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      background-color 360ms ease,
+      box-shadow 360ms ease,
+      transform 360ms cubic-bezier(0.2, 0.72, 0.18, 1);
   }
 
   .jh-header.jh-header--condensed::after {
@@ -251,16 +258,19 @@ body {
     width: 32px;
     height: 32px;
     filter: drop-shadow(0 6px 10px rgba(119, 89, 51, 0.14));
-    transition: none;
+    transition:
+      width 300ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      height 300ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      filter 300ms ease;
   }
 
   .jh-header.jh-header--condensed .jh-brand strong {
     font-size: clamp(1.6rem, 2vw, 2rem);
-    transition: none;
+    transition: font-size 300ms cubic-bezier(0.2, 0.72, 0.18, 1);
   }
 
   .jh-header.jh-header--condensed:not(:hover) .jh-nav {
-    display: none;
+    display: flex;
     width: 0;
     max-width: 0;
     height: 0;
@@ -271,6 +281,12 @@ body {
     opacity: 0;
     pointer-events: none;
     transform: translateX(-8px) scaleX(0.82);
+    transition:
+      width 320ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      max-width 320ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      opacity 180ms ease,
+      transform 320ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      gap 260ms ease;
   }
 
   .jh-header.jh-header--condensed:not(:hover) .jh-nav > * {
