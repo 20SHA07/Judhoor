@@ -759,24 +759,20 @@ function HomePage({ currencyCode, onAddToCart }) {
   const featuredBoxes = boxCatalog.map((box) => {
     const homeDetails = {
       "past-box": {
-        displayPrice: "AED 450",
         label: "Memory Care",
         summary: "A nostalgic journey through scents and sounds designed to spark vivid recollections.",
         image: assetPath("/mockups/past-box-hero-new.png"),
       },
       "balance-box": {
-        displayPrice: "AED 385",
         summary: "Gentle physical activities and mindfulness tools for daily equilibrium.",
         image: assetPath("/mockups/balance-box-detail.png"),
       },
       "important-box": {
         displayName: "You Are Important",
-        displayPrice: "AED 420",
         summary: "A gratitude-focused kit featuring guided reflection and legacy journaling.",
         image: assetPath("/mockups/important-box-hero-new.png"),
       },
       "travel-box": {
-        displayPrice: "AED 510",
         summary: "Bringing the world to the home through scents, textures, and maps from distant lands.",
         image: assetPath("/mockups/travel-box-hero-transparent.png"),
       },
