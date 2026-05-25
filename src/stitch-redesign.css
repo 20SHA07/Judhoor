@@ -1275,7 +1275,7 @@ body {
 
 .jh-experience-page {
   padding-inline: 0;
-  padding-block-start: clamp(18px, 2vw, 23px);
+  padding-block-start: clamp(10px, 1.2vw, 13px);
 }
 
 .jh-experience-page > .jh-section__head {
