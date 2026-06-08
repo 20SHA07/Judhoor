@@ -70,11 +70,39 @@ const presentationMoments = [
   },
 ];
 
-const companionMoments = [
-  "QR voice message",
-  "Family prompt card",
-  "Caregiver note",
-  "Demo checkout",
+const companionFlows = [
+  {
+    key: "voice",
+    label: "QR voice message",
+    title: "Voice note ready",
+    status: "0:42 from Mariam",
+    body: "A warm family recording opens with one tap, with a simple transcript for quiet rooms.",
+    cta: "Play elder voice",
+  },
+  {
+    key: "prompt",
+    label: "Family prompt card",
+    title: "Today’s memory prompt",
+    status: "Reflection card",
+    body: "Ask about a place that still feels like home. Let the answer move slowly.",
+    cta: "Save response",
+  },
+  {
+    key: "caregiver",
+    label: "Caregiver note",
+    title: "Gentle care cues",
+    status: "Before the visit",
+    body: "Keep the box nearby, offer one item at a time, and let silence be comfortable.",
+    cta: "Mark reviewed",
+  },
+  {
+    key: "checkout",
+    label: "Demo checkout",
+    title: "Box reserved",
+    status: "Demo order",
+    body: "The selected box can move straight into cart, customization, and checkout.",
+    cta: "Add to cart",
+  },
 ];
 
 const elderVoiceHints =
@@ -961,6 +989,7 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
   const [isOpen, setIsOpen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const [activeCompanionKey, setActiveCompanionKey] = useState(companionFlows[0].key);
   const { isPlaying, toggle } = useMemoryAtmosphere();
 
   const selectedBox = useMemo(
@@ -969,6 +998,8 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
   );
   const selectedItem = selectedBox.items[selectedItemIndex] ?? selectedBox.items[0];
   const palette = themePalettes[selectedBox.theme] ?? themePalettes.sand;
+  const activeCompanion =
+    companionFlows.find((flow) => flow.key === activeCompanionKey) ?? companionFlows[0];
 
   useEffect(() => {
     setSelectedItemIndex(0);
@@ -977,6 +1008,35 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
   function handleBoxChange(slug) {
     setSelectedSlug(slug);
     setIsOpen(false);
+  }
+
+  function handleCompanionSelect(flowKey) {
+    setActiveCompanionKey(flowKey);
+
+    if (flowKey === "voice" && !isPlaying) {
+      toggle();
+    }
+  }
+
+  function handleCompanionPrimary() {
+    if (activeCompanion.key === "voice") {
+      toggle();
+      return;
+    }
+
+    if (activeCompanion.key === "prompt") {
+      setSelectedItemIndex((current) => (current + 1) % selectedBox.items.length);
+      return;
+    }
+
+    if (activeCompanion.key === "caregiver") {
+      setIsOpen(true);
+      return;
+    }
+
+    if (activeCompanion.key === "checkout") {
+      onAddToCart?.(selectedBox.slug);
+    }
   }
 
   return (
@@ -1110,14 +1170,63 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
           </div>
           <div className="jd-phone-demo" aria-label="Companion app preview">
             <div className="jd-phone-demo__screen">
-              <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
-              <strong>{selectedBox.name}</strong>
+              <div className="jd-phone-demo__brand">
+                <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
+                <span>{selectedBox.name}</span>
+              </div>
+              <strong>{selectedBox.name.replace(" Box", "")}</strong>
               <span>{selectedBox.tagline}</span>
-              {companionMoments.map((moment) => (
-                <button key={moment} type="button">
-                  {moment}
+              <div className={`jd-phone-demo__panel jd-phone-demo__panel--${activeCompanion.key}`}>
+                <small>{activeCompanion.key === "voice" && isPlaying ? "Playing now" : activeCompanion.status}</small>
+                <h3>{activeCompanion.title}</h3>
+                <p>{activeCompanion.body}</p>
+
+                {activeCompanion.key === "voice" ? (
+                  <div className={isPlaying ? "jd-voice-wave is-playing" : "jd-voice-wave"} aria-hidden="true">
+                    {Array.from({ length: 18 }).map((_, index) => (
+                      <span key={index} style={{ "--jd-wave-index": index }} />
+                    ))}
+                  </div>
+                ) : null}
+
+                {activeCompanion.key === "prompt" ? (
+                  <blockquote>
+                    "Which object from this box reminds you of someone you love?"
+                  </blockquote>
+                ) : null}
+
+                {activeCompanion.key === "caregiver" ? (
+                  <ul className="jd-care-list">
+                    <li>One object at a time</li>
+                    <li>Read prompts slowly</li>
+                    <li>Let the elder lead</li>
+                  </ul>
+                ) : null}
+
+                {activeCompanion.key === "checkout" ? (
+                  <div className="jd-checkout-mini">
+                    <span>{getItemCount(selectedBox)} items</span>
+                    <strong>{selectedBox.price} {currencyCode}</strong>
+                  </div>
+                ) : null}
+
+                <button type="button" className="jd-phone-demo__primary" onClick={handleCompanionPrimary}>
+                  {activeCompanion.key === "voice" && isPlaying ? "Pause voice" : activeCompanion.cta}
                 </button>
-              ))}
+              </div>
+              <div className="jd-phone-demo__tabs">
+                {companionFlows.map((flow) => (
+                  <button
+                    key={flow.key}
+                    type="button"
+                    className={flow.key === activeCompanion.key ? "is-active" : ""}
+                    aria-pressed={flow.key === activeCompanion.key}
+                    onClick={() => handleCompanionSelect(flow.key)}
+                  >
+                    {flow.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div className="jd-companion__actions">
