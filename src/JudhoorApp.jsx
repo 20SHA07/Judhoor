@@ -43,22 +43,43 @@ const redesignVisuals = {
   homeHeroFallback: assetPath("/mockups/past-box-detail-luxury.png"),
 };
 
+function createDeckCards(folder, prefix, count, label) {
+  return Array.from({ length: count }, (_, index) => {
+    const cardNumber = index + 1;
+
+    return {
+      image: assetPath(
+        `/decks/${folder}/${prefix}-${String(cardNumber).padStart(2, "0")}.jpg`,
+      ),
+      alt: `${label} ${cardNumber}`,
+      label: `Card ${String(cardNumber).padStart(2, "0")}`,
+    };
+  });
+}
+
 const cardDecks = [
   {
     title: "Wellbeing Card Deck",
     label: "Balance Box Support",
     description:
       "Gentle wellbeing cards for daily comfort rituals, sensory cues, and calm family interaction.",
-    pdf: assetPath("/decks/judhoor-wellbeing-card-deck.pdf"),
+    orientation: "portrait",
     tags: ["Wellbeing", "Daily ritual", "Caregiver friendly"],
+    cards: createDeckCards("wellbeing-cards", "wellbeing-card", 33, "Wellbeing card"),
   },
   {
     title: "Memory Questions Card Deck",
     label: "The Past Box Prompts",
     description:
       "Conversation prompts that help families invite stories, memories, and shared reflection naturally.",
-    pdf: assetPath("/decks/judhoor-memory-questions-card-deck.pdf"),
+    orientation: "landscape",
     tags: ["Memory prompts", "Family stories", "Reflection"],
+    cards: createDeckCards(
+      "memory-question-cards",
+      "memory-card",
+      31,
+      "Memory question card",
+    ),
   },
 ];
 
@@ -1299,7 +1320,7 @@ function ExperiencePage() {
         <div className="jh-section__head jh-section__head--split">
           <div>
             <p className="jh-eyebrow">Card Decks</p>
-            <h2 id="card-decks-heading">Printable prompts that support the box experience.</h2>
+            <h2 id="card-decks-heading">Individual cards that support the box experience.</h2>
           </div>
           <p>
             These decks bring the Judhoor rituals into everyday conversations,
@@ -1309,36 +1330,33 @@ function ExperiencePage() {
         </div>
         <div className="jh-card-deck-grid">
           {cardDecks.map((deck) => (
-            <article key={deck.title} className="jh-card-deck">
-              <div className="jh-card-deck__preview">
-                <object
-                  data={`${deck.pdf}#toolbar=0&navpanes=0&view=FitH`}
-                  type="application/pdf"
-                  title={`${deck.title} preview`}
-                >
-                  <div className="jh-card-deck__fallback">
-                    <span>{deck.label}</span>
-                    <strong>{deck.title}</strong>
-                  </div>
-                </object>
-              </div>
+            <article
+              key={deck.title}
+              className={`jh-card-deck jh-card-deck--${deck.orientation}`}
+            >
               <div className="jh-card-deck__copy">
                 <p className="jh-eyebrow">{deck.label}</p>
                 <h3>{deck.title}</h3>
                 <p>{deck.description}</p>
                 <div className="jh-card-deck__tags" aria-label={`${deck.title} themes`}>
+                  <span>{deck.cards.length} individual cards</span>
                   {deck.tags.map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
-                <div className="jh-card-deck__actions">
-                  <a className="jh-button jh-button--solid" href={deck.pdf} target="_blank" rel="noreferrer">
-                    Open deck
-                  </a>
-                  <a className="jh-button jh-button--ghost" href={deck.pdf} download>
-                    Download PDF
-                  </a>
-                </div>
+              </div>
+              <div className="jh-card-deck__cards" aria-label={`${deck.title} individual cards`}>
+                {deck.cards.map((card, index) => (
+                  <figure key={card.image} className="jh-deck-card">
+                    <img
+                      src={card.image}
+                      alt={card.alt}
+                      loading={index < 2 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
+                    <figcaption>{card.label}</figcaption>
+                  </figure>
+                ))}
               </div>
             </article>
           ))}
