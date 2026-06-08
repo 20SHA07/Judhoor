@@ -97,7 +97,7 @@ export const productBoxes = [
       "Comfort prayer beads",
     ],
     images: [
-      assetPath("/mockups/important-box-updated.jpeg"),
+      assetPath("/mockups/important-box-final-2026.jpeg"),
       assetPath("/mockups/important-box-items.png"),
     ],
   },
@@ -196,7 +196,7 @@ export const conceptGallery = [
     title: "Emotionally rich item ecosystems",
     description:
       "Every box contains premium tactile objects designed to be used, revisited, and cherished.",
-    image: assetPath("/mockups/important-box-updated.jpeg"),
+    image: assetPath("/mockups/important-box-final-2026.jpeg"),
   },
   {
     title: "Travel-led expansion",

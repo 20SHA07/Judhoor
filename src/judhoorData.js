@@ -237,7 +237,7 @@ export const boxCatalog = [
       },
     ],
     images: [
-      assetPath("/mockups/important-box-updated.jpeg"),
+      assetPath("/mockups/important-box-final-2026.jpeg"),
       assetPath("/mockups/important-box-items.png"),
       assetPath("/mockups/important-box-detail.png"),
     ],
@@ -350,7 +350,7 @@ export const conceptMoments = [
     title: "Objects that invite interaction",
     description:
       "Every object is tactile, accessible, and selected to create a gentle moment rather than a forced task.",
-    image: assetPath("/mockups/important-box-updated.jpeg"),
+    image: assetPath("/mockups/important-box-final-2026.jpeg"),
   },
   {
     title: "A wider brand world",
