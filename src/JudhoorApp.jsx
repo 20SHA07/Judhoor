@@ -62,6 +62,36 @@ const cardDecks = [
   },
 ];
 
+const importantCustomizationFields = [
+  {
+    key: "voiceNote",
+    id: "importantVoiceNote",
+    name: "importantVoiceNote",
+    label: "Voice note",
+    detail: "A recorded family message for the QR voice card.",
+    accept: "audio/*",
+    multiple: false,
+  },
+  {
+    key: "letters",
+    id: "importantLetters",
+    name: "importantLetters",
+    label: "Letters",
+    detail: "Personal letters for the envelope bundle.",
+    accept: ".pdf,.doc,.docx,.txt,image/*",
+    multiple: true,
+  },
+  {
+    key: "familyPhotos",
+    id: "importantFamilyPhotos",
+    name: "importantFamilyPhotos",
+    label: "Family photos",
+    detail: "Portraits or memory photos for the frame and keepsakes.",
+    accept: "image/*",
+    multiple: true,
+  },
+];
+
 const getCurrency = (currencyCode) =>
   currencyOptions.find((currency) => currency.code === currencyCode) ?? currencyOptions[0];
 
@@ -77,6 +107,12 @@ function formatPrice(amount, currencyCode = DEFAULT_CURRENCY, options = {}) {
     minimumFractionDigits: options.precise ? 2 : 0,
   }).format(convertedAmount);
 }
+
+const getFormFileNames = (formData, fieldName) =>
+  formData
+    .getAll(fieldName)
+    .filter((file) => file && typeof file === "object" && "name" in file && file.name)
+    .map((file) => file.name);
 
 function Dropdown({
   options,
@@ -826,7 +862,7 @@ function HomePage({ currencyCode, onAddToCart }) {
       "important-box": {
         displayName: "You Are Important",
         summary: "A gratitude-focused kit featuring guided reflection and legacy journaling.",
-        image: assetPath("/mockups/important-box-updated.png"),
+        image: assetPath("/mockups/important-box-updated.jpeg"),
       },
       "travel-box": {
         summary: "Bringing the world to the home through scents, textures, and maps from distant lands.",
@@ -1052,7 +1088,7 @@ function ExperiencePage() {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: assetPath("/mockups/important-box-updated.png"),
+      image: assetPath("/mockups/important-box-updated.jpeg"),
       alt: "You Are Important Box presentation",
     },
     {
@@ -1201,6 +1237,7 @@ function ShopPage({ cart, currencyCode, onAddToCart, onUpdateQuantity }) {
                 <div className="jh-shop-card__badges">
                   <span>{box.tagline}</span>
                   <span>{getItemCount(box)} curated items</span>
+                  {box.slug === "important-box" ? <span>Custom uploads in checkout</span> : null}
                 </div>
                 <div className="jh-shop-card__row">
                   <strong>{formatPrice(box.price, currencyCode)}</strong>
@@ -1357,6 +1394,33 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
   const shipping = cartLines.length > 0 ? 35 : 0;
   const total = subtotal + shipping;
+  const hasImportantBox = cartLines.some((item) => item.slug === "important-box");
+  const [importantUploads, setImportantUploads] = useState({
+    voiceNote: [],
+    letters: [],
+    familyPhotos: [],
+  });
+
+  function handleImportantUploadChange(key, files) {
+    setImportantUploads((current) => ({
+      ...current,
+      [key]: Array.from(files ?? []),
+    }));
+  }
+
+  function getImportantUploadLabel(key) {
+    const files = importantUploads[key] ?? [];
+
+    if (files.length === 0) {
+      return "No file selected";
+    }
+
+    if (files.length === 1) {
+      return files[0].name;
+    }
+
+    return `${files.length} files selected`;
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -1373,6 +1437,14 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
       city: formData.get("city"),
       total,
       itemCount: cartLines.reduce((sum, item) => sum + item.quantity, 0),
+      importantBoxCustomization: hasImportantBox
+        ? {
+            voiceNote: getFormFileNames(formData, "importantVoiceNote"),
+            letters: getFormFileNames(formData, "importantLetters"),
+            familyPhotos: getFormFileNames(formData, "importantFamilyPhotos"),
+            note: formData.get("importantPersonalMessage") || "",
+          }
+        : null,
     };
 
     onSubmitDemoOrder(orderDetails);
@@ -1510,6 +1582,56 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
             </div>
           </section>
 
+          {hasImportantBox ? (
+            <section className="jh-payment-card jh-important-customizer">
+              <div className="jh-payment-card__head">
+                <p className="jh-eyebrow">You Are Important Box</p>
+                <h2>Customize the keepsakes.</h2>
+              </div>
+              <div className="jh-important-customizer__intro">
+                <img
+                  src={assetPath("/mockups/important-box-updated.jpeg")}
+                  alt="You Are Important Box updated presentation"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <p>
+                  Add the family materials that make this box personal before
+                  completing the demo order.
+                </p>
+              </div>
+              <div className="jh-upload-grid">
+                {importantCustomizationFields.map((field) => (
+                  <label key={field.key} className="jh-upload-field" htmlFor={field.id}>
+                    <span className="jh-upload-field__label">{field.label}</span>
+                    <span className="jh-upload-field__detail">{field.detail}</span>
+                    <input
+                      id={field.id}
+                      name={field.name}
+                      type="file"
+                      accept={field.accept}
+                      multiple={field.multiple}
+                      required
+                      onChange={(event) => handleImportantUploadChange(field.key, event.target.files)}
+                    />
+                    <span className="jh-upload-field__selected">
+                      {getImportantUploadLabel(field.key)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <label className="jh-form-grid__full jh-customization-note">
+                Personal message for the box
+                <textarea
+                  name="importantPersonalMessage"
+                  rows="4"
+                  placeholder="Add names, dates, or any message that should guide the customized keepsakes."
+                  maxLength="420"
+                />
+              </label>
+            </section>
+          ) : null}
+
           <section className="jh-payment-card">
             <div className="jh-payment-card__head">
               <p className="jh-eyebrow">Payment</p>
@@ -1633,6 +1755,10 @@ function CheckoutSuccessPage({ lastOrder, currencyCode }) {
     );
   }
 
+  const customization = lastOrder.importantBoxCustomization;
+  const formatCustomizationFiles = (files) =>
+    files?.length ? files.join(", ") : "No file selected";
+
   return (
     <section className="jh-page jh-success-page jh-animate jh-animate--up">
       <div className="jh-success-card">
@@ -1647,6 +1773,15 @@ function CheckoutSuccessPage({ lastOrder, currencyCode }) {
           <span>{lastOrder.itemCount} item{lastOrder.itemCount === 1 ? "" : "s"}</span>
           <span>{formatPrice(lastOrder.total, currencyCode)}</span>
         </div>
+        {customization ? (
+          <div className="jh-success-customization">
+            <strong>You Are Important customization received</strong>
+            <span>Voice note: {formatCustomizationFiles(customization.voiceNote)}</span>
+            <span>Letters: {formatCustomizationFiles(customization.letters)}</span>
+            <span>Family photos: {formatCustomizationFiles(customization.familyPhotos)}</span>
+            {customization.note ? <p>{customization.note}</p> : null}
+          </div>
+        ) : null}
         <div className="jh-success-card__actions">
           <NavLink to="/shop" className="jh-button jh-button--ghost">
             Continue shopping
