@@ -170,6 +170,27 @@ function createSceneModel(box, textureLoader) {
     return texture;
   }
 
+  function addPart(parent, geometry, material, position, rotation = [0, 0, 0], edgeOpacity = 0.34) {
+    const mesh = track(new THREE.Mesh(geometry, material));
+    mesh.position.set(...position);
+    mesh.rotation.set(...rotation);
+    parent.add(mesh);
+
+    const edge = track(new THREE.LineSegments(
+      new THREE.EdgesGeometry(geometry),
+      createMaterial(THREE.LineBasicMaterial, {
+        color: palette.metal,
+        transparent: true,
+        opacity: edgeOpacity,
+      }),
+    ));
+    edge.position.copy(mesh.position);
+    edge.rotation.copy(mesh.rotation);
+    parent.add(edge);
+
+    return mesh;
+  }
+
   const frameMaterial = createMaterial(THREE.MeshStandardMaterial, {
     color: palette.deep,
     roughness: 0.72,
@@ -183,10 +204,169 @@ function createSceneModel(box, textureLoader) {
     opacity: 0.12,
     depthWrite: false,
   });
+  const outerMaterial = createMaterial(THREE.MeshStandardMaterial, {
+    color: palette.base,
+    roughness: 0.66,
+    metalness: 0.04,
+  });
+  const sideMaterial = createMaterial(THREE.MeshStandardMaterial, {
+    color: palette.deep,
+    roughness: 0.78,
+    metalness: 0.05,
+  });
+  const interiorMaterial = createMaterial(THREE.MeshStandardMaterial, {
+    color: palette.inside,
+    roughness: 0.74,
+    metalness: 0.02,
+  });
+  const trimMaterial = createMaterial(THREE.MeshStandardMaterial, {
+    color: palette.metal,
+    roughness: 0.38,
+    metalness: 0.32,
+  });
+
+  const trayWidth = 5.7;
+  const trayDepth = 3.82;
+  const trayFloorHeight = 0.22;
+  const wallHeight = 0.78;
+  const wallThickness = 0.16;
+  const lidWidth = trayWidth + 0.46;
+  const lidDepth = trayDepth + 0.48;
+  const lidThickness = 0.22;
+
+  const boxGroup = new THREE.Group();
+  boxGroup.position.set(0, 0.08, 0);
+  group.add(boxGroup);
+
+  addPart(
+    boxGroup,
+    new THREE.BoxGeometry(trayWidth, trayFloorHeight, trayDepth),
+    interiorMaterial,
+    [0, trayFloorHeight / 2, 0],
+    [0, 0, 0],
+    0.2,
+  );
+  addPart(
+    boxGroup,
+    new THREE.BoxGeometry(trayWidth + wallThickness * 2, wallHeight, wallThickness),
+    sideMaterial,
+    [0, trayFloorHeight + wallHeight / 2, -trayDepth / 2],
+  );
+  addPart(
+    boxGroup,
+    new THREE.BoxGeometry(wallThickness, wallHeight, trayDepth),
+    sideMaterial,
+    [-trayWidth / 2, trayFloorHeight + wallHeight / 2, 0],
+  );
+  addPart(
+    boxGroup,
+    new THREE.BoxGeometry(wallThickness, wallHeight, trayDepth),
+    sideMaterial,
+    [trayWidth / 2, trayFloorHeight + wallHeight / 2, 0],
+  );
+
+  const frontPivot = new THREE.Group();
+  frontPivot.position.set(0, trayFloorHeight, trayDepth / 2 + wallThickness / 2);
+  boxGroup.add(frontPivot);
+  addPart(
+    frontPivot,
+    new THREE.BoxGeometry(trayWidth + wallThickness * 2, wallHeight, wallThickness),
+    sideMaterial,
+    [0, wallHeight / 2, 0],
+  );
+
+  const lidPivot = new THREE.Group();
+  lidPivot.position.set(0, trayFloorHeight + wallHeight + 0.04, -lidDepth / 2);
+  boxGroup.add(lidPivot);
+  addPart(
+    lidPivot,
+    new THREE.BoxGeometry(lidWidth, lidThickness, lidDepth),
+    outerMaterial,
+    [0, lidThickness / 2, lidDepth / 2],
+    [0, 0, 0],
+    0.46,
+  );
+  addPart(
+    lidPivot,
+    new THREE.BoxGeometry(lidWidth, 0.38, wallThickness),
+    sideMaterial,
+    [0, -0.16, lidDepth - wallThickness / 2],
+    [0, 0, 0],
+    0.34,
+  );
+  addPart(
+    lidPivot,
+    new THREE.BoxGeometry(wallThickness, 0.38, lidDepth),
+    sideMaterial,
+    [-lidWidth / 2 + wallThickness / 2, -0.16, lidDepth / 2],
+    [0, 0, 0],
+    0.28,
+  );
+  addPart(
+    lidPivot,
+    new THREE.BoxGeometry(wallThickness, 0.38, lidDepth),
+    sideMaterial,
+    [lidWidth / 2 - wallThickness / 2, -0.16, lidDepth / 2],
+    [0, 0, 0],
+    0.28,
+  );
+
+  const lidPhotoMaterial = createMaterial(THREE.MeshBasicMaterial, {
+    transparent: true,
+    opacity: 0.92,
+    side: THREE.DoubleSide,
+    toneMapped: false,
+  });
+  const lidPhoto = track(new THREE.Mesh(
+    new THREE.PlaneGeometry(lidWidth * 0.82, lidDepth * 0.78),
+    lidPhotoMaterial,
+  ));
+  lidPhoto.position.set(0, lidThickness + 0.014, lidDepth / 2);
+  lidPhoto.rotation.x = -Math.PI / 2;
+  lidPivot.add(lidPhoto);
+  lidPhotoMaterial.map = loadSceneTexture(box.images[0]);
+
+  const trimHeight = 0.08;
+  [-0.9, 0.9].forEach((x) => {
+    addPart(
+      boxGroup,
+      new THREE.BoxGeometry(0.08, wallHeight * 0.72, trayDepth - 0.46),
+      trimMaterial,
+      [x, trayFloorHeight + wallHeight * 0.36, 0],
+      [0, 0, 0],
+      0.2,
+    );
+  });
+  [-0.54, 0.58].forEach((z) => {
+    addPart(
+      boxGroup,
+      new THREE.BoxGeometry(trayWidth - 0.44, wallHeight * 0.68, 0.08),
+      trimMaterial,
+      [0, trayFloorHeight + wallHeight * 0.34, z],
+      [0, 0, 0],
+      0.2,
+    );
+  });
+  addPart(
+    boxGroup,
+    new THREE.BoxGeometry(trayWidth + 0.22, trimHeight, 0.12),
+    trimMaterial,
+    [0, trayFloorHeight + wallHeight + trimHeight / 2, trayDepth / 2 + 0.02],
+    [0, 0, 0],
+    0.24,
+  );
+  addPart(
+    boxGroup,
+    new THREE.BoxGeometry(trayWidth + 0.22, trimHeight, 0.12),
+    trimMaterial,
+    [0, trayFloorHeight + wallHeight + trimHeight / 2, -trayDepth / 2 - 0.02],
+    [0, 0, 0],
+    0.24,
+  );
 
   const productGroup = new THREE.Group();
-  productGroup.position.set(0, 1.55, 0.18);
-  productGroup.scale.setScalar(0.96);
+  productGroup.position.set(0, 1.28, -0.88);
+  productGroup.scale.setScalar(0.8);
   group.add(productGroup);
 
   const imageDepth = track(new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.8, 0.18), frameMaterial));
@@ -195,6 +375,7 @@ function createSceneModel(box, textureLoader) {
 
   const primaryMaterial = createMaterial(THREE.MeshBasicMaterial, {
     transparent: true,
+    opacity: 0.16,
     side: THREE.DoubleSide,
     depthWrite: false,
     toneMapped: false,
@@ -233,12 +414,8 @@ function createSceneModel(box, textureLoader) {
   productGlow.position.set(0, -2.08, -0.6);
   productGroup.add(productGlow);
 
-  const frontPivot = new THREE.Group();
-  const lidPivot = new THREE.Group();
-  group.add(frontPivot, lidPivot);
-
   const itemGroup = new THREE.Group();
-  itemGroup.position.set(0, 0.82, 0.72);
+  itemGroup.position.set(0, 0.44, 0.08);
   const itemMeshes = box.items.slice(0, 7).map((item, index) => {
     const layout = itemLayouts[index] ?? itemLayouts[itemLayouts.length - 1];
     const texture = loadSceneTexture(item.sprite);
@@ -324,6 +501,7 @@ function createSceneModel(box, textureLoader) {
     primaryImage,
     secondaryImage,
     imageDepth,
+    lidPhoto,
     frontPivot,
     lidPivot,
     itemMeshes,
@@ -382,6 +560,8 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
     renderer.domElement.className = "jd-three-canvas";
     host.appendChild(renderer.domElement);
 
@@ -392,6 +572,12 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
     keyLight.position.set(-4, 7, 5);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.camera.left = -8;
+    keyLight.shadow.camera.right = 8;
+    keyLight.shadow.camera.top = 8;
+    keyLight.shadow.camera.bottom = -8;
+    keyLight.shadow.camera.near = 1;
+    keyLight.shadow.camera.far = 20;
     scene.add(keyLight);
 
     const fillLight = new THREE.PointLight("#d8af6a", 1.8, 18);
@@ -457,22 +643,24 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
     function animate() {
       const elapsed = performance.now() * 0.001;
       const state = stateRef.current;
-      const openTarget = state.isOpen ? -Math.PI * 0.72 : 0;
-      const frontTarget = state.isOpen ? Math.PI * 0.43 : 0;
+      const openTarget = state.isOpen ? -Math.PI * 0.68 : 0;
+      const frontTarget = state.isOpen ? Math.PI * 0.52 : 0;
 
       model.lidPivot.rotation.x += (openTarget - model.lidPivot.rotation.x) * 0.085;
       model.frontPivot.rotation.x += (frontTarget - model.frontPivot.rotation.x) * 0.075;
 
-      const productScaleTarget = state.isOpen ? 1.04 : 1;
+      const productScaleTarget = state.isOpen ? 0.9 : 0.72;
       model.productGroup.scale.x += (productScaleTarget - model.productGroup.scale.x) * 0.075;
       model.productGroup.scale.y += (productScaleTarget - model.productGroup.scale.y) * 0.075;
       model.productGroup.scale.z += (productScaleTarget - model.productGroup.scale.z) * 0.075;
-      model.productGroup.position.y += ((state.isOpen ? 1.72 : 1.55) - model.productGroup.position.y) * 0.075;
-      model.primaryImage.material.opacity += ((state.isOpen ? 0.9 : 1) - model.primaryImage.material.opacity) * 0.08;
-      model.secondaryImage.material.opacity += ((state.isOpen ? 0.72 : 0) - model.secondaryImage.material.opacity) * 0.08;
-      model.secondaryImage.position.y += ((state.isOpen ? -1.34 : -0.52) - model.secondaryImage.position.y) * 0.08;
-      model.secondaryImage.position.z += ((state.isOpen ? 0.42 : 0.1) - model.secondaryImage.position.z) * 0.08;
-      model.imageDepth.material.opacity += ((state.isOpen ? 0.06 : 0.1) - model.imageDepth.material.opacity) * 0.08;
+      model.productGroup.position.y += ((state.isOpen ? 2.05 : 1.18) - model.productGroup.position.y) * 0.075;
+      model.productGroup.position.z += ((state.isOpen ? -1.18 : -0.88) - model.productGroup.position.z) * 0.075;
+      model.primaryImage.material.opacity += ((state.isOpen ? 0.86 : 0.14) - model.primaryImage.material.opacity) * 0.08;
+      model.secondaryImage.material.opacity += ((state.isOpen ? 0.54 : 0) - model.secondaryImage.material.opacity) * 0.08;
+      model.secondaryImage.position.y += ((state.isOpen ? -1.22 : -0.52) - model.secondaryImage.position.y) * 0.08;
+      model.secondaryImage.position.z += ((state.isOpen ? 0.36 : 0.1) - model.secondaryImage.position.z) * 0.08;
+      model.imageDepth.material.opacity += ((state.isOpen ? 0.08 : 0.02) - model.imageDepth.material.opacity) * 0.08;
+      model.lidPhoto.material.opacity += ((state.isOpen ? 0.62 : 0.94) - model.lidPhoto.material.opacity) * 0.08;
 
       model.itemMeshes.forEach((mesh, index) => {
         const targetOpacity = state.isOpen ? 1 : 0;

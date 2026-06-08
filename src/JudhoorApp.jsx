@@ -781,14 +781,20 @@ function BoxDemoModal({ box, currencyCode, onClose, onAddToCart }) {
               <span className="jh-demo-stage__glow" />
               <div className={`jh-demo-orbit jh-demo-orbit--${box.theme}`}>
                 <span className="jh-demo-orbit__ring" />
-                <img
-                  className="jh-demo-orbit__box"
-                  src={heroImage}
-                  alt={`${box.name} product mockup`}
-                  draggable="false"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div className={`jh-demo-orbit__box-3d jh-demo-orbit__box-3d--${box.theme}`}>
+                  <span className="jh-demo-orbit__box-face jh-demo-orbit__box-face--back" aria-hidden="true" />
+                  <img
+                    className="jh-demo-orbit__box"
+                    src={heroImage}
+                    alt={`${box.name} product mockup`}
+                    draggable="false"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="jh-demo-orbit__box-side jh-demo-orbit__box-side--right" aria-hidden="true" />
+                  <span className="jh-demo-orbit__box-side jh-demo-orbit__box-side--bottom" aria-hidden="true" />
+                  <span className="jh-demo-orbit__box-lid" aria-hidden="true" />
+                </div>
                 <div className="jh-demo-orbit__items" aria-hidden={!isOpen}>
                   {demoItems.map((item, index) => (
                     <figure
