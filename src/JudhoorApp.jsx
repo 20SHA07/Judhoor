@@ -113,6 +113,27 @@ const importantCustomizationFields = [
   },
 ];
 
+const importantRequiredUploadKeys = ["voiceNote", "letters", "familyPhotos"];
+const importantRequiredPersonalizationKeys = ["recipientName", "familyName", "boxTitle"];
+
+const importantCustomizationSteps = [
+  {
+    key: "personalization",
+    label: "Personalize",
+    detail: "Names, labels, and keepsake copy",
+  },
+  {
+    key: "uploads",
+    label: "Upload",
+    detail: "Voice note, letters, and family photos",
+  },
+  {
+    key: "preview",
+    label: "Preview",
+    detail: "Review the box before checkout",
+  },
+];
+
 const importantPersonalizationDefaults = {
   recipientName: "Noura",
   familyName: "Al Mansoori Family",
@@ -217,9 +238,11 @@ function formatPrice(amount, currencyCode = DEFAULT_CURRENCY, options = {}) {
   }).format(convertedAmount);
 }
 
-const getFormFileNames = (formData, fieldName) =>
-  formData
-    .getAll(fieldName)
+const createEmptyImportantUploads = () =>
+  Object.fromEntries(importantCustomizationFields.map((field) => [field.key, []]));
+
+const getSelectedFileNames = (files) =>
+  Array.from(files ?? [])
     .filter((file) => file && typeof file === "object" && "name" in file && file.name)
     .map((file) => file.name);
 
@@ -517,6 +540,20 @@ function ImportantBoxCustomizationPreview({ values, photoPreviewUrl, uploadLabel
             <small>{values.dedication || importantPersonalizationDefaults.dedication}</small>
           </div>
         </div>
+      </div>
+      <div className="jh-important-preview__uploads" aria-label="Selected customization files">
+        <span>
+          <strong>Voice</strong>
+          {uploadLabels.voiceNote}
+        </span>
+        <span>
+          <strong>Letters</strong>
+          {uploadLabels.letters}
+        </span>
+        <span>
+          <strong>Photos</strong>
+          {uploadLabels.familyPhotos}
+        </span>
       </div>
       <p>{values.familyName || importantPersonalizationDefaults.familyName}</p>
     </aside>
@@ -1506,6 +1543,7 @@ function ShopPage({ cart, currencyCode, onAddToCart, onUpdateQuantity }) {
 function CartPage({ cart, currencyCode, onUpdateQuantity }) {
   const cartLines = getCartLines(cart);
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
+  const hasImportantBox = cartLines.some((item) => item.slug === "important-box");
 
   return (
     <section className="jh-page jh-cart-page jh-animate jh-animate--up">
@@ -1538,7 +1576,13 @@ function CartPage({ cart, currencyCode, onUpdateQuantity }) {
                   <div className="jh-cart-item__meta">
                     <span>{item.tagline}</span>
                     <span>{getItemCount(item)} curated items</span>
+                    {item.slug === "important-box" ? <span>Customization required</span> : null}
                   </div>
+                  {item.slug === "important-box" ? (
+                    <NavLink to="/checkout" className="jh-cart-customize-link">
+                      Customize in checkout
+                    </NavLink>
+                  ) : null}
                 </div>
                 <div className="jh-cart-item__controls">
                   <strong>{formatPrice(item.price, currencyCode)}</strong>
@@ -1573,6 +1617,12 @@ function CartPage({ cart, currencyCode, onUpdateQuantity }) {
                 total={subtotal}
                 currencyCode={currencyCode}
               />
+              {hasImportantBox ? (
+                <p className="jh-checkout__order-note jh-checkout__order-note--custom">
+                  Your You Are Important Box will ask for a voice note, letters, and
+                  family photos before the demo order is placed.
+                </p>
+              ) : null}
               <div className="jh-checkout__actions">
                 <NavLink to="/shop" className="jh-button jh-button--ghost jh-button--full">
                   Keep shopping
@@ -1596,17 +1646,28 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
   const shipping = cartLines.length > 0 ? 35 : 0;
   const total = subtotal + shipping;
   const hasImportantBox = cartLines.some((item) => item.slug === "important-box");
-  const [importantUploads, setImportantUploads] = useState({
-    voiceNote: [],
-    letters: [],
-    familyPhotos: [],
-  });
+  const importantCustomizerRef = useRef(null);
+  const [importantUploads, setImportantUploads] = useState(createEmptyImportantUploads);
+  const [importantUploadInputVersions, setImportantUploadInputVersions] = useState(() =>
+    Object.fromEntries(importantCustomizationFields.map((field) => [field.key, 0])),
+  );
   const [importantPersonalization, setImportantPersonalization] = useState(
     importantPersonalizationDefaults,
   );
+  const [importantPersonalMessage, setImportantPersonalMessage] = useState("");
+  const [importantCustomizationError, setImportantCustomizationError] = useState("");
   const [importantPhotoPreviewUrl, setImportantPhotoPreviewUrl] = useState("");
   const selectedFamilyPhoto =
     importantUploads.familyPhotos.find((file) => file.type?.startsWith("image/")) ?? null;
+  const completedImportantUploadCount = importantRequiredUploadKeys.filter(
+    (key) => (importantUploads[key] ?? []).length > 0,
+  ).length;
+  const isImportantUploadReady = completedImportantUploadCount === importantRequiredUploadKeys.length;
+  const isImportantPersonalizationReady = importantRequiredPersonalizationKeys.every((key) =>
+    importantPersonalization[key]?.trim(),
+  );
+  const isImportantCustomizationReady =
+    isImportantPersonalizationReady && isImportantUploadReady;
 
   useEffect(() => {
     if (!selectedFamilyPhoto || typeof URL === "undefined") {
@@ -1623,10 +1684,51 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
   }, [selectedFamilyPhoto]);
 
   function handleImportantUploadChange(key, files) {
+    const nextFiles = Array.from(files ?? []);
+
     setImportantUploads((current) => ({
       ...current,
-      [key]: Array.from(files ?? []),
+      [key]: nextFiles,
     }));
+
+    if (nextFiles.length > 0) {
+      setImportantCustomizationError("");
+    }
+  }
+
+  function resetImportantUploadInput(key) {
+    setImportantUploadInputVersions((current) => ({
+      ...current,
+      [key]: (current[key] ?? 0) + 1,
+    }));
+  }
+
+  function handleRemoveImportantUpload(key, fileIndex) {
+    setImportantUploads((current) => ({
+      ...current,
+      [key]: (current[key] ?? []).filter((_, index) => index !== fileIndex),
+    }));
+    resetImportantUploadInput(key);
+  }
+
+  function handleClearImportantUpload(key) {
+    setImportantUploads((current) => ({
+      ...current,
+      [key]: [],
+    }));
+    resetImportantUploadInput(key);
+  }
+
+  function handleResetImportantCustomization() {
+    setImportantUploads(createEmptyImportantUploads());
+    setImportantPersonalization(importantPersonalizationDefaults);
+    setImportantPersonalMessage("");
+    setImportantCustomizationError("");
+    setImportantUploadInputVersions((current) =>
+      Object.fromEntries(
+        importantCustomizationFields.map((field) => [field.key, (current[field.key] ?? 0) + 1]),
+      ),
+    );
   }
 
   function handleImportantPersonalizationChange(key, value) {
@@ -1634,6 +1736,10 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
       ...current,
       [key]: value,
     }));
+
+    if (importantRequiredPersonalizationKeys.includes(key) && value.trim()) {
+      setImportantCustomizationError("");
+    }
   }
 
   function getImportantUploadLabel(key) {
@@ -1658,6 +1764,32 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
       return;
     }
 
+    if (hasImportantBox && !isImportantCustomizationReady) {
+      const missingTextFields = importantPersonalizationFields
+        .filter(
+          (field) =>
+            importantRequiredPersonalizationKeys.includes(field.key) &&
+            !importantPersonalization[field.key]?.trim(),
+        )
+        .map((field) => field.label.toLowerCase());
+      const missingUploads = importantCustomizationFields
+        .filter(
+          (field) =>
+            importantRequiredUploadKeys.includes(field.key) &&
+            (importantUploads[field.key] ?? []).length === 0,
+        )
+        .map((field) => field.label.toLowerCase());
+      const requirements = [...missingTextFields, ...missingUploads].join(", ");
+
+      setImportantCustomizationError(
+        requirements
+          ? `Please complete the You Are Important customization: ${requirements}.`
+          : "Please complete the You Are Important customization before placing the demo order.",
+      );
+      importantCustomizerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     const orderDetails = {
       customerName: formData.get("customerName"),
@@ -1667,9 +1799,9 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
       itemCount: cartLines.reduce((sum, item) => sum + item.quantity, 0),
       importantBoxCustomization: hasImportantBox
         ? {
-            voiceNote: getFormFileNames(formData, "importantVoiceNote"),
-            letters: getFormFileNames(formData, "importantLetters"),
-            familyPhotos: getFormFileNames(formData, "importantFamilyPhotos"),
+            voiceNote: getSelectedFileNames(importantUploads.voiceNote),
+            letters: getSelectedFileNames(importantUploads.letters),
+            familyPhotos: getSelectedFileNames(importantUploads.familyPhotos),
             personalization: importantPersonalizationFields.reduce(
               (details, field) => ({
                 ...details,
@@ -1680,7 +1812,7 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
               }),
               {},
             ),
-            note: formData.get("importantPersonalMessage") || "",
+            note: importantPersonalMessage,
           }
         : null,
     };
@@ -1821,7 +1953,10 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
           </section>
 
           {hasImportantBox ? (
-            <section className="jh-payment-card jh-important-customizer">
+            <section
+              className="jh-payment-card jh-important-customizer"
+              ref={importantCustomizerRef}
+            >
               <div className="jh-payment-card__head">
                 <p className="jh-eyebrow">You Are Important Box</p>
                 <h2>Customize the keepsakes.</h2>
@@ -1838,6 +1973,60 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
                   completing the demo order.
                 </p>
               </div>
+              <div className="jh-customization-steps" aria-label="Customization progress">
+                {importantCustomizationSteps.map((step, index) => {
+                  const isComplete =
+                    step.key === "personalization"
+                      ? isImportantPersonalizationReady
+                      : step.key === "uploads"
+                        ? isImportantUploadReady
+                        : isImportantCustomizationReady;
+
+                  return (
+                    <div
+                      key={step.key}
+                      className={`jh-customization-step ${isComplete ? "is-complete" : ""}`}
+                    >
+                      <span>{index + 1}</span>
+                      <div>
+                        <strong>{step.label}</strong>
+                        <small>{step.detail}</small>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div
+                className={`jh-customization-status ${
+                  isImportantCustomizationReady ? "is-ready" : ""
+                }`}
+                aria-live="polite"
+              >
+                <div>
+                  <strong>
+                    {isImportantCustomizationReady
+                      ? "Customization ready"
+                      : `${completedImportantUploadCount}/${importantRequiredUploadKeys.length} required uploads added`}
+                  </strong>
+                  <span>
+                    {isImportantCustomizationReady
+                      ? "The preview is ready for the demo order."
+                      : "Add a voice note, letters, and family photos to complete this box."}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="jh-customization-reset"
+                  onClick={handleResetImportantCustomization}
+                >
+                  Reset
+                </button>
+              </div>
+              {importantCustomizationError ? (
+                <p className="jh-customization-error" role="alert">
+                  {importantCustomizationError}
+                </p>
+              ) : null}
               <div className="jh-customization-workspace">
                 <div className="jh-customization-editor">
                   <div className="jh-form-grid jh-personalization-grid">
@@ -1875,26 +2064,78 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
                     ))}
                   </div>
                   <div className="jh-upload-grid">
-                    {importantCustomizationFields.map((field) => (
-                      <label key={field.key} className="jh-upload-field" htmlFor={field.id}>
-                        <span className="jh-upload-field__label">{field.label}</span>
-                        <span className="jh-upload-field__detail">{field.detail}</span>
-                        <input
-                          id={field.id}
-                          name={field.name}
-                          type="file"
-                          accept={field.accept}
-                          multiple={field.multiple}
-                          required
-                          onChange={(event) =>
-                            handleImportantUploadChange(field.key, event.target.files)
-                          }
-                        />
-                        <span className="jh-upload-field__selected">
-                          {getImportantUploadLabel(field.key)}
-                        </span>
-                      </label>
-                    ))}
+                    {importantCustomizationFields.map((field) => {
+                      const files = importantUploads[field.key] ?? [];
+                      const isComplete = files.length > 0;
+
+                      return (
+                        <div
+                          key={field.key}
+                          className={`jh-upload-field ${isComplete ? "is-complete" : ""}`}
+                        >
+                          <div className="jh-upload-field__top">
+                            <div>
+                              <label className="jh-upload-field__label" htmlFor={field.id}>
+                                {field.label}
+                              </label>
+                              <span className="jh-upload-field__detail">{field.detail}</span>
+                            </div>
+                            <strong className="jh-upload-field__state">
+                              {isComplete ? "Ready" : "Required"}
+                            </strong>
+                          </div>
+                          <input
+                            key={`${field.key}-${importantUploadInputVersions[field.key]}`}
+                            id={field.id}
+                            name={field.name}
+                            type="file"
+                            accept={field.accept}
+                            multiple={field.multiple}
+                            aria-describedby={`${field.id}Status`}
+                            aria-invalid={
+                              importantCustomizationError && !isComplete ? "true" : undefined
+                            }
+                            onChange={(event) =>
+                              handleImportantUploadChange(field.key, event.target.files)
+                            }
+                          />
+                          <span
+                            className="jh-upload-field__selected"
+                            id={`${field.id}Status`}
+                          >
+                            {getImportantUploadLabel(field.key)}
+                          </span>
+                          {files.length > 0 ? (
+                            <ul className="jh-upload-field__files">
+                              {files.map((file, index) => (
+                                <li key={`${file.name}-${file.lastModified}-${index}`}>
+                                  <span>{file.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleRemoveImportantUpload(field.key, index)
+                                    }
+                                  >
+                                    Remove
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <span className="jh-upload-field__empty">Waiting for upload</span>
+                          )}
+                          {files.length > 1 ? (
+                            <button
+                              type="button"
+                              className="jh-upload-field__clear"
+                              onClick={() => handleClearImportantUpload(field.key)}
+                            >
+                              Clear all
+                            </button>
+                          ) : null}
+                        </div>
+                      );
+                    })}
                   </div>
                   <label className="jh-form-grid__full jh-customization-note">
                     Personal message for the box
@@ -1903,6 +2144,8 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
                       rows="4"
                       placeholder="Add names, dates, or any message that should guide the customized keepsakes."
                       maxLength="420"
+                      value={importantPersonalMessage}
+                      onChange={(event) => setImportantPersonalMessage(event.target.value)}
                     />
                   </label>
                 </div>
@@ -2005,6 +2248,13 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
                   <div className="jh-checkout__item-copy">
                     <strong>{item.name}</strong>
                     <span>{item.quantity} x {formatPrice(item.price, currencyCode)}</span>
+                    {item.slug === "important-box" ? (
+                      <span className="jh-checkout__custom-line">
+                        {isImportantCustomizationReady
+                          ? "Customization ready"
+                          : "Customization required"}
+                      </span>
+                    ) : null}
                   </div>
                   <div className="jh-checkout__item-side">
                     <strong>{formatPrice(item.total, currencyCode)}</strong>
@@ -2029,6 +2279,17 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
             <p className="jh-checkout__order-note">
               You can adjust quantities or remove boxes before placing the demo order.
             </p>
+            {hasImportantBox ? (
+              <p
+                className={`jh-checkout__order-note jh-checkout__order-note--custom ${
+                  isImportantCustomizationReady ? "is-ready" : ""
+                }`}
+              >
+                {isImportantCustomizationReady
+                  ? "Your You Are Important Box customization is ready for the demo order."
+                  : "Complete the You Are Important Box customization before placing the demo order."}
+              </p>
+            ) : null}
             <CartSummary
               subtotal={subtotal}
               shipping={shipping}
