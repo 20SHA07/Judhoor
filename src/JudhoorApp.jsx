@@ -807,7 +807,7 @@ function HomePage({ currencyCode, onAddToCart }) {
       "important-box": {
         displayName: "You Are Important",
         summary: "A gratitude-focused kit featuring guided reflection and legacy journaling.",
-        image: assetPath("/mockups/important-box-hero-new.png"),
+        image: assetPath("/mockups/important-box-updated.png"),
       },
       "travel-box": {
         summary: "Bringing the world to the home through scents, textures, and maps from distant lands.",
@@ -1033,7 +1033,7 @@ function ExperiencePage() {
       title: "Objects are chosen to invite memory, touch, and conversation.",
       text:
         "Instead of abstract exercises, each item is rooted in familiarity: music, scent, handwriting, keepsakes, prayer, tea, letters, and textures that encourage emotional comfort.",
-      image: assetPath("/mockups/important-box-hero-new.png"),
+      image: assetPath("/mockups/important-box-updated.png"),
       alt: "You Are Important Box presentation",
     },
     {
