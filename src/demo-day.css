@@ -643,3 +643,88 @@
     justify-content: center;
   }
 }
+
+/* Demo page density pass to match the slightly zoomed-out site rhythm. */
+@media (min-width: 701px) {
+  .jd-page {
+    gap: clamp(16px, 1.7vw, 24px);
+  }
+
+  .jd-hero {
+    min-height: min(740px, calc(100vh - 132px));
+    grid-template-columns: minmax(280px, 0.38fr) minmax(0, 1fr);
+    gap: clamp(16px, 1.8vw, 24px);
+    padding: clamp(16px, 2vw, 30px);
+    border-radius: 30px;
+  }
+
+  .jd-copy {
+    max-width: 500px;
+    gap: 15px;
+  }
+
+  .jd-copy h1 {
+    font-size: clamp(2.9rem, 6.7vw, 6.3rem);
+  }
+
+  .jd-copy p:not(.jh-eyebrow) {
+    font-size: clamp(0.96rem, 1.15vw, 1.06rem);
+    line-height: 1.7;
+  }
+
+  .jd-stage {
+    min-height: clamp(500px, 60vh, 670px);
+  }
+
+  .jd-selector__button {
+    min-height: 56px;
+    padding: 9px 10px;
+  }
+
+  .jd-icon-button {
+    min-width: 70px;
+    min-height: 42px;
+    padding: 8px 12px;
+  }
+
+  .jd-stage__caption {
+    min-width: 170px;
+    padding: 12px 14px;
+  }
+
+  .jd-details {
+    gap: clamp(16px, 1.7vw, 24px);
+  }
+
+  .jd-spotlight,
+  .jd-companion {
+    padding: clamp(18px, 2.4vw, 32px);
+  }
+
+  .jd-spotlight__media {
+    min-height: clamp(230px, 30vw, 360px);
+  }
+
+  .jd-moment {
+    min-height: 230px;
+    padding: 22px;
+  }
+
+  .jd-phone-demo__screen {
+    min-height: 470px;
+  }
+}
+
+@media (max-width: 640px) {
+  .jd-copy h1 {
+    font-size: clamp(2.5rem, 14vw, 4.1rem);
+  }
+
+  .jd-stage {
+    min-height: 520px;
+  }
+
+  .jd-phone-demo__screen {
+    min-height: 400px;
+  }
+}

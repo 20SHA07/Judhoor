@@ -3403,3 +3403,232 @@ body {
     aspect-ratio: 4 / 3.7;
   }
 }
+
+/* Global density pass: makes the site feel less zoomed-in without browser zoom. */
+@media (min-width: 701px) {
+  html {
+    font-size: 15px;
+  }
+
+  :root {
+    --jh-page-x: clamp(18px, 4vw, 54px);
+    --jh-section-y: clamp(46px, 6.5vw, 86px);
+  }
+
+  .jh-main {
+    padding-top: clamp(76px, 6vw, 94px);
+  }
+
+  .jh-header {
+    top: 12px;
+    width: min(980px, calc(100vw - 44px));
+    padding: 12px 30px;
+    gap: clamp(18px, 2.4vw, 40px);
+  }
+
+  .jh-brand {
+    gap: 10px;
+  }
+
+  .jh-brand img {
+    width: clamp(30px, 2.7vw, 40px);
+    height: clamp(30px, 2.7vw, 40px);
+  }
+
+  .jh-brand strong {
+    font-size: clamp(1.75rem, 2.4vw, 2.55rem);
+  }
+
+  .jh-nav a,
+  .jh-replay,
+  .jh-cart-pill,
+  .jh-currency-select--compact .jh-dropdown__button {
+    padding: 8px 12px;
+    font-size: 0.86rem;
+  }
+
+  .jh-hero {
+    min-height: clamp(560px, calc(100vh - 116px), 760px);
+    padding-block: clamp(72px, 12vh, 116px);
+  }
+
+  .jh-hero h1 {
+    max-width: 620px;
+    font-size: clamp(3rem, 5.5vw, 5.65rem);
+  }
+
+  .jh-hero__text {
+    max-width: 470px;
+    margin-top: 20px;
+    font-size: 0.94rem;
+  }
+
+  .jh-hero__actions {
+    margin-top: 30px;
+  }
+
+  .jh-section__head h1,
+  .jh-section__head h2,
+  .jh-page h1,
+  .jh-editorial__copy h2,
+  .jh-guidance h2,
+  .jh-checkout h2,
+  .jh-payment-card h2,
+  .jh-success-card h1 {
+    font-size: clamp(2.7rem, 5vw, 4.8rem);
+  }
+
+  .jh-home-collection {
+    padding: clamp(58px, 7vw, 92px) var(--jh-page-x) clamp(64px, 8vw, 104px);
+  }
+
+  .jh-home-collection__head,
+  .jh-home-collection__grid {
+    width: min(1240px, 100%);
+  }
+
+  .jh-home-collection__head {
+    margin-bottom: clamp(24px, 3.4vw, 42px);
+  }
+
+  .jh-home-collection__head h2 {
+    font-size: clamp(1.9rem, 2.7vw, 2.9rem);
+  }
+
+  .jh-home-product-card__media {
+    aspect-ratio: 4 / 4.45;
+    margin-bottom: 18px;
+  }
+
+  .jh-home-product-card__body {
+    padding-bottom: 18px;
+  }
+
+  .jh-product-line-page {
+    --jh-product-page-width: min(1280px, calc(100vw - 56px));
+    padding-block: clamp(54px, 6.5vw, 92px) clamp(64px, 8vw, 104px);
+  }
+
+  .jh-product-line-hero {
+    margin-bottom: clamp(38px, 5.8vw, 68px);
+  }
+
+  .jh-product-line-hero h1 {
+    font-size: clamp(2.8rem, 5.3vw, 5.35rem);
+  }
+
+  .jh-product-line-list {
+    gap: clamp(44px, 6vw, 78px);
+  }
+
+  .jh-product-row {
+    gap: clamp(32px, 4.8vw, 62px);
+  }
+
+  .jh-product-row__media {
+    min-height: clamp(320px, 36vw, 440px);
+  }
+
+  .jh-product-row__media img {
+    padding: clamp(16px, 2.7vw, 34px);
+  }
+
+  .jh-product-row__copy {
+    gap: 13px;
+  }
+
+  .jh-product-row__copy h2 {
+    font-size: clamp(1.95rem, 2.9vw, 2.9rem);
+  }
+
+  .jh-product-line-advisor {
+    margin-top: clamp(54px, 7vw, 92px);
+  }
+
+  .jh-experience-page > .jh-section__head {
+    min-height: clamp(430px, 50vh, 520px);
+  }
+
+  .jh-story-panel,
+  .jh-story-panel--reverse {
+    gap: clamp(24px, 4.8vw, 60px);
+    padding-block: clamp(44px, 6vw, 82px);
+  }
+
+  .jh-story-panel__media {
+    padding: clamp(22px, 3vw, 42px);
+  }
+
+  .jh-card-decks {
+    margin-block: clamp(46px, 6.5vw, 86px);
+  }
+
+  .jh-card-decks .jh-section__head--split h2 {
+    font-size: clamp(2.3rem, 4vw, 4.2rem);
+  }
+
+  .jh-card-deck__preview {
+    min-height: 320px;
+  }
+
+  .jh-card-deck__preview object,
+  .jh-card-deck__fallback {
+    min-height: 284px;
+  }
+
+  .jh-shop-grid {
+    gap: 18px;
+  }
+
+  .jh-shop-card figure {
+    aspect-ratio: 4 / 3.6;
+  }
+
+  .jh-payment-card,
+  .jh-checkout {
+    padding: 26px;
+  }
+
+  .jh-footer {
+    padding-block: clamp(38px, 5.8vw, 66px);
+  }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --jh-section-y: 56px;
+  }
+
+  .jh-main {
+    padding-top: 144px;
+  }
+
+  .jh-hero {
+    min-height: 520px;
+    padding-block: 92px 78px;
+  }
+
+  .jh-hero h1,
+  .jh-section__head h1,
+  .jh-section__head h2,
+  .jh-page h1 {
+    font-size: clamp(2.25rem, 10vw, 3.2rem);
+  }
+
+  .jh-product-line-page .jh-section__head h1,
+  .jh-product-line-hero h1 {
+    font-size: clamp(1.95rem, 8.2vw, 2.45rem);
+  }
+
+  .jh-product-row__media {
+    min-height: clamp(260px, 58vw, 390px);
+  }
+
+  .jh-home-collection {
+    padding-block: 58px 72px;
+  }
+
+  .jh-home-product-card__media {
+    aspect-ratio: 4 / 3.3;
+  }
+}
