@@ -92,6 +92,94 @@ const importantCustomizationFields = [
   },
 ];
 
+const importantPersonalizationDefaults = {
+  recipientName: "Noura",
+  familyName: "Al Mansoori Family",
+  boxTitle: "You Are Important Box",
+  photoCaption: "Family portrait",
+  candleMessage: "We remember with love",
+  jarLabel: "Reasons we love you",
+  envelopeLabel: "Letters from home",
+  notebookTitle: "Stories we share",
+  dedication: "Made with love for the moments that matter.",
+};
+
+const importantPersonalizationFields = [
+  {
+    key: "recipientName",
+    name: "importantRecipientName",
+    label: "Recipient name",
+    detail: "Printed on the front card and keepsake envelope.",
+    placeholder: "Noura",
+    maxLength: 34,
+  },
+  {
+    key: "familyName",
+    name: "importantFamilyName",
+    label: "Family name",
+    detail: "Used across the photo frame and QR message card.",
+    placeholder: "Al Mansoori Family",
+    maxLength: 42,
+  },
+  {
+    key: "boxTitle",
+    name: "importantBoxTitle",
+    label: "Box title",
+    detail: "Customize the title printed on the lid preview.",
+    placeholder: "You Are Important Box",
+    maxLength: 38,
+  },
+  {
+    key: "photoCaption",
+    name: "importantPhotoCaption",
+    label: "Photo caption",
+    detail: "Caption shown below the framed family photo.",
+    placeholder: "Family portrait",
+    maxLength: 44,
+  },
+  {
+    key: "candleMessage",
+    name: "importantCandleMessage",
+    label: "Candle message",
+    detail: "Short line for the candle label.",
+    placeholder: "We remember with love",
+    maxLength: 46,
+  },
+  {
+    key: "jarLabel",
+    name: "importantJarLabel",
+    label: "Memory jar label",
+    detail: "Text for the small memory jar.",
+    placeholder: "Reasons we love you",
+    maxLength: 42,
+  },
+  {
+    key: "envelopeLabel",
+    name: "importantEnvelopeLabel",
+    label: "Envelope bundle",
+    detail: "Text for the letters and notes bundle.",
+    placeholder: "Letters from home",
+    maxLength: 42,
+  },
+  {
+    key: "notebookTitle",
+    name: "importantNotebookTitle",
+    label: "Notebook title",
+    detail: "Title on the writing booklet.",
+    placeholder: "Stories we share",
+    maxLength: 42,
+  },
+  {
+    key: "dedication",
+    name: "importantDedication",
+    label: "Dedication line",
+    detail: "A personal line shown in the preview card.",
+    placeholder: "Made with love for the moments that matter.",
+    maxLength: 120,
+    multiline: true,
+  },
+];
+
 const getCurrency = (currencyCode) =>
   currencyOptions.find((currency) => currency.code === currencyCode) ?? currencyOptions[0];
 
@@ -340,6 +428,77 @@ function QuantityControl({ quantity, onDecrease, onIncrease }) {
         +
       </button>
     </div>
+  );
+}
+
+function getPreviewInitials(value) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "J";
+}
+
+function ImportantBoxCustomizationPreview({ values, photoPreviewUrl, uploadLabels }) {
+  const initials = getPreviewInitials(values.familyName || values.recipientName);
+  const recipientLine = values.recipientName ? `For ${values.recipientName}` : "For someone loved";
+
+  return (
+    <aside className="jh-important-preview" aria-label="You Are Important Box customization preview">
+      <div className="jh-important-preview__head">
+        <span>Live preview</span>
+        <strong>{values.boxTitle || importantPersonalizationDefaults.boxTitle}</strong>
+      </div>
+      <div className="jh-important-preview__box">
+        <div className="jh-important-preview__lid">
+          <img src={assetPath("/judhoor-logo.png")} alt="" />
+          <span>{values.boxTitle || importantPersonalizationDefaults.boxTitle}</span>
+          <strong>{recipientLine}</strong>
+        </div>
+        <div className="jh-important-preview__tray">
+          <div className="jh-preview-tile jh-preview-tile--photo">
+            <div className="jh-preview-photo">
+              {photoPreviewUrl ? (
+                <img
+                  src={photoPreviewUrl}
+                  alt={`${values.familyName || "Family"} uploaded preview`}
+                />
+              ) : (
+                <span>{initials}</span>
+              )}
+            </div>
+            <small>{values.photoCaption || importantPersonalizationDefaults.photoCaption}</small>
+          </div>
+
+          <div className="jh-preview-tile jh-preview-tile--candle">
+            <span className="jh-preview-flame" aria-hidden="true" />
+            <strong>{values.candleMessage || importantPersonalizationDefaults.candleMessage}</strong>
+          </div>
+
+          <div className="jh-preview-tile jh-preview-tile--jar">
+            <span className="jh-preview-jar" aria-hidden="true" />
+            <strong>{values.jarLabel || importantPersonalizationDefaults.jarLabel}</strong>
+          </div>
+
+          <div className="jh-preview-tile jh-preview-tile--letters">
+            <span>{values.envelopeLabel || importantPersonalizationDefaults.envelopeLabel}</span>
+            <small>{uploadLabels.letters}</small>
+          </div>
+
+          <div className="jh-preview-tile jh-preview-tile--qr">
+            <span className="jh-preview-qr" aria-hidden="true" />
+            <strong>{uploadLabels.voiceNote}</strong>
+          </div>
+
+          <div className="jh-preview-tile jh-preview-tile--book">
+            <strong>{values.notebookTitle || importantPersonalizationDefaults.notebookTitle}</strong>
+            <small>{values.dedication || importantPersonalizationDefaults.dedication}</small>
+          </div>
+        </div>
+      </div>
+      <p>{values.familyName || importantPersonalizationDefaults.familyName}</p>
+    </aside>
   );
 }
 
@@ -1243,7 +1402,7 @@ function ShopPage({ cart, currencyCode, onAddToCart, onUpdateQuantity }) {
                 <div className="jh-shop-card__badges">
                   <span>{box.tagline}</span>
                   <span>{getItemCount(box)} curated items</span>
-                  {box.slug === "important-box" ? <span>Custom uploads in checkout</span> : null}
+                  {box.slug === "important-box" ? <span>Live customization in checkout</span> : null}
                 </div>
                 <div className="jh-shop-card__row">
                   <strong>{formatPrice(box.price, currencyCode)}</strong>
@@ -1424,11 +1583,38 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
     letters: [],
     familyPhotos: [],
   });
+  const [importantPersonalization, setImportantPersonalization] = useState(
+    importantPersonalizationDefaults,
+  );
+  const [importantPhotoPreviewUrl, setImportantPhotoPreviewUrl] = useState("");
+  const selectedFamilyPhoto =
+    importantUploads.familyPhotos.find((file) => file.type?.startsWith("image/")) ?? null;
+
+  useEffect(() => {
+    if (!selectedFamilyPhoto || typeof URL === "undefined") {
+      setImportantPhotoPreviewUrl("");
+      return undefined;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFamilyPhoto);
+    setImportantPhotoPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [selectedFamilyPhoto]);
 
   function handleImportantUploadChange(key, files) {
     setImportantUploads((current) => ({
       ...current,
       [key]: Array.from(files ?? []),
+    }));
+  }
+
+  function handleImportantPersonalizationChange(key, value) {
+    setImportantPersonalization((current) => ({
+      ...current,
+      [key]: value,
     }));
   }
 
@@ -1466,6 +1652,16 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
             voiceNote: getFormFileNames(formData, "importantVoiceNote"),
             letters: getFormFileNames(formData, "importantLetters"),
             familyPhotos: getFormFileNames(formData, "importantFamilyPhotos"),
+            personalization: importantPersonalizationFields.reduce(
+              (details, field) => ({
+                ...details,
+                [field.key]:
+                  formData.get(field.name) ||
+                  importantPersonalization[field.key] ||
+                  importantPersonalizationDefaults[field.key],
+              }),
+              {},
+            ),
             note: formData.get("importantPersonalMessage") || "",
           }
         : null,
@@ -1624,35 +1820,84 @@ function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder 
                   completing the demo order.
                 </p>
               </div>
-              <div className="jh-upload-grid">
-                {importantCustomizationFields.map((field) => (
-                  <label key={field.key} className="jh-upload-field" htmlFor={field.id}>
-                    <span className="jh-upload-field__label">{field.label}</span>
-                    <span className="jh-upload-field__detail">{field.detail}</span>
-                    <input
-                      id={field.id}
-                      name={field.name}
-                      type="file"
-                      accept={field.accept}
-                      multiple={field.multiple}
-                      required
-                      onChange={(event) => handleImportantUploadChange(field.key, event.target.files)}
+              <div className="jh-customization-workspace">
+                <div className="jh-customization-editor">
+                  <div className="jh-form-grid jh-personalization-grid">
+                    {importantPersonalizationFields.map((field) => (
+                      <label
+                        key={field.key}
+                        className={`jh-custom-text-field ${field.multiline ? "jh-custom-text-field--full" : ""}`}
+                      >
+                        <span className="jh-custom-text-field__label">{field.label}</span>
+                        <span className="jh-custom-text-field__detail">{field.detail}</span>
+                        {field.multiline ? (
+                          <textarea
+                            name={field.name}
+                            rows="3"
+                            value={importantPersonalization[field.key]}
+                            placeholder={field.placeholder}
+                            maxLength={field.maxLength}
+                            onChange={(event) =>
+                              handleImportantPersonalizationChange(field.key, event.target.value)
+                            }
+                          />
+                        ) : (
+                          <input
+                            name={field.name}
+                            type="text"
+                            value={importantPersonalization[field.key]}
+                            placeholder={field.placeholder}
+                            maxLength={field.maxLength}
+                            onChange={(event) =>
+                              handleImportantPersonalizationChange(field.key, event.target.value)
+                            }
+                          />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="jh-upload-grid">
+                    {importantCustomizationFields.map((field) => (
+                      <label key={field.key} className="jh-upload-field" htmlFor={field.id}>
+                        <span className="jh-upload-field__label">{field.label}</span>
+                        <span className="jh-upload-field__detail">{field.detail}</span>
+                        <input
+                          id={field.id}
+                          name={field.name}
+                          type="file"
+                          accept={field.accept}
+                          multiple={field.multiple}
+                          required
+                          onChange={(event) =>
+                            handleImportantUploadChange(field.key, event.target.files)
+                          }
+                        />
+                        <span className="jh-upload-field__selected">
+                          {getImportantUploadLabel(field.key)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <label className="jh-form-grid__full jh-customization-note">
+                    Personal message for the box
+                    <textarea
+                      name="importantPersonalMessage"
+                      rows="4"
+                      placeholder="Add names, dates, or any message that should guide the customized keepsakes."
+                      maxLength="420"
                     />
-                    <span className="jh-upload-field__selected">
-                      {getImportantUploadLabel(field.key)}
-                    </span>
                   </label>
-                ))}
-              </div>
-              <label className="jh-form-grid__full jh-customization-note">
-                Personal message for the box
-                <textarea
-                  name="importantPersonalMessage"
-                  rows="4"
-                  placeholder="Add names, dates, or any message that should guide the customized keepsakes."
-                  maxLength="420"
+                </div>
+                <ImportantBoxCustomizationPreview
+                  values={importantPersonalization}
+                  photoPreviewUrl={importantPhotoPreviewUrl}
+                  uploadLabels={{
+                    voiceNote: getImportantUploadLabel("voiceNote"),
+                    letters: getImportantUploadLabel("letters"),
+                    familyPhotos: getImportantUploadLabel("familyPhotos"),
+                  }}
                 />
-              </label>
+              </div>
             </section>
           ) : null}
 
@@ -1807,6 +2052,7 @@ function CheckoutSuccessPage({ lastOrder, currencyCode }) {
   }
 
   const customization = lastOrder.importantBoxCustomization;
+  const personalization = customization?.personalization;
   const formatCustomizationFiles = (files) =>
     files?.length ? files.join(", ") : "No file selected";
 
@@ -1827,6 +2073,19 @@ function CheckoutSuccessPage({ lastOrder, currencyCode }) {
         {customization ? (
           <div className="jh-success-customization">
             <strong>You Are Important customization received</strong>
+            {personalization ? (
+              <div className="jh-success-customization__grid">
+                <span>Recipient: {personalization.recipientName}</span>
+                <span>Family: {personalization.familyName}</span>
+                <span>Lid title: {personalization.boxTitle}</span>
+                <span>Photo: {personalization.photoCaption}</span>
+                <span>Candle: {personalization.candleMessage}</span>
+                <span>Jar: {personalization.jarLabel}</span>
+                <span>Envelope: {personalization.envelopeLabel}</span>
+                <span>Notebook: {personalization.notebookTitle}</span>
+                <span>Dedication: {personalization.dedication}</span>
+              </div>
+            ) : null}
             <span>Voice note: {formatCustomizationFiles(customization.voiceNote)}</span>
             <span>Letters: {formatCustomizationFiles(customization.letters)}</span>
             <span>Family photos: {formatCustomizationFiles(customization.familyPhotos)}</span>
