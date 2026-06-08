@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import DemoDayPage from "./DemoDayPage";
 import { boxCatalog, journeySteps } from "./judhoorData";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
@@ -461,6 +462,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <NavLink to="/">Home</NavLink>
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
+          <NavLink to="/demo-day">Demo Day</NavLink>
           <NavLink to="/shop">Shop</NavLink>
           <CurrencySelector
             currencyCode={currencyCode}
@@ -494,6 +496,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <NavLink to="/">Home</NavLink>
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
+          <NavLink to="/demo-day">Demo Day</NavLink>
           <NavLink to="/shop">Shop</NavLink>
         </div>
         <div className="jh-footer__links">
@@ -1695,6 +1698,15 @@ export default function JudhoorApp() {
             }
           />
           <Route path="/experience" element={<ExperiencePage />} />
+          <Route
+            path="/demo-day"
+            element={
+              <DemoDayPage
+                currencyCode={currencyCode}
+                onAddToCart={handleAddToCart}
+              />
+            }
+          />
           <Route
             path="/shop"
             element={
