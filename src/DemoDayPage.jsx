@@ -85,71 +85,20 @@ const memoryVoiceLines = [
   "These small things are not small to me. They are my stories.",
 ];
 
-function createTextTexture(box, palette) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 512;
-  const context = canvas.getContext("2d");
-
-  context.fillStyle = palette.base;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, "rgba(255, 255, 255, 0.26)");
-  gradient.addColorStop(0.42, "rgba(255, 255, 255, 0.04)");
-  gradient.addColorStop(1, "rgba(0, 0, 0, 0.18)");
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  context.strokeStyle = "rgba(255, 242, 203, 0.72)";
-  context.lineWidth = 10;
-  context.strokeRect(52, 52, canvas.width - 104, canvas.height - 104);
-
-  context.fillStyle = "#fff7e7";
-  context.textAlign = "center";
-  context.font = "700 82px Georgia, serif";
-  context.fillText("Judhoor", canvas.width / 2, 176);
-  context.font = "600 54px Georgia, serif";
-  context.fillText(box.name, canvas.width / 2, 286);
-  context.font = "500 32px Arial, sans-serif";
-  context.fillText(box.tagline, canvas.width / 2, 362);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 8;
-  return texture;
-}
-
 function createSceneModel(box, textureLoader) {
   const palette = themePalettes[box.theme] ?? themePalettes.sand;
   const group = new THREE.Group();
-  group.rotation.set(-0.16, 0.42, 0);
-
-  const dimensions = { width: 4.8, depth: 3.2, height: 1.24, thickness: 0.14 };
-  const { width, depth, height, thickness } = dimensions;
-  const matExterior = new THREE.MeshStandardMaterial({
-    color: palette.base,
-    roughness: 0.55,
-    metalness: 0.08,
-  });
-  const matInterior = new THREE.MeshStandardMaterial({
-    color: palette.inside,
-    roughness: 0.78,
-    metalness: 0.02,
-  });
-  const matDeep = new THREE.MeshStandardMaterial({
-    color: palette.deep,
-    roughness: 0.58,
-    metalness: 0.05,
-  });
-  const matGold = new THREE.MeshStandardMaterial({
-    color: palette.metal,
-    roughness: 0.32,
-    metalness: 0.44,
-  });
+  group.rotation.set(-0.08, 0.28, 0);
 
   const meshesToDispose = [];
   const texturesToDispose = [];
+  const materialsToDispose = [];
+
+  function createMaterial(MaterialConstructor, options) {
+    const material = new MaterialConstructor(options);
+    materialsToDispose.push(material);
+    return material;
+  }
 
   function track(mesh) {
     meshesToDispose.push(mesh);
@@ -158,120 +107,115 @@ function createSceneModel(box, textureLoader) {
     return mesh;
   }
 
-  const floor = track(
-    new THREE.Mesh(new THREE.BoxGeometry(width, thickness, depth), matInterior),
-  );
-  floor.position.y = thickness / 2;
-  group.add(floor);
+  function fitImagePlane(mesh, texture, maxWidth, maxHeight) {
+    const image = texture.image;
+    if (!image?.width || !image?.height) {
+      return;
+    }
 
-  const back = track(
-    new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), matExterior),
-  );
-  back.position.set(0, height / 2 + thickness, -depth / 2);
-  group.add(back);
+    const aspect = image.width / image.height;
+    let width = maxWidth;
+    let height = width / aspect;
 
-  const left = track(
-    new THREE.Mesh(new THREE.BoxGeometry(thickness, height, depth), matExterior),
-  );
-  left.position.set(-width / 2, height / 2 + thickness, 0);
-  group.add(left);
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = height * aspect;
+    }
 
-  const right = track(
-    new THREE.Mesh(new THREE.BoxGeometry(thickness, height, depth), matExterior),
-  );
-  right.position.set(width / 2, height / 2 + thickness, 0);
-  group.add(right);
+    mesh.scale.set(width, height, 1);
+    mesh.userData.fitWidth = width;
+    mesh.userData.fitHeight = height;
+  }
+
+  function loadSceneTexture(src, onLoad) {
+    const texture = textureLoader.load(src, (loadedTexture) => {
+      loadedTexture.colorSpace = THREE.SRGBColorSpace;
+      loadedTexture.anisotropy = 8;
+      onLoad?.(loadedTexture);
+    });
+
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 8;
+    texturesToDispose.push(texture);
+    return texture;
+  }
+
+  const frameMaterial = createMaterial(THREE.MeshStandardMaterial, {
+    color: palette.deep,
+    roughness: 0.72,
+    metalness: 0.06,
+    transparent: true,
+    opacity: 0.1,
+  });
+  const glowMaterial = createMaterial(THREE.MeshBasicMaterial, {
+    color: palette.glow,
+    transparent: true,
+    opacity: 0.12,
+    depthWrite: false,
+  });
+
+  const productGroup = new THREE.Group();
+  productGroup.position.set(0, 1.55, 0.18);
+  productGroup.scale.setScalar(0.96);
+  group.add(productGroup);
+
+  const imageDepth = track(new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.8, 0.18), frameMaterial));
+  imageDepth.position.set(0, 0, -0.12);
+  productGroup.add(imageDepth);
+
+  const primaryMaterial = createMaterial(THREE.MeshBasicMaterial, {
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    toneMapped: false,
+  });
+  const primaryImage = track(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), primaryMaterial));
+  primaryImage.position.set(0, 0.02, 0.03);
+  productGroup.add(primaryImage);
+
+  primaryMaterial.map = loadSceneTexture(box.images[0], (texture) => {
+    fitImagePlane(primaryImage, texture, 7.2, 5.75);
+    imageDepth.scale.set(
+      Math.max(1, primaryImage.userData.fitWidth / 5.2),
+      Math.max(1, primaryImage.userData.fitHeight / 3.8),
+      1,
+    );
+  });
+
+  const secondaryMaterial = createMaterial(THREE.MeshBasicMaterial, {
+    transparent: true,
+    opacity: 0,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    toneMapped: false,
+  });
+  const secondaryImage = track(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), secondaryMaterial));
+  secondaryImage.position.set(0, -0.52, 0.1);
+  secondaryImage.scale.setScalar(0.72);
+  productGroup.add(secondaryImage);
+
+  secondaryMaterial.map = loadSceneTexture(box.images[1] ?? box.images[0], (texture) => {
+    fitImagePlane(secondaryImage, texture, 5.9, 4.35);
+  });
+
+  const productGlow = track(new THREE.Mesh(new THREE.CircleGeometry(3.6, 72), glowMaterial));
+  productGlow.rotation.x = -Math.PI / 2;
+  productGlow.position.set(0, -2.08, -0.6);
+  productGroup.add(productGlow);
 
   const frontPivot = new THREE.Group();
-  frontPivot.position.set(0, thickness, depth / 2);
-  const front = track(
-    new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), matExterior),
-  );
-  front.position.set(0, height / 2, 0);
-  frontPivot.add(front);
-  group.add(frontPivot);
-
-  const labelTexture = createTextTexture(box, palette);
-  texturesToDispose.push(labelTexture);
-
-  const frontLabel = track(
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(2.45, 0.74),
-      new THREE.MeshBasicMaterial({
-        map: labelTexture,
-        transparent: true,
-        toneMapped: false,
-      }),
-    ),
-  );
-  frontLabel.position.set(0, height / 2 + 0.02, thickness / 2 + 0.006);
-  frontPivot.add(frontLabel);
-
   const lidPivot = new THREE.Group();
-  lidPivot.position.set(0, height + thickness * 1.45, -depth / 2);
-  const lid = track(
-    new THREE.Mesh(
-      new THREE.BoxGeometry(width + 0.24, thickness, depth + 0.24),
-      matExterior,
-    ),
-  );
-  lid.position.set(0, 0, depth / 2);
-  lidPivot.add(lid);
-
-  const lidLabel = track(
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(2.62, 1.32),
-      new THREE.MeshBasicMaterial({
-        map: labelTexture,
-        transparent: true,
-        toneMapped: false,
-      }),
-    ),
-  );
-  lidLabel.rotation.x = -Math.PI / 2;
-  lidLabel.position.set(0, thickness / 2 + 0.009, depth / 2);
-  lidPivot.add(lidLabel);
-  group.add(lidPivot);
-
-  const ribbonVertical = track(
-    new THREE.Mesh(new THREE.BoxGeometry(0.14, thickness + 0.02, depth + 0.32), matGold),
-  );
-  ribbonVertical.position.set(0, height + thickness * 1.55, 0);
-  group.add(ribbonVertical);
-
-  const ribbonHorizontal = track(
-    new THREE.Mesh(new THREE.BoxGeometry(width + 0.3, thickness + 0.024, 0.14), matGold),
-  );
-  ribbonHorizontal.position.set(0, height + thickness * 1.57, 0);
-  group.add(ribbonHorizontal);
-
-  const logoTexture = textureLoader.load(assetPath("/judhoor-logo.png"));
-  logoTexture.colorSpace = THREE.SRGBColorSpace;
-  texturesToDispose.push(logoTexture);
-  const logo = track(
-    new THREE.Mesh(
-      new THREE.PlaneGeometry(0.82, 0.82),
-      new THREE.MeshBasicMaterial({
-        map: logoTexture,
-        transparent: true,
-        toneMapped: false,
-      }),
-    ),
-  );
-  logo.rotation.x = -Math.PI / 2;
-  logo.position.set(0, thickness / 2 + 0.014, depth / 2 - 0.78);
-  lidPivot.add(logo);
+  group.add(frontPivot, lidPivot);
 
   const itemGroup = new THREE.Group();
+  itemGroup.position.set(0, 0.82, 0.72);
   const itemMeshes = box.items.slice(0, 7).map((item, index) => {
     const layout = itemLayouts[index] ?? itemLayouts[itemLayouts.length - 1];
-    const texture = textureLoader.load(item.sprite);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texturesToDispose.push(texture);
+    const texture = loadSceneTexture(item.sprite);
 
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(layout.size, layout.size),
-      new THREE.MeshBasicMaterial({
+      createMaterial(THREE.MeshBasicMaterial, {
         map: texture,
         transparent: true,
         opacity: 0,
@@ -314,10 +258,10 @@ function createSceneModel(box, textureLoader) {
     texturesToDispose.push(cardTexture);
     const card = new THREE.Mesh(
       new THREE.PlaneGeometry(0.82, 0.46),
-      new THREE.MeshBasicMaterial({
+      createMaterial(THREE.MeshBasicMaterial, {
         map: cardTexture,
         transparent: true,
-        opacity: 0.62,
+        opacity: 0.28,
         side: THREE.DoubleSide,
         toneMapped: false,
       }),
@@ -332,7 +276,7 @@ function createSceneModel(box, textureLoader) {
 
   const shadow = new THREE.Mesh(
     new THREE.CircleGeometry(3.8, 72),
-    new THREE.MeshBasicMaterial({
+    createMaterial(THREE.MeshBasicMaterial, {
       color: "#2f251d",
       transparent: true,
       opacity: 0.12,
@@ -346,6 +290,10 @@ function createSceneModel(box, textureLoader) {
 
   return {
     group,
+    productGroup,
+    primaryImage,
+    secondaryImage,
+    imageDepth,
     frontPivot,
     lidPivot,
     itemMeshes,
@@ -361,7 +309,7 @@ function createSceneModel(box, textureLoader) {
         }
       });
       texturesToDispose.forEach((texture) => texture.dispose());
-      [matExterior, matInterior, matDeep, matGold].forEach((material) => material.dispose());
+      materialsToDispose.forEach((material) => material.dispose());
     },
   };
 }
@@ -391,8 +339,8 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 80);
-    camera.position.set(0, 3.2, 8.2);
-    camera.lookAt(0, 0.8, 0);
+    camera.position.set(0, 2.9, 9.4);
+    camera.lookAt(0, 1.25, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -430,8 +378,9 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
       const height = Math.max(1, bounds.height);
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      camera.position.z = width < 700 ? 9.4 : 8.2;
-      camera.position.y = width < 700 ? 3.8 : 3.2;
+      camera.position.z = width < 700 ? 10.6 : 9.4;
+      camera.position.y = width < 700 ? 3.45 : 2.9;
+      camera.lookAt(0, 1.25, 0);
       camera.updateProjectionMatrix();
     }
 
@@ -483,6 +432,17 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
 
       model.lidPivot.rotation.x += (openTarget - model.lidPivot.rotation.x) * 0.085;
       model.frontPivot.rotation.x += (frontTarget - model.frontPivot.rotation.x) * 0.075;
+
+      const productScaleTarget = state.isOpen ? 1.04 : 1;
+      model.productGroup.scale.x += (productScaleTarget - model.productGroup.scale.x) * 0.075;
+      model.productGroup.scale.y += (productScaleTarget - model.productGroup.scale.y) * 0.075;
+      model.productGroup.scale.z += (productScaleTarget - model.productGroup.scale.z) * 0.075;
+      model.productGroup.position.y += ((state.isOpen ? 1.72 : 1.55) - model.productGroup.position.y) * 0.075;
+      model.primaryImage.material.opacity += ((state.isOpen ? 0.9 : 1) - model.primaryImage.material.opacity) * 0.08;
+      model.secondaryImage.material.opacity += ((state.isOpen ? 0.72 : 0) - model.secondaryImage.material.opacity) * 0.08;
+      model.secondaryImage.position.y += ((state.isOpen ? -1.34 : -0.52) - model.secondaryImage.position.y) * 0.08;
+      model.secondaryImage.position.z += ((state.isOpen ? 0.42 : 0.1) - model.secondaryImage.position.z) * 0.08;
+      model.imageDepth.material.opacity += ((state.isOpen ? 0.06 : 0.1) - model.imageDepth.material.opacity) * 0.08;
 
       model.itemMeshes.forEach((mesh, index) => {
         const targetOpacity = state.isOpen ? 1 : 0;
