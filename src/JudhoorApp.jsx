@@ -1279,16 +1279,25 @@ function ShopPage({ cart, currencyCode, onAddToCart, onUpdateQuantity }) {
           ) : (
             <div className="jh-checkout__items">
               {cartLines.map((box) => (
-                <div key={box.slug} className="jh-checkout__item">
-                  <div>
+                <div key={box.slug} className="jh-checkout__item jh-checkout__item--editable">
+                  <div className="jh-checkout__item-copy">
                     <strong>{box.name}</strong>
                     <span>{box.quantity} x {formatPrice(box.price, currencyCode)}</span>
                   </div>
-                  <QuantityControl
-                    quantity={box.quantity}
-                    onDecrease={() => onUpdateQuantity(box.slug, -1)}
-                    onIncrease={() => onUpdateQuantity(box.slug, 1)}
-                  />
+                  <div className="jh-cart-line-actions jh-cart-line-actions--end">
+                    <QuantityControl
+                      quantity={box.quantity}
+                      onDecrease={() => onUpdateQuantity(box.slug, -1)}
+                      onIncrease={() => onUpdateQuantity(box.slug, 1)}
+                    />
+                    <button
+                      type="button"
+                      className="jh-remove-line"
+                      onClick={() => onUpdateQuantity(box.slug, -box.quantity)}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1356,11 +1365,20 @@ function CartPage({ cart, currencyCode, onUpdateQuantity }) {
                 </div>
                 <div className="jh-cart-item__controls">
                   <strong>{formatPrice(item.price, currencyCode)}</strong>
-                  <QuantityControl
-                    quantity={item.quantity}
-                    onDecrease={() => onUpdateQuantity(item.slug, -1)}
-                    onIncrease={() => onUpdateQuantity(item.slug, 1)}
-                  />
+                  <div className="jh-cart-line-actions jh-cart-line-actions--end">
+                    <QuantityControl
+                      quantity={item.quantity}
+                      onDecrease={() => onUpdateQuantity(item.slug, -1)}
+                      onIncrease={() => onUpdateQuantity(item.slug, 1)}
+                    />
+                    <button
+                      type="button"
+                      className="jh-remove-line"
+                      onClick={() => onUpdateQuantity(item.slug, -item.quantity)}
+                    >
+                      Remove
+                    </button>
+                  </div>
                   <span className="jh-cart-item__line-total">
                     {formatPrice(item.total, currencyCode)}
                   </span>
@@ -1394,7 +1412,7 @@ function CartPage({ cart, currencyCode, onUpdateQuantity }) {
   );
 }
 
-function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
+function CheckoutPage({ cart, currencyCode, onUpdateQuantity, onSubmitDemoOrder }) {
   const navigate = useNavigate();
   const cartLines = getCartLines(cart);
   const subtotal = cartLines.reduce((sum, item) => sum + item.total, 0);
@@ -1708,19 +1726,46 @@ function CheckoutPage({ cart, currencyCode, onSubmitDemoOrder }) {
         </form>
 
         <aside className="jh-cart-sidebar">
-          <div className="jh-checkout">
-            <h2>Your order</h2>
+          <div className="jh-checkout jh-checkout--order">
+            <div className="jh-checkout__header">
+              <div>
+                <p className="jh-eyebrow">Summary</p>
+                <h2>Your order</h2>
+              </div>
+              <NavLink to="/cart" className="jh-checkout__edit-link">
+                Edit cart
+              </NavLink>
+            </div>
             <div className="jh-checkout__items">
               {cartLines.map((item) => (
-                <div key={item.slug} className="jh-checkout__item">
-                  <div>
+                <div key={item.slug} className="jh-checkout__item jh-checkout__item--editable">
+                  <div className="jh-checkout__item-copy">
                     <strong>{item.name}</strong>
                     <span>{item.quantity} x {formatPrice(item.price, currencyCode)}</span>
                   </div>
-                  <strong>{formatPrice(item.total, currencyCode)}</strong>
+                  <div className="jh-checkout__item-side">
+                    <strong>{formatPrice(item.total, currencyCode)}</strong>
+                    <div className="jh-cart-line-actions jh-cart-line-actions--end">
+                      <QuantityControl
+                        quantity={item.quantity}
+                        onDecrease={() => onUpdateQuantity(item.slug, -1)}
+                        onIncrease={() => onUpdateQuantity(item.slug, 1)}
+                      />
+                      <button
+                        type="button"
+                        className="jh-remove-line"
+                        onClick={() => onUpdateQuantity(item.slug, -item.quantity)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
+            <p className="jh-checkout__order-note">
+              You can adjust quantities or remove boxes before placing the demo order.
+            </p>
             <CartSummary
               subtotal={subtotal}
               shipping={shipping}
@@ -1943,6 +1988,7 @@ export default function JudhoorApp() {
               <CheckoutPage
                 cart={cart}
                 currencyCode={currencyCode}
+                onUpdateQuantity={handleUpdateQuantity}
                 onSubmitDemoOrder={handleSubmitDemoOrder}
               />
             }
