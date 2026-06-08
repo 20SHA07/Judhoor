@@ -77,6 +77,14 @@ const companionMoments = [
   "Demo checkout",
 ];
 
+const memoryVoiceLines = [
+  "Come sit with me. I want to tell you about the old house.",
+  "This picture reminds me of the day everyone gathered after lunch.",
+  "I kept this letter because it made me feel remembered.",
+  "When my grandchildren visit, the room feels bright again.",
+  "These small things are not small to me. They are my stories.",
+];
+
 function createTextTexture(box, palette) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
@@ -541,7 +549,8 @@ function stopAtmosphere(engine) {
       // Already stopped.
     }
   });
-  engine.context.close();
+  window.speechSynthesis?.cancel();
+  engine.context?.close?.();
 }
 
 function useMemoryAtmosphere() {
@@ -555,13 +564,18 @@ function useMemoryAtmosphere() {
       return;
     }
 
-    const context = new AudioContext();
+    const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextConstructor) {
+      return;
+    }
+
+    const context = new AudioContextConstructor();
     await context.resume();
 
     const master = context.createGain();
     master.gain.value = 0.0001;
     master.connect(context.destination);
-    master.gain.exponentialRampToValueAtTime(0.16, context.currentTime + 1.2);
+    master.gain.exponentialRampToValueAtTime(0.42, context.currentTime + 0.8);
 
     const sources = [];
     const timers = [];
@@ -569,7 +583,7 @@ function useMemoryAtmosphere() {
     const noiseBuffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
     const noiseData = noiseBuffer.getChannelData(0);
     for (let index = 0; index < noiseData.length; index += 1) {
-      noiseData[index] = (Math.random() * 2 - 1) * 0.18;
+      noiseData[index] = (Math.random() * 2 - 1) * 0.3;
     }
 
     const roomSource = context.createBufferSource();
@@ -577,22 +591,22 @@ function useMemoryAtmosphere() {
     roomSource.loop = true;
     const roomFilter = context.createBiquadFilter();
     roomFilter.type = "bandpass";
-    roomFilter.frequency.value = 420;
-    roomFilter.Q.value = 0.7;
+    roomFilter.frequency.value = 520;
+    roomFilter.Q.value = 0.85;
     const roomGain = context.createGain();
-    roomGain.gain.value = 0.1;
+    roomGain.gain.value = 0.18;
     roomSource.connect(roomFilter).connect(roomGain).connect(master);
     roomSource.start();
     sources.push(roomSource);
 
-    [118, 145, 172, 208].forEach((frequency, index) => {
+    [98, 132, 176, 220].forEach((frequency, index) => {
       const oscillator = context.createOscillator();
       oscillator.type = index % 2 === 0 ? "sine" : "triangle";
       oscillator.frequency.value = frequency;
 
       const filter = context.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.value = 720 + index * 120;
+      filter.frequency.value = 920 + index * 140;
 
       const voiceGain = context.createGain();
       voiceGain.gain.value = 0.0001;
@@ -602,17 +616,35 @@ function useMemoryAtmosphere() {
 
       const timerId = window.setInterval(() => {
         const now = context.currentTime;
-        const nextFrequency = frequency + (Math.random() - 0.5) * 26;
-        const nextGain = 0.018 + Math.random() * 0.038;
+        const nextFrequency = frequency + (Math.random() - 0.5) * 34;
+        const nextGain = 0.055 + Math.random() * 0.075;
         oscillator.frequency.cancelScheduledValues(now);
         oscillator.frequency.linearRampToValueAtTime(nextFrequency, now + 0.22);
         voiceGain.gain.cancelScheduledValues(now);
         voiceGain.gain.setValueAtTime(voiceGain.gain.value, now);
-        voiceGain.gain.linearRampToValueAtTime(nextGain, now + 0.24);
-        voiceGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2 + Math.random() * 0.9);
-      }, 620 + index * 170);
+        voiceGain.gain.linearRampToValueAtTime(nextGain, now + 0.32);
+        voiceGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5 + Math.random() * 1.1);
+      }, 780 + index * 210);
       timers.push(timerId);
     });
+
+    const playChime = () => {
+      [392, 523.25, 659.25].forEach((frequency, index) => {
+        const oscillator = context.createOscillator();
+        const chimeGain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.value = frequency;
+        chimeGain.gain.value = 0.0001;
+        oscillator.connect(chimeGain).connect(master);
+        const startAt = context.currentTime + index * 0.13;
+        oscillator.start(startAt);
+        chimeGain.gain.linearRampToValueAtTime(0.09, startAt + 0.05);
+        chimeGain.gain.exponentialRampToValueAtTime(0.001, startAt + 1.2);
+        oscillator.stop(startAt + 1.35);
+      });
+    };
+    playChime();
+    timers.push(window.setInterval(playChime, 14500));
 
     const crackleTimer = window.setInterval(() => {
       const tick = context.createBufferSource();
@@ -623,11 +655,38 @@ function useMemoryAtmosphere() {
       }
       tick.buffer = tickBuffer;
       const tickGain = context.createGain();
-      tickGain.gain.value = 0.018;
+      tickGain.gain.value = 0.032;
       tick.connect(tickGain).connect(master);
       tick.start();
     }, 2400);
     timers.push(crackleTimer);
+
+    const speakMemoryLine = () => {
+      if (!window.speechSynthesis || window.speechSynthesis.speaking) {
+        return;
+      }
+
+      const lineIndex = Math.floor(Math.random() * memoryVoiceLines.length);
+      const utterance = new SpeechSynthesisUtterance(memoryVoiceLines[lineIndex]);
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice =
+        voices.find((voice) => /en/i.test(voice.lang) && /female|samantha|zira|aria/i.test(voice.name)) ||
+        voices.find((voice) => /en/i.test(voice.lang)) ||
+        voices[0];
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.rate = 0.82;
+      utterance.pitch = 0.78;
+      utterance.volume = 0.92;
+      window.speechSynthesis.speak(utterance);
+    };
+
+    window.speechSynthesis?.cancel();
+    speakMemoryLine();
+    timers.push(window.setInterval(speakMemoryLine, 8600));
 
     engineRef.current = { context, sources, timers };
     setIsPlaying(true);
@@ -645,7 +704,9 @@ function useMemoryAtmosphere() {
       return;
     }
 
-    start();
+    start().catch(() => {
+      stop();
+    });
   }
 
   return { isPlaying, toggle };
@@ -707,7 +768,7 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
               aria-pressed={isPlaying}
               onClick={toggle}
             >
-              {isPlaying ? "Stop atmosphere" : "Start atmosphere"}
+              {isPlaying ? "Stop voices" : "Play voices"}
             </button>
           </div>
         </div>
@@ -753,7 +814,7 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
                 aria-pressed={isPlaying}
                 onClick={toggle}
               >
-                Audio
+                Voices
               </button>
             </div>
           </div>
