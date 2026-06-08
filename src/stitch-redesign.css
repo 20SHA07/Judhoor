@@ -1735,17 +1735,55 @@ body {
   grid-template-columns: minmax(0, 1fr) minmax(330px, 0.36fr);
   gap: 32px;
   align-items: start;
+  min-width: 0;
+}
+
+.jh-cart-page,
+.jh-checkout-route,
+.jh-cart-list,
+.jh-cart-sidebar {
+  min-width: 0;
 }
 
 .jh-cart-item {
-  grid-template-columns: 150px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(132px, 150px) minmax(0, 1fr) minmax(176px, max-content);
   gap: 24px;
   padding: 18px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .jh-cart-item__media {
   aspect-ratio: 1;
   border-radius: 22px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.jh-cart-item__copy,
+.jh-cart-item__controls {
+  min-width: 0;
+}
+
+.jh-cart-item__copy h2,
+.jh-cart-item__copy p,
+.jh-cart-item__meta span {
+  overflow-wrap: anywhere;
+}
+
+.jh-cart-item__controls {
+  align-self: stretch;
+  align-content: center;
+  min-width: 176px;
+}
+
+.jh-cart-item__line-total {
+  justify-self: end;
+}
+
+.jh-cart-sidebar .jh-checkout {
+  position: static;
+  top: auto;
 }
 
 .jh-payment-form {
@@ -2335,6 +2373,26 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .jh-cart-item {
+    grid-template-columns: minmax(120px, 150px) minmax(0, 1fr);
+  }
+
+  .jh-cart-item__controls {
+    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+    justify-items: stretch;
+    text-align: left;
+  }
+
+  .jh-cart-line-actions--end {
+    justify-content: flex-start;
+  }
+
+  .jh-cart-item__line-total {
+    justify-self: start;
+  }
+
   .jh-seasonal {
     grid-template-areas:
       "copy"
@@ -2447,10 +2505,35 @@ body {
   .jh-showcase-card__copy,
   .jh-gallery,
   .jh-checkout,
+  .jh-cart-item,
   .jh-payment-card {
     width: 100%;
     min-width: 0;
     max-width: 100%;
+  }
+
+  .jh-cart-item {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .jh-cart-item__media {
+    width: min(100%, 280px);
+  }
+
+  .jh-cart-item__controls {
+    grid-column: auto;
+    gap: 10px;
+  }
+
+  .jh-cart-line-actions,
+  .jh-cart-line-actions--end {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .jh-remove-line {
+    flex: 1 1 118px;
   }
 
   .jh-product-line-page .jh-section__head h1 {
@@ -2542,8 +2625,8 @@ body {
   }
 
   .jh-cart-item__media {
-    width: 100%;
-    max-width: none;
+    width: min(100%, 280px);
+    max-width: 100%;
   }
 
   .jh-checkout__item--editable {
