@@ -43,6 +43,25 @@ const redesignVisuals = {
   homeHeroFallback: assetPath("/mockups/past-box-detail-luxury.png"),
 };
 
+const cardDecks = [
+  {
+    title: "Wellbeing Card Deck",
+    label: "Balance Box Support",
+    description:
+      "Gentle wellbeing cards for daily comfort rituals, sensory cues, and calm family interaction.",
+    pdf: assetPath("/decks/judhoor-wellbeing-card-deck.pdf"),
+    tags: ["Wellbeing", "Daily ritual", "Caregiver friendly"],
+  },
+  {
+    title: "Memory Questions Card Deck",
+    label: "The Past Box Prompts",
+    description:
+      "Conversation prompts that help families invite stories, memories, and shared reflection naturally.",
+    pdf: assetPath("/decks/judhoor-memory-questions-card-deck.pdf"),
+    tags: ["Memory prompts", "Family stories", "Reflection"],
+  },
+];
+
 const getCurrency = (currencyCode) =>
   currencyOptions.find((currency) => currency.code === currencyCode) ?? currencyOptions[0];
 
@@ -1074,6 +1093,55 @@ function ExperiencePage() {
             </div>
           </article>
         ))}
+      </div>
+      <div className="jh-card-decks" aria-labelledby="card-decks-heading">
+        <div className="jh-section__head jh-section__head--split">
+          <div>
+            <p className="jh-eyebrow">Card Decks</p>
+            <h2 id="card-decks-heading">Printable prompts that support the box experience.</h2>
+          </div>
+          <p>
+            These decks bring the Judhoor rituals into everyday conversations,
+            making the physical objects easier to revisit with family members
+            and caregivers.
+          </p>
+        </div>
+        <div className="jh-card-deck-grid">
+          {cardDecks.map((deck) => (
+            <article key={deck.title} className="jh-card-deck">
+              <div className="jh-card-deck__preview">
+                <object
+                  data={`${deck.pdf}#toolbar=0&navpanes=0&view=FitH`}
+                  type="application/pdf"
+                  title={`${deck.title} preview`}
+                >
+                  <div className="jh-card-deck__fallback">
+                    <span>{deck.label}</span>
+                    <strong>{deck.title}</strong>
+                  </div>
+                </object>
+              </div>
+              <div className="jh-card-deck__copy">
+                <p className="jh-eyebrow">{deck.label}</p>
+                <h3>{deck.title}</h3>
+                <p>{deck.description}</p>
+                <div className="jh-card-deck__tags" aria-label={`${deck.title} themes`}>
+                  {deck.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+                <div className="jh-card-deck__actions">
+                  <a className="jh-button jh-button--solid" href={deck.pdf} target="_blank" rel="noreferrer">
+                    Open deck
+                  </a>
+                  <a className="jh-button jh-button--ghost" href={deck.pdf} download>
+                    Download PDF
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
       <div className="jh-step-grid">
         {journeySteps.map((step, index) => (
