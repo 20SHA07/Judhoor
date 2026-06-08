@@ -1,5 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { Canvas, useFrame } from "@react-three/fiber";
+import {
+  ContactShadows,
+  Environment,
+  Html,
+  OrbitControls,
+  useAnimations,
+  useGLTF,
+} from "@react-three/drei";
 import * as THREE from "three";
 import { boxCatalog } from "./judhoorData";
 
@@ -150,906 +159,332 @@ const memoryVoiceScripts = [
   },
 ];
 
-function createRoundedRectShape(width, depth, radius) {
-  const safeRadius = clamp(radius, 0.001, Math.min(width, depth) / 2 - 0.001);
-  const halfWidth = width / 2;
-  const halfDepth = depth / 2;
-  const shape = new THREE.Shape();
+const GLB_MODEL_PATHS = {
+  "past-box": "/models/past-box.glb",
+  "balance-box": "/models/balance-box.glb",
+  "important-box": "/models/you-are-important-box.glb",
+  "travel-box": "/models/travel-box.glb",
+};
 
-  shape.moveTo(-halfWidth + safeRadius, -halfDepth);
-  shape.lineTo(halfWidth - safeRadius, -halfDepth);
-  shape.quadraticCurveTo(halfWidth, -halfDepth, halfWidth, -halfDepth + safeRadius);
-  shape.lineTo(halfWidth, halfDepth - safeRadius);
-  shape.quadraticCurveTo(halfWidth, halfDepth, halfWidth - safeRadius, halfDepth);
-  shape.lineTo(-halfWidth + safeRadius, halfDepth);
-  shape.quadraticCurveTo(-halfWidth, halfDepth, -halfWidth, halfDepth - safeRadius);
-  shape.lineTo(-halfWidth, -halfDepth + safeRadius);
-  shape.quadraticCurveTo(-halfWidth, -halfDepth, -halfWidth + safeRadius, -halfDepth);
+const GLB_OBJECT_NAME_ASSUMPTIONS = [
+  "base",
+  "lid",
+  "inner_tray",
+  "item_radio",
+  "item_perfume",
+  "item_coffee_cup",
+  "item_cards",
+  "item_booklet",
+  "item_envelope",
+  "item_pouch",
+];
 
-  return shape;
+const MODEL_TARGET_SIZE = 4.7;
+const LID_OPEN_ROTATION = -Math.PI * 0.62;
+
+Object.values(GLB_MODEL_PATHS).forEach((path) => {
+  useGLTF.preload(assetPath(path));
+});
+
+function getModelPath(box) {
+  return assetPath(GLB_MODEL_PATHS[box.slug] ?? GLB_MODEL_PATHS["past-box"]);
 }
 
-function createRoundedBoxGeometry(width, height, depth, radius = 0.08, bevel = 0.018) {
-  const safeBevel = Math.min(bevel, height * 0.28, width * 0.08, depth * 0.08);
-  const geometry = new THREE.ExtrudeGeometry(createRoundedRectShape(width, depth, radius), {
-    depth: height,
-    bevelEnabled: true,
-    bevelSegments: 5,
-    bevelSize: safeBevel,
-    bevelThickness: safeBevel,
-    curveSegments: 12,
-    steps: 1,
+function findObjectByName(root, targetName) {
+  const normalizedTarget = targetName.toLowerCase();
+  let match = null;
+
+  root.traverse((object) => {
+    if (!match && object.name?.toLowerCase() === normalizedTarget) {
+      match = object;
+    }
   });
 
-  geometry.rotateX(-Math.PI / 2);
-  geometry.computeVertexNormals();
-  return geometry;
+  return match;
 }
 
-function createSceneModel(box, textureLoader) {
-  const palette = themePalettes[box.theme] ?? themePalettes.sand;
-  const group = new THREE.Group();
-  group.rotation.set(-0.22, 0.34, -0.015);
+function chooseOpenAnimation(animations) {
+  return (
+    animations.find((clip) => /open|unbox|lid|reveal/i.test(clip.name)) ??
+    animations[0] ??
+    null
+  );
+}
 
-  const meshesToDispose = [];
-  const texturesToDispose = [];
-  const materialsToDispose = [];
+function prepareModelScene(sourceScene) {
+  const modelScene = sourceScene.clone(true);
+  const bounds = new THREE.Box3().setFromObject(modelScene);
+  const size = new THREE.Vector3();
+  const center = new THREE.Vector3();
+  bounds.getSize(size);
+  bounds.getCenter(center);
 
-  function createMaterial(MaterialConstructor, options) {
-    const material = new MaterialConstructor(options);
-    materialsToDispose.push(material);
-    return material;
-  }
+  const maxDimension = Math.max(size.x, size.y, size.z, 1);
+  const scale = MODEL_TARGET_SIZE / maxDimension;
 
-  function track(mesh, { castShadow = true, receiveShadow = true } = {}) {
-    meshesToDispose.push(mesh);
-    mesh.castShadow = castShadow;
-    mesh.receiveShadow = receiveShadow;
-    return mesh;
-  }
+  modelScene.position.sub(center);
+  modelScene.position.y += size.y / 2;
 
-  function createSeededRandom(seedText) {
-    let seed = 2166136261;
-    for (let index = 0; index < seedText.length; index += 1) {
-      seed ^= seedText.charCodeAt(index);
-      seed = Math.imul(seed, 16777619);
+  modelScene.traverse((object) => {
+    if (!object.isMesh) {
+      return;
     }
 
-    return () => {
-      seed = Math.imul(seed + 0x6d2b79f5, 0x85ebca6b);
-      seed ^= seed >>> 13;
-      return ((seed >>> 0) % 10000) / 10000;
-    };
-  }
+    object.castShadow = true;
+    object.receiveShadow = true;
+    object.frustumCulled = true;
 
-  function cssColor(color, alpha = 1) {
-    const parsed = new THREE.Color(color);
-    return `rgba(${Math.round(parsed.r * 255)}, ${Math.round(parsed.g * 255)}, ${Math.round(parsed.b * 255)}, ${alpha})`;
-  }
-
-  function createCanvasTexture(width, height, draw) {
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d");
-    draw(context, canvas);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 8;
-    texturesToDispose.push(texture);
-    return texture;
-  }
-
-  function createPaperTexture(baseColor, fiberColor, seedText) {
-    const random = createSeededRandom(seedText);
-    const texture = createCanvasTexture(768, 768, (ctx, canvas) => {
-      ctx.fillStyle = cssColor(baseColor);
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let index = 0; index < 1800; index += 1) {
-        const alpha = 0.025 + random() * 0.07;
-        const x = random() * canvas.width;
-        const y = random() * canvas.height;
-        const length = 4 + random() * 34;
-        const rotation = (random() - 0.5) * 0.28;
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(rotation);
-        ctx.strokeStyle = random() > 0.48
-          ? cssColor("#fff8ec", alpha)
-          : cssColor(fiberColor, alpha);
-        ctx.lineWidth = 0.6 + random() * 1.4;
-        ctx.beginPath();
-        ctx.moveTo(-length / 2, 0);
-        ctx.lineTo(length / 2, 0);
-        ctx.stroke();
-        ctx.restore();
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    materials.filter(Boolean).forEach((material) => {
+      if ("roughness" in material) {
+        material.roughness = Math.max(material.roughness ?? 0.82, 0.72);
       }
-
-      for (let index = 0; index < 260; index += 1) {
-        ctx.fillStyle = cssColor(fiberColor, 0.025 + random() * 0.04);
-        ctx.fillRect(random() * canvas.width, random() * canvas.height, 1 + random() * 3, 1);
+      if ("metalness" in material) {
+        material.metalness = Math.min(material.metalness ?? 0.08, 0.28);
       }
-    });
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1.6, 1.35);
-    return texture;
-  }
-
-  function createPaperBumpTexture(seedText) {
-    const random = createSeededRandom(seedText);
-    const texture = createCanvasTexture(512, 512, (ctx, canvas) => {
-      ctx.fillStyle = "#808080";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let index = 0; index < 1500; index += 1) {
-        const tone = 106 + Math.floor(random() * 70);
-        ctx.fillStyle = `rgb(${tone}, ${tone}, ${tone})`;
-        ctx.fillRect(random() * canvas.width, random() * canvas.height, 1 + random() * 5, 1);
+      if (material.map) {
+        material.map.anisotropy = Math.max(material.map.anisotropy ?? 1, 8);
       }
+      material.needsUpdate = true;
     });
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2.4, 2.1);
-    return texture;
-  }
-
-  function loadSceneTexture(src, onLoad) {
-    const texture = textureLoader.load(src, (loadedTexture) => {
-      loadedTexture.colorSpace = THREE.SRGBColorSpace;
-      loadedTexture.anisotropy = 8;
-      onLoad?.(loadedTexture);
-    });
-
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 8;
-    texturesToDispose.push(texture);
-    return texture;
-  }
-
-  function addRoundedPart(
-    parent,
-    dimensions,
-    material,
-    position,
-    rotation = [0, 0, 0],
-    radius = 0.06,
-    bevel = 0.014,
-  ) {
-    const [width, height, depth] = dimensions;
-    const mesh = track(new THREE.Mesh(
-      createRoundedBoxGeometry(width, height, depth, radius, bevel),
-      material,
-    ));
-    mesh.position.set(...position);
-    mesh.rotation.set(...rotation);
-    parent.add(mesh);
-    return mesh;
-  }
-
-  function createLidTitleTexture() {
-    return createCanvasTexture(1200, 760, (ctx, canvas) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = cssColor(palette.metal, 0.76);
-      ctx.lineWidth = 8;
-      ctx.strokeRect(82, 86, canvas.width - 164, canvas.height - 172);
-
-      ctx.strokeStyle = cssColor(palette.metal, 0.38);
-      ctx.lineWidth = 2;
-      ctx.strokeRect(118, 122, canvas.width - 236, canvas.height - 244);
-
-      ctx.fillStyle = cssColor(palette.metal, 0.88);
-      ctx.textAlign = "center";
-      ctx.letterSpacing = "10px";
-      ctx.font = "700 54px Georgia, serif";
-      ctx.fillText("JUDHOOR", canvas.width / 2, 225);
-
-      ctx.letterSpacing = "0px";
-      ctx.fillStyle = cssColor(palette.deep, 0.92);
-      ctx.font = "700 102px Georgia, serif";
-      ctx.fillText(box.name.replace(" Box", ""), canvas.width / 2, 380);
-
-      ctx.fillStyle = cssColor(palette.deep, 0.64);
-      ctx.font = "500 42px Georgia, serif";
-      ctx.fillText(box.tagline, canvas.width / 2, 460);
-
-      ctx.strokeStyle = cssColor(palette.metal, 0.72);
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(canvas.width / 2 - 210, 532);
-      ctx.lineTo(canvas.width / 2 - 54, 532);
-      ctx.moveTo(canvas.width / 2 + 54, 532);
-      ctx.lineTo(canvas.width / 2 + 210, 532);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, 532, 24, 0, Math.PI * 2);
-      ctx.stroke();
-    });
-  }
-
-  const outerPaper = createPaperTexture(palette.base, palette.deep, `${box.slug}-outer`);
-  const outerBump = createPaperBumpTexture(`${box.slug}-outer-bump`);
-  const sidePaper = createPaperTexture(palette.deep, "#fff4df", `${box.slug}-side`);
-  const sideBump = createPaperBumpTexture(`${box.slug}-side-bump`);
-  const linerPaper = createPaperTexture(palette.inside, palette.deep, `${box.slug}-liner`);
-  const linerBump = createPaperBumpTexture(`${box.slug}-liner-bump`);
-
-  const outerMaterial = createMaterial(THREE.MeshStandardMaterial, {
-    color: palette.base,
-    map: outerPaper,
-    bumpMap: outerBump,
-    bumpScale: 0.022,
-    roughness: 0.94,
-    metalness: 0.015,
   });
-  const sideMaterial = createMaterial(THREE.MeshStandardMaterial, {
-    color: palette.deep,
-    map: sidePaper,
-    bumpMap: sideBump,
-    bumpScale: 0.014,
-    roughness: 0.9,
-    metalness: 0.02,
-  });
-  const interiorMaterial = createMaterial(THREE.MeshStandardMaterial, {
-    color: palette.inside,
-    map: linerPaper,
-    bumpMap: linerBump,
-    bumpScale: 0.018,
-    roughness: 0.96,
-    metalness: 0.02,
-  });
-  const linerMaterial = createMaterial(THREE.MeshStandardMaterial, {
-    color: palette.lining,
-    map: linerPaper,
-    bumpMap: linerBump,
-    bumpScale: 0.012,
-    roughness: 0.94,
-    metalness: 0.01,
-  });
-  const trimMaterial = createMaterial(THREE.MeshStandardMaterial, {
-    color: palette.metal,
-    roughness: 0.34,
-    metalness: 0.48,
-  });
-  const softShadowMaterial = createMaterial(THREE.ShadowMaterial, {
-    color: "#261a12",
-    transparent: true,
-    opacity: 0.28,
-  });
-
-  const trayWidth = 5.75;
-  const trayDepth = 3.95;
-  const trayFloorHeight = 0.22;
-  const wallHeight = 0.76;
-  const wallThickness = 0.24;
-  const outerWidth = trayWidth + wallThickness * 2;
-  const outerDepth = trayDepth + wallThickness * 2;
-  const lidWidth = outerWidth + 0.28;
-  const lidDepth = outerDepth + 0.3;
-  const lidThickness = 0.24;
-  const lidSkirtHeight = 0.48;
-
-  const boxGroup = new THREE.Group();
-  boxGroup.position.set(0, 0.1, 0);
-  group.add(boxGroup);
-
-  addRoundedPart(
-    boxGroup,
-    [outerWidth, trayFloorHeight, outerDepth],
-    sideMaterial,
-    [0, trayFloorHeight / 2, 0],
-    [0, 0, 0],
-    0.2,
-    0.025,
-  );
-  addRoundedPart(
-    boxGroup,
-    [trayWidth - 0.12, 0.06, trayDepth - 0.12],
-    interiorMaterial,
-    [0, trayFloorHeight + 0.03, 0],
-    [0, 0, 0],
-    0.16,
-    0.01,
-  );
-  addRoundedPart(
-    boxGroup,
-    [outerWidth, wallHeight, wallThickness],
-    sideMaterial,
-    [0, trayFloorHeight + wallHeight / 2, -trayDepth / 2 - wallThickness / 2],
-    [0, 0, 0],
-    0.08,
-    0.018,
-  );
-  addRoundedPart(
-    boxGroup,
-    [wallThickness, wallHeight, outerDepth],
-    sideMaterial,
-    [-trayWidth / 2 - wallThickness / 2, trayFloorHeight + wallHeight / 2, 0],
-    [0, 0, 0],
-    0.08,
-    0.018,
-  );
-  addRoundedPart(
-    boxGroup,
-    [wallThickness, wallHeight, outerDepth],
-    sideMaterial,
-    [trayWidth / 2 + wallThickness / 2, trayFloorHeight + wallHeight / 2, 0],
-    [0, 0, 0],
-    0.08,
-    0.018,
-  );
-  addRoundedPart(
-    boxGroup,
-    [trayWidth - 0.14, wallHeight * 0.82, 0.045],
-    linerMaterial,
-    [0, trayFloorHeight + wallHeight / 2, -trayDepth / 2 + 0.035],
-    [0, 0, 0],
-    0.035,
-    0.006,
-  );
-  addRoundedPart(
-    boxGroup,
-    [0.045, wallHeight * 0.82, trayDepth - 0.14],
-    linerMaterial,
-    [-trayWidth / 2 + 0.035, trayFloorHeight + wallHeight / 2, 0],
-    [0, 0, 0],
-    0.035,
-    0.006,
-  );
-  addRoundedPart(
-    boxGroup,
-    [0.045, wallHeight * 0.82, trayDepth - 0.14],
-    linerMaterial,
-    [trayWidth / 2 - 0.035, trayFloorHeight + wallHeight / 2, 0],
-    [0, 0, 0],
-    0.035,
-    0.006,
-  );
-
-  const frontPivot = new THREE.Group();
-  frontPivot.position.set(0, trayFloorHeight, trayDepth / 2 + wallThickness / 2);
-  boxGroup.add(frontPivot);
-  addRoundedPart(
-    frontPivot,
-    [outerWidth, wallHeight, wallThickness],
-    sideMaterial,
-    [0, wallHeight / 2, 0],
-    [0, 0, 0],
-    0.08,
-    0.018,
-  );
-  addRoundedPart(
-    frontPivot,
-    [trayWidth - 0.1, wallHeight * 0.76, 0.045],
-    linerMaterial,
-    [0, wallHeight / 2, -wallThickness / 2 + 0.038],
-    [0, 0, 0],
-    0.035,
-    0.006,
-  );
-
-  const lidPivot = new THREE.Group();
-  lidPivot.position.set(0, trayFloorHeight + wallHeight + 0.05, -lidDepth / 2);
-  boxGroup.add(lidPivot);
-  addRoundedPart(
-    lidPivot,
-    [lidWidth, lidThickness, lidDepth],
-    outerMaterial,
-    [0, lidThickness / 2, lidDepth / 2],
-    [0, 0, 0],
-    0.2,
-    0.024,
-  );
-  addRoundedPart(
-    lidPivot,
-    [lidWidth, lidSkirtHeight, wallThickness],
-    sideMaterial,
-    [0, -lidSkirtHeight / 2 + 0.02, lidDepth - wallThickness / 2],
-    [0, 0, 0],
-    0.08,
-    0.014,
-  );
-  addRoundedPart(
-    lidPivot,
-    [wallThickness, lidSkirtHeight, lidDepth],
-    sideMaterial,
-    [-lidWidth / 2 + wallThickness / 2, -lidSkirtHeight / 2 + 0.02, lidDepth / 2],
-    [0, 0, 0],
-    0.08,
-    0.014,
-  );
-  addRoundedPart(
-    lidPivot,
-    [wallThickness, lidSkirtHeight, lidDepth],
-    sideMaterial,
-    [lidWidth / 2 - wallThickness / 2, -lidSkirtHeight / 2 + 0.02, lidDepth / 2],
-    [0, 0, 0],
-    0.08,
-    0.014,
-  );
-  addRoundedPart(
-    lidPivot,
-    [lidWidth - 0.42, 0.045, lidDepth - 0.42],
-    linerMaterial,
-    [0, -lidSkirtHeight + 0.015, lidDepth / 2],
-    [0, 0, 0],
-    0.14,
-    0.008,
-  );
-
-  const lidPhotoMaterial = createMaterial(THREE.MeshBasicMaterial, {
-    map: createLidTitleTexture(),
-    transparent: true,
-    opacity: 0.96,
-    side: THREE.DoubleSide,
-    toneMapped: false,
-    alphaTest: 0.02,
-    polygonOffset: true,
-    polygonOffsetFactor: -1,
-  });
-  const lidPhoto = track(new THREE.Mesh(
-    new THREE.PlaneGeometry(lidWidth * 0.76, lidDepth * 0.42),
-    lidPhotoMaterial,
-  ), { receiveShadow: false });
-  lidPhoto.position.set(0, lidThickness + 0.024, lidDepth * 0.58);
-  lidPhoto.rotation.x = -Math.PI / 2;
-  lidPivot.add(lidPhoto);
-
-  const logoMaterial = createMaterial(THREE.MeshBasicMaterial, {
-    map: loadSceneTexture(assetPath("/judhoor-logo.png")),
-    transparent: true,
-    opacity: 0.86,
-    side: THREE.DoubleSide,
-    toneMapped: false,
-    alphaTest: 0.03,
-  });
-  const lidLogo = track(new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), logoMaterial), {
-    receiveShadow: false,
-  });
-  lidLogo.position.set(0, lidThickness + 0.03, lidDepth * 0.29);
-  lidLogo.rotation.x = -Math.PI / 2;
-  lidPivot.add(lidLogo);
-
-  [
-    [lidWidth * 0.74, 0.018, 0.045, 0, lidThickness + 0.018, lidDepth * 0.36],
-    [lidWidth * 0.74, 0.018, 0.045, 0, lidThickness + 0.018, lidDepth * 0.79],
-    [0.045, 0.018, lidDepth * 0.42, -lidWidth * 0.38, lidThickness + 0.018, lidDepth * 0.58],
-    [0.045, 0.018, lidDepth * 0.42, lidWidth * 0.38, lidThickness + 0.018, lidDepth * 0.58],
-  ].forEach(([width, height, depth, x, y, z]) => {
-    addRoundedPart(lidPivot, [width, height, depth], trimMaterial, [x, y, z], [0, 0, 0], 0.02, 0.005);
-  });
-
-  const trimHeight = 0.07;
-  [-0.96, 0.96].forEach((x) => {
-    addRoundedPart(
-      boxGroup,
-      [0.07, wallHeight * 0.58, trayDepth - 0.46],
-      trimMaterial,
-      [x, trayFloorHeight + wallHeight * 0.38, 0],
-      [0, 0, 0],
-      0.025,
-      0.006,
-    );
-  });
-  [-0.58, 0.58].forEach((z) => {
-    addRoundedPart(
-      boxGroup,
-      [trayWidth - 0.52, wallHeight * 0.54, 0.07],
-      trimMaterial,
-      [0, trayFloorHeight + wallHeight * 0.36, z],
-      [0, 0, 0],
-      0.025,
-      0.006,
-    );
-  });
-  addRoundedPart(
-    boxGroup,
-    [outerWidth - 0.16, trimHeight, 0.1],
-    trimMaterial,
-    [0, trayFloorHeight + wallHeight + trimHeight / 2, trayDepth / 2 + 0.02],
-    [0, 0, 0],
-    0.035,
-    0.006,
-  );
-  addRoundedPart(
-    boxGroup,
-    [outerWidth - 0.16, trimHeight, 0.1],
-    trimMaterial,
-    [0, trayFloorHeight + wallHeight + trimHeight / 2, -trayDepth / 2 - 0.02],
-    [0, 0, 0],
-    0.035,
-    0.006,
-  );
-
-  const productGroup = new THREE.Group();
-  productGroup.position.set(0, 1.28, -0.88);
-  productGroup.scale.setScalar(0.8);
-  productGroup.visible = false;
-  group.add(productGroup);
-
-  const frameMaterial = createMaterial(THREE.MeshStandardMaterial, {
-    color: palette.glow,
-    roughness: 0.92,
-    metalness: 0.02,
-    transparent: true,
-    opacity: 0.04,
-  });
-  const imageDepth = track(new THREE.Mesh(
-    createRoundedBoxGeometry(5.2, 3.8, 0.18, 0.16, 0.012),
-    frameMaterial,
-  ));
-  imageDepth.position.set(0, 0, -0.12);
-  productGroup.add(imageDepth);
-
-  const primaryMaterial = createMaterial(THREE.MeshBasicMaterial, {
-    transparent: true,
-    opacity: 0,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-    toneMapped: false,
-  });
-  const primaryImage = track(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), primaryMaterial));
-  primaryImage.position.set(0, 0.02, 0.03);
-  productGroup.add(primaryImage);
-
-  const secondaryMaterial = createMaterial(THREE.MeshBasicMaterial, {
-    transparent: true,
-    opacity: 0,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-    toneMapped: false,
-  });
-  const secondaryImage = track(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), secondaryMaterial));
-  secondaryImage.position.set(0, -0.52, 0.1);
-  secondaryImage.scale.setScalar(0.72);
-  productGroup.add(secondaryImage);
-
-  const itemGroup = new THREE.Group();
-  itemGroup.position.set(0, 0.02, 0.08);
-  boxGroup.add(itemGroup);
-  const itemMeshes = box.items.slice(0, 7).map((item, index) => {
-    const layout = itemLayouts[index] ?? itemLayouts[itemLayouts.length - 1];
-    const texture = loadSceneTexture(item.sprite);
-    const backingMaterial = createMaterial(THREE.MeshStandardMaterial, {
-      color: palette.inside,
-      map: linerPaper,
-      bumpMap: linerBump,
-      bumpScale: 0.008,
-      roughness: 0.96,
-      metalness: 0.01,
-      transparent: true,
-      opacity: 0,
-    });
-    const backing = addRoundedPart(
-      itemGroup,
-      [layout.size * 1.08, 0.055, layout.size * 0.86],
-      backingMaterial,
-      [layout.x, trayFloorHeight + 0.092, layout.z],
-      [0, layout.rotation, 0],
-      0.08,
-      0.006,
-    );
-    backing.userData = {
-      baseY: trayFloorHeight + 0.092,
-      targetY: trayFloorHeight + 0.104 + index * 0.01,
-    };
-    backing.visible = false;
-
-    const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(layout.size * 0.94, layout.size * 0.94),
-      createMaterial(THREE.MeshBasicMaterial, {
-        map: texture,
-        transparent: true,
-        opacity: 0,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        toneMapped: false,
-        alphaTest: 0.035,
-      }),
-    );
-    mesh.position.set(layout.x, trayFloorHeight + 0.136, layout.z);
-    mesh.rotation.set(-Math.PI / 2, 0, layout.rotation);
-    mesh.userData = {
-      targetY: trayFloorHeight + 0.148 + index * 0.012,
-      baseX: layout.x,
-      baseZ: layout.z,
-      backing,
-      delay: index * 0.12,
-    };
-    mesh.visible = false;
-    itemGroup.add(mesh);
-    return mesh;
-  });
-
-  const memoryCards = new THREE.Group();
-  ["Story", "Family", "Voice", "Care", "Roots", "Ritual"].forEach((word, index) => {
-    const cardCanvas = document.createElement("canvas");
-    cardCanvas.width = 512;
-    cardCanvas.height = 288;
-    const ctx = cardCanvas.getContext("2d");
-    ctx.fillStyle = "rgba(255, 247, 229, 0.88)";
-    ctx.fillRect(0, 0, cardCanvas.width, cardCanvas.height);
-    ctx.strokeStyle = palette.metal;
-    ctx.lineWidth = 8;
-    ctx.strokeRect(24, 24, cardCanvas.width - 48, cardCanvas.height - 48);
-    ctx.fillStyle = palette.deep;
-    ctx.textAlign = "center";
-    ctx.font = "700 52px Georgia, serif";
-    ctx.fillText(word, cardCanvas.width / 2, 166);
-
-    const cardTexture = new THREE.CanvasTexture(cardCanvas);
-    cardTexture.colorSpace = THREE.SRGBColorSpace;
-    texturesToDispose.push(cardTexture);
-    const card = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.82, 0.46),
-      createMaterial(THREE.MeshBasicMaterial, {
-        map: cardTexture,
-        transparent: true,
-        opacity: 0.2,
-        side: THREE.DoubleSide,
-        toneMapped: false,
-      }),
-    );
-    const angle = (index / 6) * Math.PI * 2;
-    card.position.set(Math.cos(angle) * 4.2, 1.9 + index * 0.08, Math.sin(angle) * 3.3);
-    card.rotation.set(-0.18, -angle + Math.PI / 2, 0.08);
-    card.userData = { angle, speed: 0.18 + index * 0.018, y: card.position.y };
-    memoryCards.add(card);
-  });
-  group.add(memoryCards);
-
-  const stageFloor = track(new THREE.Mesh(new THREE.PlaneGeometry(12, 9), softShadowMaterial), {
-    castShadow: false,
-    receiveShadow: true,
-  });
-  stageFloor.rotation.x = -Math.PI / 2;
-  stageFloor.position.y = -0.012;
-  group.add(stageFloor);
 
   return {
-    group,
-    productGroup,
-    primaryImage,
-    secondaryImage,
-    imageDepth,
-    lidPhoto,
-    frontPivot,
-    lidPivot,
-    itemMeshes,
-    memoryCards,
-    palette,
-    dispose() {
-      meshesToDispose.forEach((mesh) => {
-        mesh.geometry?.dispose();
-      });
-      texturesToDispose.forEach((texture) => texture.dispose());
-      materialsToDispose.forEach((material) => material.dispose());
-    },
+    scene: modelScene,
+    scale,
+    lid: findObjectByName(modelScene, "lid"),
+    base: findObjectByName(modelScene, "base"),
+    innerTray: findObjectByName(modelScene, "inner_tray"),
   };
 }
 
-function DemoThreeScene({ box, isOpen, autoRotate }) {
-  const hostRef = useRef(null);
-  const stateRef = useRef({
-    isOpen,
-    autoRotate,
-    dragging: false,
-    baseX: 0,
-    baseY: 0,
-    startX: 0,
-    startY: 0,
-  });
+class ModelErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidUpdate(previousProps) {
+    if (previousProps.resetKey !== this.props.resetKey && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
+function ModelLoadingFallback({ box }) {
+  const palette = themePalettes[box.theme] ?? themePalettes.sand;
+
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[1.1, 1.18, 96]} />
+        <meshBasicMaterial color={palette.metal} transparent opacity={0.34} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
+        <ringGeometry args={[1.55, 1.58, 96]} />
+        <meshBasicMaterial color={palette.glow} transparent opacity={0.18} />
+      </mesh>
+      <Html center className="jd-model-status">
+        <span>Loading {box.name}</span>
+      </Html>
+    </group>
+  );
+}
+
+function ModelPendingFallback({ box, modelPath }) {
+  const palette = themePalettes[box.theme] ?? themePalettes.sand;
+
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+        <circleGeometry args={[2.4, 96]} />
+        <meshBasicMaterial color={palette.glow} transparent opacity={0.14} />
+      </mesh>
+      <mesh position={[0, 0.68, 0]}>
+        <cylinderGeometry args={[1.64, 1.8, 0.18, 96]} />
+        <meshStandardMaterial color={palette.base} roughness={0.92} metalness={0.02} />
+      </mesh>
+      <mesh position={[0, 0.84, 0]}>
+        <cylinderGeometry args={[1.76, 1.76, 0.12, 96]} />
+        <meshStandardMaterial color={palette.deep} roughness={0.9} metalness={0.04} />
+      </mesh>
+      <Html center className="jd-model-status jd-model-status--missing">
+        <span>{box.name} model pending</span>
+        <small>{modelPath.replace(import.meta.env.BASE_URL, "/")}</small>
+      </Html>
+    </group>
+  );
+}
+
+function JudhoorGLBModel({ box, isOpen }) {
+  const groupRef = useRef(null);
+  const lidRef = useRef(null);
+  const closedLidRotationRef = useRef(0);
+  const modelPath = getModelPath(box);
+  const { scene, animations } = useGLTF(modelPath);
+  const preparedModel = useMemo(() => prepareModelScene(scene), [scene]);
+  const openAnimation = useMemo(() => chooseOpenAnimation(animations), [animations]);
+  const { actions } = useAnimations(animations, groupRef);
 
   useEffect(() => {
-    stateRef.current.isOpen = isOpen;
-    stateRef.current.autoRotate = autoRotate;
-  }, [isOpen, autoRotate]);
+    lidRef.current = preparedModel.lid;
+    closedLidRotationRef.current = preparedModel.lid?.rotation.x ?? 0;
+  }, [preparedModel]);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host) {
+    if (!openAnimation) {
       return undefined;
     }
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 80);
-    camera.position.set(4.4, 3.35, 8.4);
-    camera.lookAt(0, 0.95, 0);
-
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-      preserveDrawingBuffer: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.98;
-    renderer.domElement.className = "jd-three-canvas";
-    host.appendChild(renderer.domElement);
-
-    const ambientLight = new THREE.HemisphereLight("#fff6df", "#4a3627", 1.25);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight("#fff2cf", 4.6);
-    keyLight.position.set(-5.4, 7.6, 5.2);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.set(2048, 2048);
-    keyLight.shadow.camera.left = -8;
-    keyLight.shadow.camera.right = 8;
-    keyLight.shadow.camera.top = 8;
-    keyLight.shadow.camera.bottom = -8;
-    keyLight.shadow.camera.near = 1;
-    keyLight.shadow.camera.far = 20;
-    scene.add(keyLight);
-
-    const fillLight = new THREE.PointLight("#d5a866", 1.6, 18);
-    fillLight.position.set(4.8, 3.4, 2.8);
-    scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight("#fff8e9", 1.8);
-    rimLight.position.set(3.8, 4.2, -4.8);
-    scene.add(rimLight);
-
-    const textureLoader = new THREE.TextureLoader();
-    let model = createSceneModel(box, textureLoader);
-    scene.add(model.group);
-
-    function resize() {
-      const bounds = host.getBoundingClientRect();
-      const width = Math.max(1, bounds.width);
-      const height = Math.max(1, bounds.height);
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.position.x = width < 700 ? 3.2 : 4.4;
-      camera.position.z = width < 700 ? 10.8 : 8.4;
-      camera.position.y = width < 700 ? 3.75 : 3.35;
-      camera.lookAt(0, 0.95, 0);
-      camera.updateProjectionMatrix();
+    const action = actions[openAnimation.name];
+    if (!action) {
+      return undefined;
     }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(host);
-    resize();
+    action.enabled = true;
+    action.clampWhenFinished = true;
+    action.setLoop(THREE.LoopOnce, 1);
+    action.paused = false;
+    action.timeScale = isOpen ? 1 : -1;
 
-    function handlePointerDown(event) {
-      event.preventDefault();
-      renderer.domElement.setPointerCapture?.(event.pointerId);
-      stateRef.current.dragging = true;
-      stateRef.current.startX = event.clientX;
-      stateRef.current.startY = event.clientY;
-      stateRef.current.baseX = model.group.rotation.x;
-      stateRef.current.baseY = model.group.rotation.y;
+    if (isOpen) {
+      action.reset();
+    } else {
+      action.time = action.getClip().duration;
     }
 
-    function handlePointerMove(event) {
-      if (!stateRef.current.dragging) {
-        return;
-      }
-
-      const deltaX = event.clientX - stateRef.current.startX;
-      const deltaY = event.clientY - stateRef.current.startY;
-      model.group.rotation.y = stateRef.current.baseY + deltaX * 0.012;
-      model.group.rotation.x = clamp(
-        stateRef.current.baseX + deltaY * 0.008,
-        -0.58,
-        0.34,
-      );
-    }
-
-    function handlePointerUp(event) {
-      renderer.domElement.releasePointerCapture?.(event.pointerId);
-      stateRef.current.dragging = false;
-    }
-
-    renderer.domElement.addEventListener("pointerdown", handlePointerDown);
-    renderer.domElement.addEventListener("pointermove", handlePointerMove);
-    renderer.domElement.addEventListener("pointerup", handlePointerUp);
-    renderer.domElement.addEventListener("pointercancel", handlePointerUp);
-
-    let frameId = 0;
-    function animate() {
-      const elapsed = performance.now() * 0.001;
-      const state = stateRef.current;
-      const openTarget = state.isOpen ? -Math.PI * 0.52 : 0;
-      const frontTarget = state.isOpen ? Math.PI * 0.34 : 0;
-
-      model.lidPivot.rotation.x += (openTarget - model.lidPivot.rotation.x) * 0.085;
-      model.frontPivot.rotation.x += (frontTarget - model.frontPivot.rotation.x) * 0.075;
-
-      const productScaleTarget = state.isOpen ? 0.9 : 0.72;
-      model.productGroup.scale.x += (productScaleTarget - model.productGroup.scale.x) * 0.075;
-      model.productGroup.scale.y += (productScaleTarget - model.productGroup.scale.y) * 0.075;
-      model.productGroup.scale.z += (productScaleTarget - model.productGroup.scale.z) * 0.075;
-      model.productGroup.position.y += ((state.isOpen ? 2.05 : 1.18) - model.productGroup.position.y) * 0.075;
-      model.productGroup.position.z += ((state.isOpen ? -1.18 : -0.88) - model.productGroup.position.z) * 0.075;
-      model.primaryImage.material.opacity += (0 - model.primaryImage.material.opacity) * 0.08;
-      model.secondaryImage.material.opacity += (0 - model.secondaryImage.material.opacity) * 0.08;
-      model.secondaryImage.position.y += ((state.isOpen ? -1.22 : -0.52) - model.secondaryImage.position.y) * 0.08;
-      model.secondaryImage.position.z += ((state.isOpen ? 0.36 : 0.1) - model.secondaryImage.position.z) * 0.08;
-      model.imageDepth.material.opacity += ((state.isOpen ? 0.08 : 0.02) - model.imageDepth.material.opacity) * 0.08;
-      model.lidPhoto.material.opacity += ((state.isOpen ? 0.84 : 0.98) - model.lidPhoto.material.opacity) * 0.08;
-
-      model.itemMeshes.forEach((mesh, index) => {
-        const targetOpacity = state.isOpen ? 1 : 0;
-        const backing = mesh.userData.backing;
-        if (state.isOpen) {
-          mesh.visible = true;
-          if (backing) {
-            backing.visible = true;
-          }
-        }
-        const targetY = state.isOpen
-          ? mesh.userData.targetY + Math.sin(elapsed * 1.7 + index) * 0.035
-          : 0.22;
-        mesh.position.y += (targetY - mesh.position.y) * 0.08;
-        mesh.position.x =
-          mesh.userData.baseX + (state.isOpen ? Math.sin(elapsed * 1.2 + index) * 0.025 : 0);
-        mesh.position.z =
-          mesh.userData.baseZ + (state.isOpen ? Math.cos(elapsed * 1.05 + index) * 0.025 : 0);
-        mesh.material.opacity += (targetOpacity - mesh.material.opacity) * 0.075;
-        const targetScale = state.isOpen ? 1 : 0.72;
-        mesh.scale.x += (targetScale - mesh.scale.x) * 0.08;
-        mesh.scale.y += (targetScale - mesh.scale.y) * 0.08;
-
-        if (backing) {
-          const backingTargetY = state.isOpen ? backing.userData.targetY : backing.userData.baseY - 0.06;
-          backing.position.y += (backingTargetY - backing.position.y) * 0.08;
-          backing.material.opacity += ((state.isOpen ? 0.88 : 0) - backing.material.opacity) * 0.08;
-          backing.scale.x += (targetScale - backing.scale.x) * 0.07;
-          backing.scale.z += (targetScale - backing.scale.z) * 0.07;
-
-          if (!state.isOpen && backing.material.opacity < 0.02) {
-            backing.visible = false;
-          }
-        }
-
-        if (!state.isOpen && mesh.material.opacity < 0.02) {
-          mesh.visible = false;
-        }
-      });
-
-      model.memoryCards.children.forEach((card) => {
-        const angle = card.userData.angle + elapsed * card.userData.speed;
-        card.position.x = Math.cos(angle) * 4.2;
-        card.position.z = Math.sin(angle) * 3.3;
-        card.position.y = card.userData.y + Math.sin(elapsed * 1.1 + card.userData.angle) * 0.16;
-        card.rotation.y = -angle + Math.PI / 2;
-      });
-
-      if (state.autoRotate && !state.dragging) {
-        model.group.rotation.y += 0.006;
-      }
-
-      renderer.render(scene, camera);
-      frameId = window.requestAnimationFrame(animate);
-    }
-
-    animate();
+    action.play();
 
     return () => {
-      window.cancelAnimationFrame(frameId);
-      resizeObserver.disconnect();
-      renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
-      renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-      renderer.domElement.removeEventListener("pointerup", handlePointerUp);
-      renderer.domElement.removeEventListener("pointercancel", handlePointerUp);
-      scene.remove(model.group);
-      model.dispose();
-      renderer.dispose();
-      renderer.forceContextLoss();
-      renderer.domElement.remove();
+      action.fadeOut(0.12);
     };
-  }, [box]);
+  }, [actions, isOpen, openAnimation]);
 
-  return <div ref={hostRef} className="jd-three-host" aria-label={`${box.name} 3D stage`} />;
+  useFrame((_, delta) => {
+    if (openAnimation || !lidRef.current) {
+      return;
+    }
+
+    const targetRotation = isOpen
+      ? closedLidRotationRef.current + LID_OPEN_ROTATION
+      : closedLidRotationRef.current;
+
+    lidRef.current.rotation.x = THREE.MathUtils.damp(
+      lidRef.current.rotation.x,
+      targetRotation,
+      6,
+      delta,
+    );
+  });
+
+  return (
+    <group
+      ref={groupRef}
+      scale={preparedModel.scale}
+      rotation={[-0.08, -0.32, 0]}
+      position={[0, -0.02, 0]}
+    >
+      <primitive object={preparedModel.scene} />
+    </group>
+  );
+}
+
+function DemoThreeScene({ box, isOpen, autoRotate }) {
+  const modelPath = getModelPath(box);
+
+  return (
+    <div className="jd-three-host" aria-label={`${box.name} 3D stage`}>
+      <Canvas
+        className="jd-three-canvas"
+        shadows
+        dpr={[1, 1.5]}
+        camera={{ position: [4.1, 2.8, 7.4], fov: 38, near: 0.1, far: 80 }}
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+          preserveDrawingBuffer: true,
+        }}
+      >
+        <ambientLight intensity={0.72} color="#fff1d4" />
+        <directionalLight
+          castShadow
+          color="#fff2cf"
+          intensity={2.4}
+          position={[-4.5, 6.8, 4.6]}
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+          shadow-camera-left={-6}
+          shadow-camera-right={6}
+          shadow-camera-top={6}
+          shadow-camera-bottom={-6}
+        />
+        <spotLight
+          castShadow
+          color="#ffdca1"
+          intensity={2.6}
+          position={[3.8, 5.2, 4.1]}
+          angle={0.38}
+          penumbra={0.82}
+          distance={14}
+        />
+        <spotLight
+          color="#fff7e8"
+          intensity={0.88}
+          position={[-3.5, 3.2, -4.8]}
+          angle={0.52}
+          penumbra={0.9}
+          distance={12}
+        />
+
+        <Suspense fallback={<ModelLoadingFallback box={box} />}>
+          <ModelErrorBoundary
+            resetKey={`${box.slug}-${modelPath}`}
+            fallback={<ModelPendingFallback box={box} modelPath={modelPath} />}
+          >
+            <JudhoorGLBModel box={box} isOpen={isOpen} />
+          </ModelErrorBoundary>
+          <Environment preset="studio" />
+        </Suspense>
+
+        <ContactShadows
+          position={[0, -0.02, 0]}
+          opacity={0.42}
+          scale={7.4}
+          blur={2.8}
+          far={4.2}
+          resolution={512}
+          frames={1}
+        />
+        <OrbitControls
+          makeDefault
+          enablePan={false}
+          enableDamping
+          dampingFactor={0.065}
+          rotateSpeed={0.72}
+          autoRotate={autoRotate}
+          autoRotateSpeed={0.72}
+          minDistance={5.6}
+          maxDistance={10.8}
+          minPolarAngle={Math.PI * 0.18}
+          maxPolarAngle={Math.PI * 0.58}
+          target={[0, 0.95, 0]}
+        />
+      </Canvas>
+    </div>
+  );
 }
 
 function stopAtmosphere(engine) {

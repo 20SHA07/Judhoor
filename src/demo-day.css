@@ -180,6 +180,31 @@
   cursor: grabbing;
 }
 
+.jd-model-status {
+  display: grid;
+  gap: 4px;
+  min-width: 180px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 235, 188, 0.22);
+  border-radius: 16px;
+  background: rgba(28, 19, 14, 0.56);
+  color: rgba(255, 248, 232, 0.86);
+  text-align: center;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 42px rgba(18, 10, 7, 0.22);
+}
+
+.jd-model-status span {
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.jd-model-status small {
+  color: rgba(255, 235, 188, 0.68);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .jd-stage__shade {
   position: absolute;
   inset: 0;
