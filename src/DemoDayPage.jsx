@@ -77,12 +77,42 @@ const companionMoments = [
   "Demo checkout",
 ];
 
-const memoryVoiceLines = [
-  "Come sit with me. I want to tell you about the old house.",
-  "This picture reminds me of the day everyone gathered after lunch.",
-  "I kept this letter because it made me feel remembered.",
-  "When my grandchildren visit, the room feels bright again.",
-  "These small things are not small to me. They are my stories.",
+const memoryVoiceScripts = [
+  {
+    role: "Elder",
+    text: "Come sit with me. I want to tell you about the old house.",
+    rate: 0.82,
+    pitch: 0.82,
+    voiceHints: /natural|neural|aria|jenny|samantha|zira|female|woman/i,
+  },
+  {
+    role: "Daughter",
+    text: "This picture reminds me of the day everyone gathered after lunch.",
+    rate: 0.9,
+    pitch: 1.02,
+    voiceHints: /natural|neural|aria|jenny|samantha|female|woman/i,
+  },
+  {
+    role: "Grandchild",
+    text: "I kept this letter because it made me feel remembered.",
+    rate: 0.96,
+    pitch: 1.12,
+    voiceHints: /natural|neural|aria|jenny|samantha|female|woman/i,
+  },
+  {
+    role: "Elder",
+    text: "When my grandchildren visit, the room feels bright again.",
+    rate: 0.84,
+    pitch: 0.86,
+    voiceHints: /natural|neural|guy|david|mark|male|man|zira/i,
+  },
+  {
+    role: "Family",
+    text: "These small things are not small to me. They are my stories.",
+    rate: 0.88,
+    pitch: 0.94,
+    voiceHints: /natural|neural|online|premium|google|microsoft/i,
+  },
 ];
 
 function createSceneModel(box, textureLoader) {
@@ -501,7 +531,10 @@ function stopAtmosphere(engine) {
     return;
   }
 
-  engine.timers.forEach((timerId) => window.clearInterval(timerId));
+  engine.timers.forEach((timerId) => {
+    window.clearInterval(timerId);
+    window.clearTimeout(timerId);
+  });
   engine.sources.forEach((source) => {
     try {
       source.stop();
@@ -511,6 +544,66 @@ function stopAtmosphere(engine) {
   });
   window.speechSynthesis?.cancel();
   engine.context?.close?.();
+}
+
+function getBrowserVoices() {
+  if (!window.speechSynthesis) {
+    return Promise.resolve([]);
+  }
+
+  const loadedVoices = window.speechSynthesis.getVoices();
+  if (loadedVoices.length > 0) {
+    return Promise.resolve(loadedVoices);
+  }
+
+  return new Promise((resolve) => {
+    const timeoutId = window.setTimeout(() => {
+      window.speechSynthesis.removeEventListener("voiceschanged", handleVoicesChanged);
+      resolve(window.speechSynthesis.getVoices());
+    }, 1400);
+
+    function handleVoicesChanged() {
+      window.clearTimeout(timeoutId);
+      window.speechSynthesis.removeEventListener("voiceschanged", handleVoicesChanged);
+      resolve(window.speechSynthesis.getVoices());
+    }
+
+    window.speechSynthesis.addEventListener("voiceschanged", handleVoicesChanged);
+  });
+}
+
+function scoreNaturalVoice(voice, script, usedVoiceNames) {
+  const name = `${voice.name} ${voice.voiceURI}`.toLowerCase();
+  const language = voice.lang.toLowerCase();
+  let score = 0;
+
+  if (language.startsWith("en")) score += 60;
+  if (/natural|neural|online|premium/i.test(name)) score += 80;
+  if (/microsoft|google|apple|samantha|aria|jenny|guy|zira|david/i.test(name)) score += 42;
+  if (script.voiceHints.test(name)) score += 34;
+  if (!voice.localService) score += 16;
+  if (usedVoiceNames.has(voice.name)) score -= 24;
+
+  return score;
+}
+
+function buildVoiceCast(voices) {
+  const usedVoiceNames = new Set();
+
+  return memoryVoiceScripts.map((script) => {
+    const bestVoice = voices
+      .filter((voice) => /^en/i.test(voice.lang))
+      .sort((first, second) =>
+        scoreNaturalVoice(second, script, usedVoiceNames) -
+        scoreNaturalVoice(first, script, usedVoiceNames),
+      )[0] || voices[0];
+
+    if (bestVoice) {
+      usedVoiceNames.add(bestVoice.name);
+    }
+
+    return { ...script, voice: bestVoice };
+  });
 }
 
 function useMemoryAtmosphere() {
@@ -539,6 +632,9 @@ function useMemoryAtmosphere() {
 
     const sources = [];
     const timers = [];
+    const voices = await getBrowserVoices();
+    const voiceCast = buildVoiceCast(voices);
+    let nextVoiceIndex = 0;
 
     const noiseBuffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
     const noiseData = noiseBuffer.getChannelData(0);
@@ -558,35 +654,6 @@ function useMemoryAtmosphere() {
     roomSource.connect(roomFilter).connect(roomGain).connect(master);
     roomSource.start();
     sources.push(roomSource);
-
-    [98, 132, 176, 220].forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      oscillator.type = index % 2 === 0 ? "sine" : "triangle";
-      oscillator.frequency.value = frequency;
-
-      const filter = context.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 920 + index * 140;
-
-      const voiceGain = context.createGain();
-      voiceGain.gain.value = 0.0001;
-      oscillator.connect(filter).connect(voiceGain).connect(master);
-      oscillator.start();
-      sources.push(oscillator);
-
-      const timerId = window.setInterval(() => {
-        const now = context.currentTime;
-        const nextFrequency = frequency + (Math.random() - 0.5) * 34;
-        const nextGain = 0.055 + Math.random() * 0.075;
-        oscillator.frequency.cancelScheduledValues(now);
-        oscillator.frequency.linearRampToValueAtTime(nextFrequency, now + 0.22);
-        voiceGain.gain.cancelScheduledValues(now);
-        voiceGain.gain.setValueAtTime(voiceGain.gain.value, now);
-        voiceGain.gain.linearRampToValueAtTime(nextGain, now + 0.32);
-        voiceGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5 + Math.random() * 1.1);
-      }, 780 + index * 210);
-      timers.push(timerId);
-    });
 
     const playChime = () => {
       [392, 523.25, 659.25].forEach((frequency, index) => {
@@ -621,32 +688,41 @@ function useMemoryAtmosphere() {
     }, 2400);
     timers.push(crackleTimer);
 
-    const speakMemoryLine = () => {
+    const speakMemoryLine = (delay = 0) => {
       if (!window.speechSynthesis || window.speechSynthesis.speaking) {
         return;
       }
 
-      const lineIndex = Math.floor(Math.random() * memoryVoiceLines.length);
-      const utterance = new SpeechSynthesisUtterance(memoryVoiceLines[lineIndex]);
-      const voices = window.speechSynthesis.getVoices();
-      const preferredVoice =
-        voices.find((voice) => /en/i.test(voice.lang) && /female|samantha|zira|aria/i.test(voice.name)) ||
-        voices.find((voice) => /en/i.test(voice.lang)) ||
-        voices[0];
+      const script = voiceCast[nextVoiceIndex % voiceCast.length];
+      nextVoiceIndex += 1;
+      const utterance = new SpeechSynthesisUtterance(script.text);
+      utterance.lang = script.voice?.lang || "en-US";
 
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
+      if (script.voice) {
+        utterance.voice = script.voice;
       }
 
-      utterance.rate = 0.82;
-      utterance.pitch = 0.78;
-      utterance.volume = 0.92;
-      window.speechSynthesis.speak(utterance);
+      utterance.rate = script.rate + (Math.random() - 0.5) * 0.035;
+      utterance.pitch = script.pitch + (Math.random() - 0.5) * 0.045;
+      utterance.volume = 0.98;
+      utterance.onend = () => {
+        if (!engineRef.current) {
+          return;
+        }
+
+        const nextDelay = 1800 + Math.random() * 2400;
+        const timeoutId = window.setTimeout(() => speakMemoryLine(), nextDelay);
+        engineRef.current.timers.push(timeoutId);
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, delay);
+      timers.push(timeoutId);
     };
 
     window.speechSynthesis?.cancel();
-    speakMemoryLine();
-    timers.push(window.setInterval(speakMemoryLine, 8600));
+    speakMemoryLine(300);
 
     engineRef.current = { context, sources, timers };
     setIsPlaying(true);
@@ -728,7 +804,7 @@ export default function DemoDayPage({ currencyCode = "AED", onAddToCart }) {
               aria-pressed={isPlaying}
               onClick={toggle}
             >
-              {isPlaying ? "Stop voices" : "Play voices"}
+              {isPlaying ? "Stop voices" : "Play natural voices"}
             </button>
           </div>
         </div>
