@@ -77,48 +77,51 @@ const companionMoments = [
   "Demo checkout",
 ];
 
+const elderVoiceHints =
+  /natural|neural|online|premium|google|microsoft|apple|david|george|daniel|arthur|fred|guy|mark|zira|hazel|susan|martha|moira|victoria|samantha/i;
+
 const memoryVoiceScripts = [
   {
-    role: "Elder",
-    text: "Come sit with me. I want to tell you about the old house.",
-    rate: 0.82,
+    role: "Grandmother",
+    text: "My dear... come closer. This photograph takes me back many years.",
+    rate: 0.68,
+    pitch: 0.78,
+    voiceHints: elderVoiceHints,
+  },
+  {
+    role: "Grandfather",
+    text: "I remember the old house very clearly... the smell of coffee, and everyone laughing after lunch.",
+    rate: 0.66,
+    pitch: 0.72,
+    voiceHints: elderVoiceHints,
+  },
+  {
+    role: "Grandmother",
+    text: "When you read this letter to me slowly... I feel that I am still held by my family.",
+    rate: 0.7,
+    pitch: 0.8,
+    voiceHints: elderVoiceHints,
+  },
+  {
+    role: "Grandfather",
+    text: "These small things are not small to me. They carry my days, my people, and my stories.",
+    rate: 0.67,
+    pitch: 0.74,
+    voiceHints: elderVoiceHints,
+  },
+  {
+    role: "Grandmother",
+    text: "Stay a little longer, habibi... I have one more memory I want to share with you.",
+    rate: 0.69,
     pitch: 0.82,
-    voiceHints: /natural|neural|aria|jenny|samantha|zira|female|woman/i,
-  },
-  {
-    role: "Daughter",
-    text: "This picture reminds me of the day everyone gathered after lunch.",
-    rate: 0.9,
-    pitch: 1.02,
-    voiceHints: /natural|neural|aria|jenny|samantha|female|woman/i,
-  },
-  {
-    role: "Grandchild",
-    text: "I kept this letter because it made me feel remembered.",
-    rate: 0.96,
-    pitch: 1.12,
-    voiceHints: /natural|neural|aria|jenny|samantha|female|woman/i,
-  },
-  {
-    role: "Elder",
-    text: "When my grandchildren visit, the room feels bright again.",
-    rate: 0.84,
-    pitch: 0.86,
-    voiceHints: /natural|neural|guy|david|mark|male|man|zira/i,
-  },
-  {
-    role: "Family",
-    text: "These small things are not small to me. They are my stories.",
-    rate: 0.88,
-    pitch: 0.94,
-    voiceHints: /natural|neural|online|premium|google|microsoft/i,
+    voiceHints: elderVoiceHints,
   },
 ];
 
 function createSceneModel(box, textureLoader) {
   const palette = themePalettes[box.theme] ?? themePalettes.sand;
   const group = new THREE.Group();
-  group.rotation.set(-0.08, 0.28, 0);
+  group.rotation.set(-0.12, 0.22, 0);
 
   const meshesToDispose = [];
   const texturesToDispose = [];
@@ -170,7 +173,7 @@ function createSceneModel(box, textureLoader) {
     return texture;
   }
 
-  function addPart(parent, geometry, material, position, rotation = [0, 0, 0], edgeOpacity = 0.34) {
+  function addPart(parent, geometry, material, position, rotation = [0, 0, 0], edgeOpacity = 0.12) {
     const mesh = track(new THREE.Mesh(geometry, material));
     mesh.position.set(...position);
     mesh.rotation.set(...rotation);
@@ -196,7 +199,7 @@ function createSceneModel(box, textureLoader) {
     roughness: 0.72,
     metalness: 0.06,
     transparent: true,
-    opacity: 0.1,
+    opacity: 0.06,
   });
   const glowMaterial = createMaterial(THREE.MeshBasicMaterial, {
     color: palette.glow,
@@ -313,18 +316,22 @@ function createSceneModel(box, textureLoader) {
 
   const lidPhotoMaterial = createMaterial(THREE.MeshBasicMaterial, {
     transparent: true,
-    opacity: 0.92,
+    opacity: 0.98,
     side: THREE.DoubleSide,
     toneMapped: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
   });
   const lidPhoto = track(new THREE.Mesh(
-    new THREE.PlaneGeometry(lidWidth * 0.82, lidDepth * 0.78),
+    new THREE.PlaneGeometry(1, 1),
     lidPhotoMaterial,
   ));
   lidPhoto.position.set(0, lidThickness + 0.014, lidDepth / 2);
   lidPhoto.rotation.x = -Math.PI / 2;
   lidPivot.add(lidPhoto);
-  lidPhotoMaterial.map = loadSceneTexture(box.images[0]);
+  lidPhotoMaterial.map = loadSceneTexture(box.images[0], (texture) => {
+    fitImagePlane(lidPhoto, texture, lidWidth * 0.86, lidDepth * 0.82);
+  });
 
   const trimHeight = 0.08;
   [-0.9, 0.9].forEach((x) => {
@@ -367,6 +374,7 @@ function createSceneModel(box, textureLoader) {
   const productGroup = new THREE.Group();
   productGroup.position.set(0, 1.28, -0.88);
   productGroup.scale.setScalar(0.8);
+  productGroup.visible = false;
   group.add(productGroup);
 
   const imageDepth = track(new THREE.Mesh(new THREE.BoxGeometry(5.2, 3.8, 0.18), frameMaterial));
@@ -415,7 +423,7 @@ function createSceneModel(box, textureLoader) {
   productGroup.add(productGlow);
 
   const itemGroup = new THREE.Group();
-  itemGroup.position.set(0, 0.44, 0.08);
+  itemGroup.position.set(0, 0, 0.08);
   const itemMeshes = box.items.slice(0, 7).map((item, index) => {
     const layout = itemLayouts[index] ?? itemLayouts[itemLayouts.length - 1];
     const texture = loadSceneTexture(item.sprite);
@@ -431,10 +439,10 @@ function createSceneModel(box, textureLoader) {
         toneMapped: false,
       }),
     );
-    mesh.position.set(layout.x, 0.22, layout.z);
-    mesh.rotation.y = layout.rotation;
+    mesh.position.set(layout.x, trayFloorHeight + 0.1, layout.z);
+    mesh.rotation.set(-Math.PI / 2, 0, layout.rotation);
     mesh.userData = {
-      targetY: layout.y,
+      targetY: trayFloorHeight + 0.14 + index * 0.012,
       baseX: layout.x,
       baseZ: layout.z,
       delay: index * 0.12,
@@ -547,7 +555,7 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 80);
-    camera.position.set(0, 2.9, 9.4);
+    camera.position.set(0, 3.1, 10.4);
     camera.lookAt(0, 1.25, 0);
 
     const renderer = new THREE.WebGLRenderer({
@@ -594,8 +602,8 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
       const height = Math.max(1, bounds.height);
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      camera.position.z = width < 700 ? 10.6 : 9.4;
-      camera.position.y = width < 700 ? 3.45 : 2.9;
+      camera.position.z = width < 700 ? 11.8 : 10.4;
+      camera.position.y = width < 700 ? 3.6 : 3.1;
       camera.lookAt(0, 1.25, 0);
       camera.updateProjectionMatrix();
     }
@@ -643,8 +651,8 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
     function animate() {
       const elapsed = performance.now() * 0.001;
       const state = stateRef.current;
-      const openTarget = state.isOpen ? -Math.PI * 0.68 : 0;
-      const frontTarget = state.isOpen ? Math.PI * 0.52 : 0;
+      const openTarget = state.isOpen ? -Math.PI * 0.52 : 0;
+      const frontTarget = state.isOpen ? Math.PI * 0.34 : 0;
 
       model.lidPivot.rotation.x += (openTarget - model.lidPivot.rotation.x) * 0.085;
       model.frontPivot.rotation.x += (frontTarget - model.frontPivot.rotation.x) * 0.075;
@@ -655,12 +663,12 @@ function DemoThreeScene({ box, isOpen, autoRotate }) {
       model.productGroup.scale.z += (productScaleTarget - model.productGroup.scale.z) * 0.075;
       model.productGroup.position.y += ((state.isOpen ? 2.05 : 1.18) - model.productGroup.position.y) * 0.075;
       model.productGroup.position.z += ((state.isOpen ? -1.18 : -0.88) - model.productGroup.position.z) * 0.075;
-      model.primaryImage.material.opacity += ((state.isOpen ? 0.86 : 0.14) - model.primaryImage.material.opacity) * 0.08;
-      model.secondaryImage.material.opacity += ((state.isOpen ? 0.54 : 0) - model.secondaryImage.material.opacity) * 0.08;
+      model.primaryImage.material.opacity += (0 - model.primaryImage.material.opacity) * 0.08;
+      model.secondaryImage.material.opacity += (0 - model.secondaryImage.material.opacity) * 0.08;
       model.secondaryImage.position.y += ((state.isOpen ? -1.22 : -0.52) - model.secondaryImage.position.y) * 0.08;
       model.secondaryImage.position.z += ((state.isOpen ? 0.36 : 0.1) - model.secondaryImage.position.z) * 0.08;
       model.imageDepth.material.opacity += ((state.isOpen ? 0.08 : 0.02) - model.imageDepth.material.opacity) * 0.08;
-      model.lidPhoto.material.opacity += ((state.isOpen ? 0.62 : 0.94) - model.lidPhoto.material.opacity) * 0.08;
+      model.lidPhoto.material.opacity += ((state.isOpen ? 0.84 : 0.98) - model.lidPhoto.material.opacity) * 0.08;
 
       model.itemMeshes.forEach((mesh, index) => {
         const targetOpacity = state.isOpen ? 1 : 0;
@@ -767,10 +775,17 @@ function scoreNaturalVoice(voice, script, usedVoiceNames) {
 
   if (language.startsWith("en")) score += 60;
   if (/natural|neural|online|premium/i.test(name)) score += 80;
-  if (/microsoft|google|apple|samantha|aria|jenny|guy|zira|david/i.test(name)) score += 42;
+  if (/microsoft|google|apple|samantha|aria|jenny|guy|zira|david|george|daniel|arthur|hazel|susan|martha|moira|victoria/i.test(name)) {
+    score += 42;
+  }
+  if (/david|george|daniel|arthur|fred|guy|mark|hazel|susan|martha|moira|victoria/i.test(name)) {
+    score += 36;
+  }
+  if (/child|kid|junior|young|teen/i.test(name)) score -= 90;
+  if (/robot|compact|eloquence|novelty/i.test(name)) score -= 35;
   if (script.voiceHints.test(name)) score += 34;
   if (!voice.localService) score += 16;
-  if (usedVoiceNames.has(voice.name)) score -= 24;
+  if (usedVoiceNames.has(voice.name)) score -= 8;
 
   return score;
 }
@@ -816,7 +831,7 @@ function useMemoryAtmosphere() {
     const master = context.createGain();
     master.gain.value = 0.0001;
     master.connect(context.destination);
-    master.gain.exponentialRampToValueAtTime(0.42, context.currentTime + 0.8);
+    master.gain.exponentialRampToValueAtTime(0.3, context.currentTime + 0.9);
 
     const sources = [];
     const timers = [];
@@ -835,10 +850,10 @@ function useMemoryAtmosphere() {
     roomSource.loop = true;
     const roomFilter = context.createBiquadFilter();
     roomFilter.type = "bandpass";
-    roomFilter.frequency.value = 520;
-    roomFilter.Q.value = 0.85;
+    roomFilter.frequency.value = 420;
+    roomFilter.Q.value = 0.72;
     const roomGain = context.createGain();
-    roomGain.gain.value = 0.18;
+    roomGain.gain.value = 0.09;
     roomSource.connect(roomFilter).connect(roomGain).connect(master);
     roomSource.start();
     sources.push(roomSource);
@@ -853,7 +868,7 @@ function useMemoryAtmosphere() {
         oscillator.connect(chimeGain).connect(master);
         const startAt = context.currentTime + index * 0.13;
         oscillator.start(startAt);
-        chimeGain.gain.linearRampToValueAtTime(0.09, startAt + 0.05);
+        chimeGain.gain.linearRampToValueAtTime(0.055, startAt + 0.05);
         chimeGain.gain.exponentialRampToValueAtTime(0.001, startAt + 1.2);
         oscillator.stop(startAt + 1.35);
       });
@@ -870,14 +885,20 @@ function useMemoryAtmosphere() {
       }
       tick.buffer = tickBuffer;
       const tickGain = context.createGain();
-      tickGain.gain.value = 0.032;
+      tickGain.gain.value = 0.018;
       tick.connect(tickGain).connect(master);
       tick.start();
     }, 2400);
     timers.push(crackleTimer);
 
     const speakMemoryLine = (delay = 0) => {
-      if (!window.speechSynthesis || window.speechSynthesis.speaking) {
+      if (!window.speechSynthesis) {
+        return;
+      }
+
+      if (window.speechSynthesis.speaking) {
+        const retryId = window.setTimeout(() => speakMemoryLine(), 700);
+        engineRef.current?.timers.push(retryId);
         return;
       }
 
@@ -890,15 +911,15 @@ function useMemoryAtmosphere() {
         utterance.voice = script.voice;
       }
 
-      utterance.rate = script.rate + (Math.random() - 0.5) * 0.035;
-      utterance.pitch = script.pitch + (Math.random() - 0.5) * 0.045;
-      utterance.volume = 0.98;
+      utterance.rate = clamp(script.rate + (Math.random() - 0.5) * 0.035, 0.6, 0.78);
+      utterance.pitch = clamp(script.pitch + (Math.random() - 0.5) * 0.04, 0.66, 0.88);
+      utterance.volume = 0.92;
       utterance.onend = () => {
         if (!engineRef.current) {
           return;
         }
 
-        const nextDelay = 1800 + Math.random() * 2400;
+        const nextDelay = 2800 + Math.random() * 3600;
         const timeoutId = window.setTimeout(() => speakMemoryLine(), nextDelay);
         engineRef.current.timers.push(timeoutId);
       };
@@ -909,10 +930,9 @@ function useMemoryAtmosphere() {
       timers.push(timeoutId);
     };
 
-    window.speechSynthesis?.cancel();
-    speakMemoryLine(300);
-
     engineRef.current = { context, sources, timers };
+    window.speechSynthesis?.cancel();
+    speakMemoryLine(450);
     setIsPlaying(true);
   }
 

@@ -1262,22 +1262,22 @@ img {
 }
 
 .jh-demo-orbit__box-3d {
-  --jh-box-depth: clamp(34px, 5vw, 64px);
+  --jh-box-depth: clamp(18px, 3vw, 36px);
   --jh-box-face: #f4dfbd;
   --jh-box-side: #c49758;
   --jh-box-edge: rgba(121, 84, 45, 0.42);
-  --jh-box-padding: clamp(12px, 2vw, 22px);
+  --jh-box-padding: clamp(6px, 1.2vw, 12px);
   position: relative;
-  width: min(92%, 590px);
-  aspect-ratio: 1.18;
-  max-height: min(48vh, 430px);
-  border-radius: 24px;
+  width: min(84%, 520px);
+  aspect-ratio: 1;
+  max-height: min(48vh, 410px);
+  border-radius: 20px;
   pointer-events: none;
-  transform: translate3d(0, -4%, 92px) rotateX(8deg) rotateY(-17deg) rotateZ(-1deg);
+  transform: translate3d(0, -4%, 82px) rotateX(5deg) rotateY(-10deg) rotateZ(-0.4deg);
   transform-style: preserve-3d;
   filter:
-    drop-shadow(18px 26px 28px rgba(49, 32, 17, 0.24))
-    drop-shadow(-8px 12px 18px rgba(49, 32, 17, 0.1));
+    drop-shadow(12px 22px 28px rgba(49, 32, 17, 0.2))
+    drop-shadow(-6px 10px 16px rgba(49, 32, 17, 0.08));
   transition:
     opacity 360ms ease,
     transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -1319,8 +1319,8 @@ img {
     linear-gradient(150deg, var(--jh-box-face), color-mix(in srgb, var(--jh-box-side) 52%, #f6ebd5));
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.34),
-    inset 0 -22px 32px rgba(79, 52, 27, 0.16),
-    0 26px 40px rgba(46, 30, 16, 0.18);
+    inset 0 -14px 24px rgba(79, 52, 27, 0.12),
+    0 20px 34px rgba(46, 30, 16, 0.14);
   transform: translateZ(0);
 }
 
@@ -1329,13 +1329,13 @@ img {
   width: auto;
   height: auto;
   object-fit: contain;
-  padding: clamp(2px, 0.5vw, 6px);
+  padding: 0;
   background:
-    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.52), transparent 58%),
-    rgba(255, 248, 237, 0.32);
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.34), transparent 58%),
+    rgba(255, 248, 237, 0.18);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.34),
-    0 16px 24px rgba(63, 42, 22, 0.12);
+    0 0 0 1px rgba(255, 255, 255, 0.28),
+    0 12px 20px rgba(63, 42, 22, 0.1);
   transform: translateZ(var(--jh-box-depth));
 }
 
@@ -1347,24 +1347,25 @@ img {
 }
 
 .jh-demo-orbit__box-side--right {
-  top: 5%;
+  top: 4%;
   right: calc(var(--jh-box-depth) * -0.98);
   width: var(--jh-box-depth);
-  height: 90%;
+  height: 92%;
   transform-origin: left center;
   transform: rotateY(90deg);
 }
 
 .jh-demo-orbit__box-side--bottom {
-  left: 5%;
+  left: 4%;
   bottom: calc(var(--jh-box-depth) * -0.98);
-  width: 90%;
+  width: 92%;
   height: var(--jh-box-depth);
   transform-origin: top center;
   transform: rotateX(-90deg);
 }
 
 .jh-demo-orbit__box-lid {
+  display: none;
   inset: 4% 3%;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background:
@@ -1377,11 +1378,11 @@ img {
 }
 
 .jh-demo-stage__scene--open .jh-demo-orbit__box-3d {
-  opacity: 0.18;
-  transform: translate3d(0, -19%, 58px) rotateX(58deg) rotateY(-24deg) rotateZ(-2deg) scale(0.72);
+  opacity: 0.32;
+  transform: translate3d(0, -17%, 58px) rotateX(16deg) rotateY(-14deg) rotateZ(-0.5deg) scale(0.72);
   filter:
     blur(0.2px)
-    drop-shadow(10px 20px 22px rgba(49, 32, 17, 0.16));
+    drop-shadow(8px 18px 20px rgba(49, 32, 17, 0.14));
 }
 
 .jh-demo-stage__scene--open .jh-demo-orbit__box-lid {
@@ -3224,7 +3225,7 @@ body {
   }
 
   .jh-demo-orbit__box-3d {
-    --jh-box-depth: 34px;
+    --jh-box-depth: 22px;
     width: min(92%, 350px);
     max-height: 250px;
     border-radius: 20px;
