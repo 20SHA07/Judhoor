@@ -736,6 +736,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
           <NavLink to="/demo-day">Demo Day</NavLink>
+          <NavLink to="/model-viewer">3D Box</NavLink>
           <NavLink to="/shop">Shop</NavLink>
           <CurrencySelector
             currencyCode={currencyCode}
@@ -770,6 +771,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
           <NavLink to="/demo-day">Demo Day</NavLink>
+          <NavLink to="/model-viewer">3D Box</NavLink>
           <NavLink to="/shop">Shop</NavLink>
         </div>
         <div className="jh-footer__links">
