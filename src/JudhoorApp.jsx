@@ -604,11 +604,11 @@ function CartSummary({
 
 function QuantityControl({ quantity, onDecrease, onIncrease }) {
   return (
-    <div className="jh-counter">
+    <div className="jh-counter" aria-label="Quantity control">
       <button type="button" onClick={onDecrease} aria-label="Decrease quantity">
         -
       </button>
-      <span>{quantity}</span>
+      <span aria-live="polite">{quantity}</span>
       <button type="button" onClick={onIncrease} aria-label="Increase quantity">
         +
       </button>
@@ -830,6 +830,7 @@ function TranslateWidget() {
 function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
   const [isCompactNavOpen, setIsCompactNavOpen] = useState(false);
+  const headerRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -863,6 +864,32 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
     setIsCompactNavOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (!isCompactNavOpen || !isHeaderCondensed) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (!headerRef.current?.contains(event.target)) {
+        setIsCompactNavOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setIsCompactNavOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isCompactNavOpen, isHeaderCondensed]);
+
   const closeCompactNav = () => {
     setIsCompactNavOpen(false);
   };
@@ -874,9 +901,13 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
 
   return (
     <div className="jh-app">
+      <a className="jh-skip-link" href="#main-content">
+        Skip to content
+      </a>
       <div className="jh-bg jh-bg--one" />
       <div className="jh-bg jh-bg--two" />
       <header
+        ref={headerRef}
         className={[
           "jh-header",
           isHeaderCondensed ? "jh-header--condensed" : "",
@@ -884,7 +915,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           cartCount > 0 ? "jh-header--has-cart" : "",
         ].filter(Boolean).join(" ")}
       >
-        <NavLink to="/" className="jh-brand">
+        <NavLink to="/" className="jh-brand" onClick={closeCompactNav}>
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
           <div>
             <strong>Judhoor</strong>
@@ -908,6 +939,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           id="jh-primary-nav"
           className="jh-nav"
           aria-label="Primary navigation"
+          aria-hidden={isHeaderCondensed && !isCompactNavOpen ? "true" : undefined}
           onClick={(event) => {
             if (event.target instanceof Element && event.target.closest("a")) {
               closeCompactNav();
@@ -935,7 +967,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           ) : null}
         </nav>
       </header>
-      <main className="jh-main">{children}</main>
+      <main id="main-content" className="jh-main" tabIndex={-1}>{children}</main>
       <footer className="jh-footer">
         <div className="jh-footer__brand">
           <img src={assetPath("/judhoor-logo.png")} alt="Judhoor logo" />
@@ -2747,14 +2779,14 @@ export default function JudhoorApp() {
   function handleAddToCart(slug) {
     setCart((current) => ({
       ...current,
-      [slug]: current[slug] + 1,
+      [slug]: (current[slug] ?? 0) + 1,
     }));
   }
 
   function handleUpdateQuantity(slug, delta) {
     setCart((current) => ({
       ...current,
-      [slug]: Math.max(0, current[slug] + delta),
+      [slug]: Math.max(0, (current[slug] ?? 0) + delta),
     }));
   }
 
@@ -2765,9 +2797,16 @@ export default function JudhoorApp() {
 
   function replayIntro() {
     setShowIntro(false);
-    window.requestAnimationFrame(() => {
+    const restartIntro = () => {
       setShowIntro(true);
-    });
+    };
+
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(restartIntro);
+      return;
+    }
+
+    window.setTimeout(restartIntro, 0);
   }
 
   return (

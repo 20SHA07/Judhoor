@@ -50,6 +50,34 @@ body {
   color: var(--jh-coffee);
 }
 
+.jh-skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 120;
+  padding: 10px 14px;
+  border: 1px solid rgba(119, 89, 51, 0.3);
+  border-radius: 999px;
+  background: #fff9ef;
+  color: var(--jh-coffee);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 12px 28px rgba(39, 24, 15, 0.14);
+  transform: translateY(-160%);
+  transition: transform 180ms ease;
+}
+
+.jh-skip-link:focus-visible {
+  outline: 3px solid rgba(185, 148, 105, 0.34);
+  outline-offset: 3px;
+  transform: translateY(0);
+}
+
+#main-content {
+  scroll-margin-top: 120px;
+}
+
 .jh-bg,
 .jh-hero__frame-tag,
 .jh-brand span {
