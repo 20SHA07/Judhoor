@@ -861,7 +861,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
         className={[
           "jh-header",
           isHeaderCondensed ? "jh-header--condensed" : "",
-          cartCount > 0 && !isHeaderCondensed ? "jh-header--has-cart" : "",
+          cartCount > 0 ? "jh-header--has-cart" : "",
         ].filter(Boolean).join(" ")}
       >
         <NavLink to="/" className="jh-brand">
