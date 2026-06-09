@@ -5044,3 +5044,101 @@ body {
     pointer-events: auto !important;
   }
 }
+
+/* Smoother compact nav pass. These rules intentionally sit last so the header
+   transitions do not get cancelled by earlier compact-nav overrides. */
+.jh-header {
+  will-change: width, max-width, min-height, padding, gap, border-radius, transform;
+  transition:
+    width 520ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    max-width 520ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    min-height 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    padding 440ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    gap 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    border-radius 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    background-color 300ms ease,
+    box-shadow 320ms ease,
+    transform 420ms cubic-bezier(0.2, 0.72, 0.18, 1);
+}
+
+.jh-brand,
+.jh-brand img,
+.jh-brand strong,
+.jh-nav,
+.jh-nav > *,
+.jh-nav-toggle {
+  transition:
+    opacity 260ms ease,
+    transform 360ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    max-width 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    height 320ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    gap 320ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    color 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease;
+}
+
+@media (min-width: 981px) {
+  .jh-header.jh-header--condensed,
+  .jh-header.jh-header--condensed:not(:hover),
+  .jh-header.jh-header--condensed:hover,
+  .jh-header.jh-header--condensed.jh-header--has-cart,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(:hover),
+  .jh-header.jh-header--condensed.jh-header--has-cart:hover,
+  .jh-header.jh-header--condensed.jh-header--compact-open,
+  .jh-header.jh-header--condensed.jh-header--compact-open:hover,
+  .jh-header.jh-header--condensed.jh-header--compact-open.jh-header--has-cart,
+  .jh-header.jh-header--condensed.jh-header--compact-open.jh-header--has-cart:hover {
+    transition:
+      width 520ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      max-width 520ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      min-height 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      padding 440ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      gap 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      border-radius 420ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      background-color 300ms ease,
+      box-shadow 320ms ease,
+      transform 420ms cubic-bezier(0.2, 0.72, 0.18, 1) !important;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-nav-toggle {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-nav,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) .jh-nav {
+    transition:
+      opacity 180ms ease,
+      transform 260ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      width 260ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      max-width 260ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      height 220ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      max-height 220ms cubic-bezier(0.2, 0.72, 0.18, 1) !important;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--compact-open .jh-nav,
+  .jh-header.jh-header--condensed.jh-header--compact-open:hover .jh-nav,
+  .jh-header.jh-header--condensed.jh-header--compact-open.jh-header--has-cart:hover .jh-nav {
+    transform-origin: right center;
+    transition:
+      opacity 260ms ease 80ms,
+      transform 360ms cubic-bezier(0.2, 0.72, 0.18, 1) 60ms,
+      gap 320ms cubic-bezier(0.2, 0.72, 0.18, 1),
+      max-width 420ms cubic-bezier(0.2, 0.72, 0.18, 1) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jh-header,
+  .jh-brand,
+  .jh-brand img,
+  .jh-brand strong,
+  .jh-nav,
+  .jh-nav > *,
+  .jh-nav-toggle {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}

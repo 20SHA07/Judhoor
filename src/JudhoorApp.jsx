@@ -834,31 +834,49 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
   const location = useLocation();
 
   useEffect(() => {
-    function syncHeaderState() {
-      const scrollTop =
-        window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-      const shouldCondense = scrollTop > 140;
+    let frameId = 0;
 
-      if (!shouldCondense) {
-        setIsCompactNavOpen(false);
+    function syncHeaderState() {
+      function applyHeaderState() {
+        frameId = 0;
+        const scrollTop =
+          window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const shouldCondense = isHeaderCondensed ? scrollTop > 96 : scrollTop > 180;
+
+        if (!shouldCondense) {
+          setIsCompactNavOpen(false);
+        }
+
+        setIsHeaderCondensed((current) =>
+          current === shouldCondense ? current : shouldCondense,
+        );
       }
 
-      setIsHeaderCondensed((current) =>
-        current === shouldCondense ? current : shouldCondense,
-      );
+      if (frameId) {
+        return;
+      }
+
+      if (typeof window.requestAnimationFrame === "function") {
+        frameId = window.requestAnimationFrame(applyHeaderState);
+        return;
+      }
+
+      applyHeaderState();
     }
 
     syncHeaderState();
-    const syncIntervalId = window.setInterval(syncHeaderState, 200);
     window.addEventListener("scroll", syncHeaderState, { passive: true });
     window.addEventListener("resize", syncHeaderState);
 
     return () => {
-      window.clearInterval(syncIntervalId);
+      if (frameId && typeof window.cancelAnimationFrame === "function") {
+        window.cancelAnimationFrame(frameId);
+      }
+
       window.removeEventListener("scroll", syncHeaderState);
       window.removeEventListener("resize", syncHeaderState);
     };
-  }, []);
+  }, [isHeaderCondensed]);
 
   useEffect(() => {
     setIsCompactNavOpen(false);
