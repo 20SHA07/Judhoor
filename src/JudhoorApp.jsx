@@ -968,7 +968,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
           <NavLink to="/demo-day">Demo Day</NavLink>
-          <NavLink to="/model-viewer">3D Box</NavLink>
+          <NavLink to="/vr-box-viewer">3D Box</NavLink>
           <NavLink to="/shop">Shop</NavLink>
           <CurrencySelector
             currencyCode={currencyCode}
@@ -1003,7 +1003,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
           <NavLink to="/demo-day">Demo Day</NavLink>
-          <NavLink to="/model-viewer">3D Box</NavLink>
+          <NavLink to="/vr-box-viewer">3D Box</NavLink>
           <NavLink to="/shop">Shop</NavLink>
         </div>
         <div className="jh-footer__links">
@@ -1363,7 +1363,7 @@ function HomePage({ currencyCode, onAddToCart }) {
             <NavLink to="/experience" className="jh-button jh-button--ghost">
               Our Story
             </NavLink>
-            <NavLink to="/model-viewer" className="jh-button jh-button--ghost">
+            <NavLink to="/vr-box-viewer" className="jh-button jh-button--ghost">
               View 3D Box
             </NavLink>
           </div>
@@ -2876,6 +2876,7 @@ export default function JudhoorApp() {
               />
             }
           />
+          <Route path="/vr-box-viewer" element={<BoxModelViewer />} />
           <Route path="/model-viewer" element={<BoxModelViewer />} />
           <Route
             path="/shop"

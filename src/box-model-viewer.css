@@ -78,6 +78,82 @@
   cursor: grabbing;
 }
 
+.bmv-toolbar {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: min(680px, calc(100% - 36px));
+  pointer-events: auto;
+}
+
+.bmv-control,
+.bmv-vr-button-host button {
+  min-height: 42px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(119, 89, 51, 0.28) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 249, 239, 0.88) !important;
+  color: var(--jh-coffee) !important;
+  font: inherit !important;
+  font-size: 0.82rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-decoration: none !important;
+  box-shadow:
+    0 12px 26px rgba(65, 41, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  position: static !important;
+  width: auto !important;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease !important;
+}
+
+.bmv-control:hover,
+.bmv-control:focus-visible,
+.bmv-vr-button-host button:hover,
+.bmv-vr-button-host button:focus-visible {
+  border-color: rgba(119, 89, 51, 0.48) !important;
+  background: rgba(255, 249, 239, 0.98) !important;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.bmv-control--link {
+  background: rgba(39, 24, 15, 0.9) !important;
+  color: #fff8ed !important;
+}
+
+.bmv-mode-note {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 5;
+  max-width: min(520px, calc(100% - 36px));
+  padding: 10px 13px;
+  border: 1px solid rgba(119, 89, 51, 0.14);
+  border-radius: 999px;
+  color: rgba(39, 24, 15, 0.78);
+  background: rgba(255, 249, 239, 0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  box-shadow: 0 12px 28px rgba(65, 41, 24, 0.1);
+  backdrop-filter: blur(12px);
+}
+
 .bmv-status {
   max-width: min(320px, 74vw);
   padding: 14px 16px;
@@ -105,6 +181,27 @@
   .bmv-stage {
     min-height: 560px;
     border-radius: 24px;
+  }
+
+  .bmv-toolbar {
+    inset: 14px 14px auto 14px;
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .bmv-control,
+  .bmv-vr-button-host button {
+    min-height: 40px !important;
+    padding-inline: 13px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .bmv-mode-note {
+    right: 14px;
+    left: 14px;
+    bottom: 14px;
+    max-width: none;
+    border-radius: 16px;
   }
 }
 
