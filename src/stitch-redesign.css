@@ -4838,3 +4838,181 @@ body {
     left: 18px;
   }
 }
+
+/* Restored minimized nav: scroll condenses into a stable brand pill with a
+   tap/click menu, avoiding the old hover-only cramped state. */
+.jh-nav-toggle {
+  order: 3;
+  width: 42px;
+  height: 42px;
+  display: none;
+  place-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(119, 89, 51, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 249, 239, 0.78);
+  color: var(--jh-coffee);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.66);
+  cursor: pointer;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    transform 220ms ease;
+}
+
+.jh-nav-toggle:hover,
+.jh-nav-toggle:focus-visible {
+  background: rgba(255, 249, 239, 0.96);
+  border-color: rgba(119, 89, 51, 0.42);
+}
+
+.jh-nav-toggle:active {
+  transform: translateY(1px);
+}
+
+.jh-nav-toggle span {
+  width: 18px;
+  height: 2px;
+  display: block;
+  border-radius: 999px;
+  background: currentColor;
+  transition:
+    opacity 180ms ease,
+    transform 220ms ease;
+}
+
+.jh-nav-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.jh-nav-toggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.jh-nav-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.jh-brand {
+  order: 1;
+}
+
+.jh-nav {
+  order: 2;
+}
+
+@media (min-width: 981px) {
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open),
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) {
+    width: clamp(244px, 21vw, 310px) !important;
+    max-width: calc(100vw - 32px) !important;
+    min-height: 58px !important;
+    padding: 9px 12px 9px 15px !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-radius: 999px !important;
+    overflow: visible !important;
+    background: rgba(247, 238, 228, 0.9) !important;
+    box-shadow:
+      0 18px 44px rgba(39, 24, 15, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.46) !important;
+    transform: translateX(-50%) translateY(-2px) !important;
+  }
+
+  .jh-header.jh-header--condensed .jh-nav-toggle {
+    display: inline-grid;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-brand,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) .jh-brand {
+    gap: 8px !important;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-brand img,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) .jh-brand img {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-brand strong,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) .jh-brand strong {
+    max-width: 150px;
+    display: block;
+    overflow: hidden;
+    font-size: clamp(1.45rem, 1.8vw, 1.95rem) !important;
+    line-height: 0.96;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-nav,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) .jh-nav {
+    position: absolute !important;
+    width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    flex: 0 0 0 !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(-6px) scale(0.98) !important;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-nav > *,
+  .jh-header.jh-header--condensed.jh-header--has-cart:not(.jh-header--compact-open) .jh-nav > * {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--compact-open,
+  .jh-header.jh-header--condensed.jh-header--compact-open:hover,
+  .jh-header.jh-header--condensed.jh-header--compact-open.jh-header--has-cart,
+  .jh-header.jh-header--condensed.jh-header--compact-open.jh-header--has-cart:hover {
+    width: min(1080px, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+    min-height: 66px !important;
+    padding: 12px 16px !important;
+    align-items: center !important;
+    gap: clamp(12px, 1.3vw, 20px) !important;
+    border-radius: 30px !important;
+    overflow: visible !important;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--compact-open .jh-brand {
+    flex: 0 0 auto;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--compact-open .jh-nav,
+  .jh-header.jh-header--condensed.jh-header--compact-open:hover .jh-nav,
+  .jh-header.jh-header--condensed.jh-header--compact-open.jh-header--has-cart:hover .jh-nav {
+    position: static !important;
+    display: flex !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    flex: 1 1 auto !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    gap: clamp(7px, 0.8vw, 12px) !important;
+    row-gap: 6px !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+
+  .jh-header.jh-header--condensed.jh-header--compact-open .jh-nav > * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}

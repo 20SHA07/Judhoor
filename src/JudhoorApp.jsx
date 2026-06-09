@@ -829,12 +829,18 @@ function TranslateWidget() {
 
 function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
+  const [isCompactNavOpen, setIsCompactNavOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     function syncHeaderState() {
       const scrollTop =
         window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
       const shouldCondense = scrollTop > 140;
+
+      if (!shouldCondense) {
+        setIsCompactNavOpen(false);
+      }
 
       setIsHeaderCondensed((current) =>
         current === shouldCondense ? current : shouldCondense,
@@ -853,6 +859,19 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
     };
   }, []);
 
+  useEffect(() => {
+    setIsCompactNavOpen(false);
+  }, [location.pathname]);
+
+  const closeCompactNav = () => {
+    setIsCompactNavOpen(false);
+  };
+
+  const handleReplayIntro = () => {
+    closeCompactNav();
+    onReplayIntro();
+  };
+
   return (
     <div className="jh-app">
       <div className="jh-bg jh-bg--one" />
@@ -861,6 +880,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
         className={[
           "jh-header",
           isHeaderCondensed ? "jh-header--condensed" : "",
+          isHeaderCondensed && isCompactNavOpen ? "jh-header--compact-open" : "",
           cartCount > 0 ? "jh-header--has-cart" : "",
         ].filter(Boolean).join(" ")}
       >
@@ -871,7 +891,29 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
             <span>Premium care boxes for cherished elders</span>
           </div>
         </NavLink>
-        <nav className="jh-nav" aria-label="Primary navigation">
+        <button
+          type="button"
+          className="jh-nav-toggle"
+          aria-controls="jh-primary-nav"
+          aria-expanded={isCompactNavOpen}
+          aria-label={isCompactNavOpen ? "Close navigation" : "Open navigation"}
+          title={isCompactNavOpen ? "Close navigation" : "Open navigation"}
+          onClick={() => setIsCompactNavOpen((current) => !current)}
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
+        <nav
+          id="jh-primary-nav"
+          className="jh-nav"
+          aria-label="Primary navigation"
+          onClick={(event) => {
+            if (event.target instanceof Element && event.target.closest("a")) {
+              closeCompactNav();
+            }
+          }}
+        >
           <NavLink to="/">Home</NavLink>
           <NavLink to="/product-line">Product Line</NavLink>
           <NavLink to="/experience">Experience</NavLink>
@@ -883,7 +925,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
             onCurrencyChange={onCurrencyChange}
             compact
           />
-          <button type="button" className="jh-replay" onClick={onReplayIntro}>
+          <button type="button" className="jh-replay" onClick={handleReplayIntro}>
             Replay intro
           </button>
           {cartCount > 0 ? (
