@@ -1,6 +1,6 @@
 import { Component, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, createPortal, useFrame } from "@react-three/fiber";
 import {
   ContactShadows,
   Environment,
@@ -8,6 +8,7 @@ import {
   OrbitControls,
   useAnimations,
   useGLTF,
+  useTexture,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { boxCatalog } from "./judhoorData";
@@ -166,6 +167,29 @@ const GLB_MODEL_PATHS = {
   "travel-box": "/models/travel-box.glb",
 };
 
+const PACKAGE_LID_ARTWORK = {
+  "past-box": {
+    title: "The Past Box",
+    subtitle: "Memory & Reflection",
+    arabicLine: "صندوق الماضي",
+  },
+  "balance-box": {
+    title: "Balance Box",
+    subtitle: "Health & Wellbeing",
+    arabicLine: "صندوق التوازن",
+  },
+  "important-box": {
+    title: "You Are Important Box",
+    subtitle: "Connection & Love",
+    arabicLine: "أنت مهم",
+  },
+  "travel-box": {
+    title: "Travel Box",
+    subtitle: "Travel & Discovery",
+    arabicLine: "صندوق السفر",
+  },
+};
+
 const GLB_OBJECT_NAME_ASSUMPTIONS = [
   "base",
   "lid",
@@ -201,6 +225,101 @@ function findObjectByName(root, targetName) {
   });
 
   return match;
+}
+
+function createPackageCopyTexture(box, palette) {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const artwork = PACKAGE_LID_ARTWORK[box.slug] ?? {
+    title: box.name,
+    subtitle: box.tagline,
+    arabicLine: "",
+  };
+  const canvas = document.createElement("canvas");
+  canvas.width = 1400;
+  canvas.height = 860;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return null;
+  }
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+
+  context.fillStyle = palette.deep;
+  context.globalAlpha = 0.22;
+  context.fillRect(210, 178, 980, 2);
+  context.fillRect(210, 684, 980, 2);
+  context.globalAlpha = 1;
+
+  context.fillStyle = palette.metal;
+  context.font = "800 42px Georgia, 'Times New Roman', serif";
+  context.letterSpacing = "8px";
+  context.fillText("JUDHOOR", canvas.width / 2, 158);
+
+  context.shadowColor = "rgba(79, 55, 33, 0.18)";
+  context.shadowBlur = 14;
+  context.shadowOffsetY = 8;
+  context.fillStyle = palette.deep;
+  context.font = "700 118px Georgia, 'Times New Roman', serif";
+  context.letterSpacing = "0px";
+  context.fillText(artwork.title, canvas.width / 2, 344);
+
+  context.shadowColor = "transparent";
+  context.fillStyle = palette.deep;
+  context.globalAlpha = 0.78;
+  context.font = "600 46px 'Segoe UI', Arial, sans-serif";
+  context.fillText(artwork.subtitle, canvas.width / 2, 454);
+
+  if (artwork.arabicLine) {
+    context.direction = "rtl";
+    context.globalAlpha = 0.92;
+    context.fillStyle = palette.metal;
+    context.font = "700 76px 'Segoe UI', Tahoma, Arial, sans-serif";
+    context.fillText(artwork.arabicLine, canvas.width / 2, 576);
+    context.direction = "ltr";
+  }
+
+  context.globalAlpha = 1;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = true;
+  texture.needsUpdate = true;
+
+  return texture;
+}
+
+function getLidArtworkPlacement(modelScene, lid) {
+  modelScene.updateWorldMatrix(true, true);
+
+  const target = lid ?? modelScene;
+  const bounds = new THREE.Box3().setFromObject(target);
+  const size = new THREE.Vector3();
+  const center = new THREE.Vector3();
+  bounds.getSize(size);
+  bounds.getCenter(center);
+
+  const topWorldPosition = new THREE.Vector3(
+    center.x,
+    center.y + Math.max(size.y / 2, 0.02) + 0.018,
+    center.z,
+  );
+  const localPosition = lid
+    ? lid.worldToLocal(topWorldPosition.clone())
+    : topWorldPosition.clone();
+
+  return {
+    position: localPosition.toArray(),
+    width: Math.max(size.x * 0.7, 1.6),
+    depth: Math.max(size.z * 0.62, 1.1),
+  };
 }
 
 function chooseOpenAnimation(animations) {
@@ -249,12 +368,17 @@ function prepareModelScene(sourceScene) {
     });
   });
 
+  const lid = findObjectByName(modelScene, "lid");
+  const base = findObjectByName(modelScene, "base");
+  const innerTray = findObjectByName(modelScene, "inner_tray");
+
   return {
     scene: modelScene,
     scale,
-    lid: findObjectByName(modelScene, "lid"),
-    base: findObjectByName(modelScene, "base"),
-    innerTray: findObjectByName(modelScene, "inner_tray"),
+    lid,
+    base,
+    innerTray,
+    lidArtwork: getLidArtworkPlacement(modelScene, lid),
   };
 }
 
@@ -328,6 +452,81 @@ function ModelPendingFallback({ box, modelPath }) {
   );
 }
 
+function PackageLidArtwork({ box, placement }) {
+  const palette = themePalettes[box.theme] ?? themePalettes.sand;
+  const logoTexture = useTexture(assetPath("/judhoor-logo.svg"));
+  const copyTexture = useMemo(
+    () => createPackageCopyTexture(box, palette),
+    [box, palette],
+  );
+
+  useEffect(() => {
+    logoTexture.colorSpace = THREE.SRGBColorSpace;
+    logoTexture.anisotropy = 8;
+    logoTexture.needsUpdate = true;
+  }, [logoTexture]);
+
+  useEffect(() => {
+    if (!copyTexture) {
+      return undefined;
+    }
+
+    return () => {
+      copyTexture.dispose();
+    };
+  }, [copyTexture]);
+
+  if (!placement || !copyTexture) {
+    return null;
+  }
+
+  const logoSize = Math.min(placement.width, placement.depth) * 0.24;
+  const copyWidth = placement.width * 0.76;
+  const copyDepth = placement.depth * 0.58;
+
+  return (
+    <group position={placement.position}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0.04]}>
+        <planeGeometry args={[placement.width * 0.82, placement.depth * 0.72]} />
+        <meshStandardMaterial
+          color="#fff4df"
+          roughness={0.96}
+          metalness={0.02}
+          transparent
+          opacity={0.12}
+          depthWrite={false}
+          polygonOffset
+          polygonOffsetFactor={-2}
+        />
+      </mesh>
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -placement.depth * 0.2]}>
+        <planeGeometry args={[logoSize, logoSize]} />
+        <meshBasicMaterial
+          map={logoTexture}
+          transparent
+          toneMapped={false}
+          depthWrite={false}
+          polygonOffset
+          polygonOffsetFactor={-4}
+        />
+      </mesh>
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.016, placement.depth * 0.11]}>
+        <planeGeometry args={[copyWidth, copyDepth]} />
+        <meshBasicMaterial
+          map={copyTexture}
+          transparent
+          toneMapped={false}
+          depthWrite={false}
+          polygonOffset
+          polygonOffsetFactor={-5}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 function JudhoorGLBModel({ box, isOpen }) {
   const groupRef = useRef(null);
   const lidRef = useRef(null);
@@ -389,6 +588,10 @@ function JudhoorGLBModel({ box, isOpen }) {
     );
   });
 
+  const lidArtwork = (
+    <PackageLidArtwork box={box} placement={preparedModel.lidArtwork} />
+  );
+
   return (
     <group
       ref={groupRef}
@@ -397,6 +600,7 @@ function JudhoorGLBModel({ box, isOpen }) {
       position={[0, -0.02, 0]}
     >
       <primitive object={preparedModel.scene} />
+      {preparedModel.lid ? createPortal(lidArtwork, preparedModel.lid) : lidArtwork}
     </group>
   );
 }

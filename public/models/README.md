@@ -19,3 +19,5 @@ Model object naming assumptions:
 - item_pouch
 
 For open-box support, the lid object must be named `lid`. Its pivot/origin should be at the back lower edge so rotating the lid on the X axis opens it like a real gift box. If the GLB includes an open/unbox/lid animation clip, the site will play that clip instead of rotating the `lid` object directly.
+
+The 3D viewer now applies a Judhoor lid artwork layer at runtime using `/judhoor-logo.svg` plus the correct product wording for each box. Final production GLBs should still keep the same physical package proportions and may include baked logo/title artwork on the lid, but the lid top must remain aligned with the `lid` object so the runtime artwork can sit flush and open with it.
