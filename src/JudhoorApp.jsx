@@ -223,6 +223,146 @@ const importantPersonalizationFields = [
   },
 ];
 
+const boxQuizQuestions = [
+  {
+    id: "careNeed",
+    prompt: "What would feel most supportive for your loved one right now?",
+    options: [
+      {
+        id: "memory",
+        label: "Remembering stories, places, and family moments",
+        scores: { "past-box": 3, "travel-box": 1 },
+      },
+      {
+        id: "wellbeing",
+        label: "Calm routines, comfort, and gentle daily wellbeing",
+        scores: { "balance-box": 3, "important-box": 1 },
+      },
+      {
+        id: "connection",
+        label: "Feeling loved, noticed, and emotionally close to family",
+        scores: { "important-box": 3, "past-box": 1 },
+      },
+      {
+        id: "discovery",
+        label: "Curiosity, culture, and a sense of travel from home",
+        scores: { "travel-box": 3, "past-box": 1 },
+      },
+    ],
+  },
+  {
+    id: "ritualStyle",
+    prompt: "What kind of ritual would they naturally enjoy?",
+    options: [
+      {
+        id: "conversation",
+        label: "Slow conversation over familiar objects",
+        scores: { "past-box": 3, "important-box": 1 },
+      },
+      {
+        id: "quietCare",
+        label: "Quiet self-care with soft, soothing items",
+        scores: { "balance-box": 3 },
+      },
+      {
+        id: "lettersPhotos",
+        label: "Letters, photos, and messages from family",
+        scores: { "important-box": 3 },
+      },
+      {
+        id: "guidedExploration",
+        label: "A guided mini-adventure with cultural keepsakes",
+        scores: { "travel-box": 3 },
+      },
+    ],
+  },
+  {
+    id: "sensoryCue",
+    prompt: "Which sensory cue would mean the most?",
+    options: [
+      {
+        id: "soundScent",
+        label: "Old songs, scent, coffee, and handwriting",
+        scores: { "past-box": 3 },
+      },
+      {
+        id: "movementRest",
+        label: "Rest, touch, hydration, and gentle movement",
+        scores: { "balance-box": 3 },
+      },
+      {
+        id: "voiceAffection",
+        label: "A family voice note and personal keepsakes",
+        scores: { "important-box": 3 },
+      },
+      {
+        id: "objectsPlaces",
+        label: "Objects that bring places and heritage to life",
+        scores: { "travel-box": 3 },
+      },
+    ],
+  },
+  {
+    id: "familyRole",
+    prompt: "How involved should the family be?",
+    options: [
+      {
+        id: "storyListening",
+        label: "Sitting together and listening to stories",
+        scores: { "past-box": 2, "important-box": 1 },
+      },
+      {
+        id: "supportiveCheckins",
+        label: "Gentle check-ins around everyday comfort",
+        scores: { "balance-box": 3 },
+      },
+      {
+        id: "customMessages",
+        label: "Uploading photos, letters, and voice messages",
+        scores: { "important-box": 4 },
+      },
+      {
+        id: "sharedLearning",
+        label: "Exploring cultural prompts together",
+        scores: { "travel-box": 3 },
+      },
+    ],
+  },
+];
+
+const boxQuizResultCopy = {
+  "past-box":
+    "Best for memory, reflection, scent, sound, and family storytelling.",
+  "balance-box":
+    "Best for calm routines, comfort, wellbeing, and daily grounding.",
+  "important-box":
+    "Best for deep connection through photos, letters, voice notes, and love.",
+  "travel-box":
+    "Best for heritage discovery, curiosity, and a travel ritual from home.",
+};
+
+function getBoxQuizResult(answers) {
+  const scores = Object.fromEntries(boxCatalog.map((box) => [box.slug, 0]));
+
+  boxQuizQuestions.forEach((question) => {
+    const option = question.options.find((item) => item.id === answers[question.id]);
+
+    if (!option) {
+      return;
+    }
+
+    Object.entries(option.scores).forEach(([slug, value]) => {
+      scores[slug] = (scores[slug] ?? 0) + value;
+    });
+  });
+
+  const rankedBoxes = boxCatalog
+    .map((box) => ({ box, score: scores[box.slug] ?? 0 }))
+    .sort((left, right) => right.score - left.score);
+
+  return rankedBoxes[0]?.box ?? boxCatalog[0];
+}
+
 const getCurrency = (currencyCode) =>
   currencyOptions.find((currency) => currency.code === currencyCode) ?? currencyOptions[0];
 
@@ -1206,6 +1346,48 @@ function ProductLinePage({
   onPreviewItem,
   onPreviewBoxDemo,
 }) {
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [quizStep, setQuizStep] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [isQuizComplete, setIsQuizComplete] = useState(false);
+  const activeQuizQuestion = boxQuizQuestions[quizStep];
+  const selectedQuizOption = activeQuizQuestion
+    ? quizAnswers[activeQuizQuestion.id]
+    : null;
+  const quizResult = getBoxQuizResult(quizAnswers);
+
+  function startQuiz() {
+    setIsQuizOpen(true);
+    setIsQuizComplete(false);
+    setQuizStep(0);
+    setQuizAnswers({});
+  }
+
+  function selectQuizOption(questionId, optionId) {
+    setQuizAnswers((current) => ({
+      ...current,
+      [questionId]: optionId,
+    }));
+  }
+
+  function goToNextQuizStep() {
+    if (quizStep < boxQuizQuestions.length - 1) {
+      setQuizStep((current) => current + 1);
+      return;
+    }
+
+    setIsQuizComplete(true);
+  }
+
+  function goToPreviousQuizStep() {
+    if (quizStep > 0) {
+      setQuizStep((current) => current - 1);
+      return;
+    }
+
+    setIsQuizOpen(false);
+  }
+
   return (
     <section className="jh-page jh-product-line-page jh-animate jh-animate--up">
       <div className="jh-product-line-hero">
@@ -1279,26 +1461,116 @@ function ProductLinePage({
         })}
       </div>
 
-      <aside className="jh-product-line-advisor" aria-label="Box selection help">
+      <aside
+        className={`jh-product-line-advisor ${isQuizOpen ? "is-open" : ""}`}
+        aria-label="Box selection help"
+      >
         <h2>Can't decide?</h2>
         <p>
           Take our heritage quiz to find the perfect ritual for your loved one
           or schedule a consultation with our curation experts.
         </p>
-        <div>
-          <a
-            className="jh-product-line-advisor__button jh-product-line-advisor__button--light"
-            href="mailto:hello@judhoor.com?subject=Judhoor%20box%20quiz"
-          >
-            Start the Quiz
-          </a>
-          <a
-            className="jh-product-line-advisor__button"
-            href="mailto:hello@judhoor.com?subject=Judhoor%20consultation"
-          >
-            Book Consultation
-          </a>
-        </div>
+        {!isQuizOpen ? (
+          <div className="jh-product-line-advisor__actions">
+            <button
+              type="button"
+              className="jh-product-line-advisor__button jh-product-line-advisor__button--light"
+              onClick={startQuiz}
+            >
+              Start the Quiz
+            </button>
+            <a
+              className="jh-product-line-advisor__button"
+              href="mailto:hello@judhoor.com?subject=Judhoor%20consultation"
+            >
+              Book Consultation
+            </a>
+          </div>
+        ) : (
+          <div className="jh-box-quiz">
+            {!isQuizComplete ? (
+              <>
+                <div className="jh-box-quiz__top">
+                  <span>
+                    Question {quizStep + 1} of {boxQuizQuestions.length}
+                  </span>
+                  <strong>{activeQuizQuestion.prompt}</strong>
+                </div>
+                <div className="jh-box-quiz__meter" aria-hidden="true">
+                  <span
+                    style={{
+                      width: `${((quizStep + 1) / boxQuizQuestions.length) * 100}%`,
+                    }}
+                  />
+                </div>
+                <div className="jh-box-quiz__options">
+                  {activeQuizQuestion.options.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className={`jh-box-quiz__option ${
+                        selectedQuizOption === option.id ? "is-selected" : ""
+                      }`}
+                      onClick={() => selectQuizOption(activeQuizQuestion.id, option.id)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="jh-box-quiz__actions">
+                  <button type="button" onClick={goToPreviousQuizStep}>
+                    {quizStep === 0 ? "Close" : "Back"}
+                  </button>
+                  <button
+                    type="button"
+                    className="jh-product-line-advisor__button jh-product-line-advisor__button--light"
+                    disabled={!selectedQuizOption}
+                    onClick={goToNextQuizStep}
+                  >
+                    {quizStep === boxQuizQuestions.length - 1 ? "See My Box" : "Next"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="jh-box-quiz__result">
+                <figure>
+                  <img src={quizResult.images[0]} alt={`${quizResult.name} recommendation`} />
+                </figure>
+                <div>
+                  <span>Your best match</span>
+                  <strong>{quizResult.name}</strong>
+                  <p>{boxQuizResultCopy[quizResult.slug] ?? quizResult.summary}</p>
+                  <small>{quizResult.tagline}</small>
+                  <div className="jh-box-quiz__result-actions">
+                    <button
+                      type="button"
+                      className="jh-product-line-advisor__button jh-product-line-advisor__button--light"
+                      onClick={() => onAddToCart(quizResult.slug)}
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      type="button"
+                      className="jh-product-line-advisor__button"
+                      onClick={() => onPreviewBoxDemo(quizResult)}
+                    >
+                      Preview 3D
+                    </button>
+                    <button type="button" onClick={startQuiz}>
+                      Retake Quiz
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <a
+              className="jh-product-line-advisor__button jh-product-line-advisor__button--light jh-box-quiz__consult"
+              href="mailto:hello@judhoor.com?subject=Judhoor%20consultation"
+            >
+              Book Consultation
+            </a>
+          </div>
+        )}
       </aside>
     </section>
   );
