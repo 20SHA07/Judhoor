@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import BoxModelViewer from "./BoxModelViewer";
 import DemoDayPage from "./DemoDayPage";
 import { boxCatalog, journeySteps } from "./judhoorData";
 
@@ -1127,6 +1128,9 @@ function HomePage({ currencyCode, onAddToCart }) {
             </NavLink>
             <NavLink to="/experience" className="jh-button jh-button--ghost">
               Our Story
+            </NavLink>
+            <NavLink to="/model-viewer" className="jh-button jh-button--ghost">
+              View 3D Box
             </NavLink>
           </div>
         </div>
@@ -2499,6 +2503,7 @@ export default function JudhoorApp() {
               />
             }
           />
+          <Route path="/model-viewer" element={<BoxModelViewer />} />
           <Route
             path="/shop"
             element={
