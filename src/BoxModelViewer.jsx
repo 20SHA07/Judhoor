@@ -29,6 +29,10 @@ const XR_DEFAULT_SCALE = 0.12;
 const XR_MIN_SCALE = 0.07;
 const XR_MAX_SCALE = 0.22;
 const XR_SCALE_STEP = 0.015;
+const XR_ROTATE_SENSITIVITY = 5.4;
+const XR_SCALE_VERTICAL_SENSITIVITY = 0.32;
+const XR_CONTROL_MOVE_THRESHOLD = 0.012;
+const XR_PINCH_SCALE_MIN_DISTANCE = 0.03;
 const XR_DEFAULT_PLACEMENT = {
   position: [0, 0, -1.25],
   rotationY: 0,
@@ -382,13 +386,112 @@ function ARPlacementReticle({ enabled, onHitUpdate }) {
   );
 }
 
-function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
-  const { gl, scene } = useThree();
+function XRSupport({
+  onControlHintChange,
+  onPlacementTransform,
+  onSelect,
+  onStatusChange,
+  xrApiRef,
+  xrPlacement,
+}) {
+  const { camera, gl, scene } = useThree();
+  const activeControlRef = useRef(null);
+  const activeModeRef = useRef("none");
+  const controllerRefs = useRef([]);
+  const lastSelectMovedRef = useRef(false);
+  const onControlHintChangeRef = useRef(onControlHintChange);
+  const onPlacementTransformRef = useRef(onPlacementTransform);
   const onSelectRef = useRef(onSelect);
+  const selectedControllersRef = useRef(new Set());
+  const xrPlacementRef = useRef(xrPlacement);
 
   useEffect(() => {
     onSelectRef.current = onSelect;
   }, [onSelect]);
+
+  useEffect(() => {
+    onControlHintChangeRef.current = onControlHintChange;
+  }, [onControlHintChange]);
+
+  useEffect(() => {
+    onPlacementTransformRef.current = onPlacementTransform;
+  }, [onPlacementTransform]);
+
+  useEffect(() => {
+    xrPlacementRef.current = xrPlacement;
+  }, [xrPlacement]);
+
+  useFrame(() => {
+    const activeControl = activeControlRef.current;
+    if (activeModeRef.current !== "ar" || !activeControl || !xrPlacementRef.current.placed) {
+      return;
+    }
+
+    const controllers = controllerRefs.current;
+    if (activeControl.mode === "pinch-scale") {
+      const [firstIndex, secondIndex] = activeControl.controllerIndices;
+      const firstController = controllers[firstIndex];
+      const secondController = controllers[secondIndex];
+      if (!firstController || !secondController) {
+        return;
+      }
+
+      const firstPosition = new THREE.Vector3();
+      const secondPosition = new THREE.Vector3();
+      firstController.getWorldPosition(firstPosition);
+      secondController.getWorldPosition(secondPosition);
+      const currentDistance = firstPosition.distanceTo(secondPosition);
+      if (activeControl.startDistance < XR_PINCH_SCALE_MIN_DISTANCE) {
+        return;
+      }
+
+      const nextScale = clamp(
+        activeControl.startScale * (currentDistance / activeControl.startDistance),
+        XR_MIN_SCALE,
+        XR_MAX_SCALE,
+      );
+      if (Math.abs(nextScale - activeControl.startScale) > 0.002) {
+        activeControl.moved = true;
+      }
+      onPlacementTransformRef.current?.({ scale: nextScale });
+      return;
+    }
+
+    const controller = controllers[activeControl.controllerIndex];
+    if (!controller) {
+      return;
+    }
+
+    const currentPosition = new THREE.Vector3();
+    controller.getWorldPosition(currentPosition);
+    const movement = currentPosition.sub(activeControl.startPosition);
+
+    if (activeControl.mode === "rotate") {
+      const cameraRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+      cameraRight.y = 0;
+      cameraRight.normalize();
+      const horizontalMovement = movement.dot(cameraRight);
+      if (Math.abs(horizontalMovement) > XR_CONTROL_MOVE_THRESHOLD) {
+        activeControl.moved = true;
+      }
+      onPlacementTransformRef.current?.({
+        rotationY: activeControl.startRotationY + horizontalMovement * XR_ROTATE_SENSITIVITY,
+      });
+      return;
+    }
+
+    if (activeControl.mode === "scale") {
+      const nextScale = clamp(
+        activeControl.startScale + movement.y * XR_SCALE_VERTICAL_SENSITIVITY,
+        XR_MIN_SCALE,
+        XR_MAX_SCALE,
+      );
+      if (Math.abs(nextScale - activeControl.startScale) > 0.002) {
+        activeControl.moved = true;
+      }
+      onPlacementTransformRef.current?.({ scale: nextScale });
+    }
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -405,14 +508,158 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
       }
     }
 
+    function controlUsesController(control, controllerIndex) {
+      if (!control) {
+        return false;
+      }
+
+      if (control.mode === "pinch-scale") {
+        return control.controllerIndices.includes(controllerIndex);
+      }
+
+      return control.controllerIndex === controllerIndex;
+    }
+
+    function getControllerPosition(controllerIndex) {
+      const controller = controllerRefs.current[controllerIndex];
+      if (!controller) {
+        return null;
+      }
+
+      const position = new THREE.Vector3();
+      controller.getWorldPosition(position);
+      return position;
+    }
+
+    function startRotateControl(controllerIndex) {
+      const startPosition = getControllerPosition(controllerIndex);
+      if (!startPosition) {
+        return;
+      }
+
+      activeControlRef.current = {
+        controllerIndex,
+        mode: "rotate",
+        moved: false,
+        startPosition,
+        startRotationY: xrPlacementRef.current.rotationY,
+      };
+      onControlHintChangeRef.current?.("Move your hand left or right to rotate the box.");
+    }
+
+    function startScaleControl(controllerIndex) {
+      const startPosition = getControllerPosition(controllerIndex);
+      if (!startPosition) {
+        return;
+      }
+
+      activeControlRef.current = {
+        controllerIndex,
+        mode: "scale",
+        moved: false,
+        startPosition,
+        startScale: xrPlacementRef.current.scale,
+      };
+      onControlHintChangeRef.current?.("Move your hand up to enlarge, down to shrink.");
+    }
+
+    function startPinchScaleControl(controllerIndices) {
+      const firstPosition = getControllerPosition(controllerIndices[0]);
+      const secondPosition = getControllerPosition(controllerIndices[1]);
+      if (!firstPosition || !secondPosition) {
+        return;
+      }
+
+      activeControlRef.current = {
+        controllerIndices,
+        mode: "pinch-scale",
+        moved: false,
+        startDistance: firstPosition.distanceTo(secondPosition),
+        startScale: xrPlacementRef.current.scale,
+      };
+      onControlHintChangeRef.current?.("Move both hands apart or together to resize the box.");
+    }
+
+    function handleControllerSelectStart(controllerIndex) {
+      selectedControllersRef.current.add(controllerIndex);
+
+      if (activeModeRef.current !== "ar" || !xrPlacementRef.current.placed) {
+        return;
+      }
+
+      const selectedControllers = Array.from(selectedControllersRef.current);
+      if (selectedControllers.length >= 2) {
+        startPinchScaleControl(selectedControllers.slice(0, 2));
+        return;
+      }
+
+      startRotateControl(controllerIndex);
+    }
+
+    function handleControllerSelectEnd(controllerIndex) {
+      const activeControl = activeControlRef.current;
+      if (controlUsesController(activeControl, controllerIndex)) {
+        if (!activeControl.selectHandled) {
+          lastSelectMovedRef.current = lastSelectMovedRef.current || Boolean(activeControl.moved);
+        }
+        activeControlRef.current = null;
+      }
+
+      selectedControllersRef.current.delete(controllerIndex);
+
+      const selectedControllers = Array.from(selectedControllersRef.current);
+      if (activeModeRef.current === "ar" && xrPlacementRef.current.placed && selectedControllers.length === 1) {
+        startRotateControl(selectedControllers[0]);
+        return;
+      }
+
+      if (activeModeRef.current === "ar" && xrPlacementRef.current.placed) {
+        onControlHintChangeRef.current?.(
+          "Quick pinch opens the box. Hold and move left/right to rotate. Use two hands or grip to resize.",
+        );
+      }
+    }
+
+    function handleControllerSqueezeStart(controllerIndex) {
+      if (activeModeRef.current !== "ar" || !xrPlacementRef.current.placed) {
+        return;
+      }
+
+      startScaleControl(controllerIndex);
+    }
+
+    function handleControllerSqueezeEnd(controllerIndex) {
+      const activeControl = activeControlRef.current;
+      if (controlUsesController(activeControl, controllerIndex)) {
+        activeControlRef.current = null;
+      }
+
+      if (activeModeRef.current === "ar" && xrPlacementRef.current.placed) {
+        onControlHintChangeRef.current?.(
+          "Quick pinch opens the box. Hold and move left/right to rotate. Use two hands or grip to resize.",
+        );
+      }
+    }
+
     function handleControllerSelect() {
-      onSelectRef.current?.();
+      const activeControl = activeControlRef.current;
+      const activeMoved = Boolean(activeControl?.moved);
+      const moved = lastSelectMovedRef.current || activeMoved;
+      if (activeControl) {
+        activeControl.selectHandled = true;
+      }
+      lastSelectMovedRef.current = false;
+      onSelectRef.current?.({ moved });
     }
 
     function handleSessionEnd() {
       const endedMode = activeMode;
       activeSession = null;
       activeMode = "none";
+      activeModeRef.current = "none";
+      activeControlRef.current = null;
+      selectedControllersRef.current.clear();
+      onControlHintChangeRef.current?.("");
       updateStatus({
         checked: true,
         supported: supportState.arSupported || supportState.vrSupported,
@@ -518,13 +765,13 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
           try {
             activeSession = await navigator.xr.requestSession(sessionMode, {
               requiredFeatures: ["hit-test"],
-              optionalFeatures: ["local-floor", "bounded-floor", "dom-overlay"],
+              optionalFeatures: ["local-floor", "bounded-floor", "dom-overlay", "hand-tracking"],
               domOverlay: { root: document.body },
             });
           } catch {
             activeSession = await navigator.xr.requestSession(sessionMode, {
               requiredFeatures: ["hit-test"],
-              optionalFeatures: ["local-floor", "bounded-floor"],
+              optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"],
             });
           }
         } else {
@@ -533,8 +780,14 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
           });
         }
         activeMode = mode;
+        activeModeRef.current = mode;
         activeSession.addEventListener("end", handleSessionEnd);
         await gl.xr.setSession(activeSession);
+        onControlHintChangeRef.current?.(
+          mode === "ar"
+            ? "First pinch places the box. After placement, hold and move to adjust it."
+            : "",
+        );
 
         updateStatus({
           checked: true,
@@ -552,6 +805,10 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
       } catch {
         activeSession = null;
         activeMode = "none";
+        activeModeRef.current = "none";
+        activeControlRef.current = null;
+        selectedControllersRef.current.clear();
+        onControlHintChangeRef.current?.("");
         updateStatus({
           checked: true,
           supported: supportState.arSupported || supportState.vrSupported,
@@ -584,10 +841,26 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
     }
 
     const controllers = [gl.xr.getController(0), gl.xr.getController(1)];
-    controllers.forEach((controller) => {
-      controller.addEventListener("select", handleControllerSelect);
+    const hands = [gl.xr.getHand?.(0), gl.xr.getHand?.(1)].filter(Boolean);
+    const controllerHandlers = controllers.map((_, controllerIndex) => ({
+      select: () => handleControllerSelect(controllerIndex),
+      selectEnd: () => handleControllerSelectEnd(controllerIndex),
+      selectStart: () => handleControllerSelectStart(controllerIndex),
+      squeezeEnd: () => handleControllerSqueezeEnd(controllerIndex),
+      squeezeStart: () => handleControllerSqueezeStart(controllerIndex),
+    }));
+
+    controllerRefs.current = controllers;
+    controllers.forEach((controller, controllerIndex) => {
+      const handlers = controllerHandlers[controllerIndex];
+      controller.addEventListener("select", handlers.select);
+      controller.addEventListener("selectend", handlers.selectEnd);
+      controller.addEventListener("selectstart", handlers.selectStart);
+      controller.addEventListener("squeezeend", handlers.squeezeEnd);
+      controller.addEventListener("squeezestart", handlers.squeezeStart);
       scene.add(controller);
     });
+    hands.forEach((hand) => scene.add(hand));
 
     xrApiRef.current = {
       enterAr,
@@ -602,10 +875,17 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
         xrApiRef.current = null;
       }
 
-      controllers.forEach((controller) => {
-        controller.removeEventListener("select", handleControllerSelect);
+      controllerRefs.current = [];
+      controllers.forEach((controller, controllerIndex) => {
+        const handlers = controllerHandlers[controllerIndex];
+        controller.removeEventListener("select", handlers.select);
+        controller.removeEventListener("selectend", handlers.selectEnd);
+        controller.removeEventListener("selectstart", handlers.selectStart);
+        controller.removeEventListener("squeezeend", handlers.squeezeEnd);
+        controller.removeEventListener("squeezestart", handlers.squeezeStart);
         scene.remove(controller);
       });
+      hands.forEach((hand) => scene.remove(hand));
 
       if (activeSession) {
         activeSession.removeEventListener("end", handleSessionEnd);
@@ -618,9 +898,11 @@ function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
 
 function ViewerScene({
   isOpen,
+  onControlHintChange,
   onToggle,
   onModelInfo,
   onArHitUpdate,
+  onPlacementTransform,
   resetSignal,
   xrApiRef,
   xrMode,
@@ -665,9 +947,12 @@ function ViewerScene({
       />
 
       <XRSupport
+        onControlHintChange={onControlHintChange}
+        onPlacementTransform={onPlacementTransform}
         onSelect={onToggle}
         onStatusChange={onXrStatusChange}
         xrApiRef={xrApiRef}
+        xrPlacement={xrPlacement}
       />
       <ViewerErrorBoundary fallback={<ModelErrorFallback />}>
         <Suspense fallback={<ModelLoadingFallback />}>
@@ -726,6 +1011,7 @@ export default function BoxModelViewer() {
     mode: "none",
     message: "Checking WebXR support...",
   });
+  const [xrControlHint, setXrControlHint] = useState("");
   const xrApiRef = useRef(null);
   const latestArHitRef = useRef(null);
   const toggleOpen = useCallback(() => {
@@ -736,6 +1022,7 @@ export default function BoxModelViewer() {
   }, []);
   const resetPlacement = useCallback(() => {
     latestArHitRef.current = null;
+    setXrControlHint("Aim at a table or floor until the gold ring appears, then pinch to place.");
     setXrPlacement({
       ...XR_DEFAULT_PLACEMENT,
       position: [...XR_DEFAULT_PLACEMENT.position],
@@ -752,15 +1039,28 @@ export default function BoxModelViewer() {
       position: hitPosition,
       placed: true,
     }));
+    setXrControlHint(
+      "Placed. Quick pinch opens it; hold and move left/right to rotate; use two hands or grip to resize.",
+    );
     return true;
   }, []);
-  const handleSceneSelect = useCallback(() => {
+  const handleSceneSelect = useCallback((event = {}) => {
     if (xrStatus.mode === "ar" && !xrPlacement.placed && placeBoxAtLatestHit()) {
+      return;
+    }
+
+    if (xrStatus.mode === "ar" && event.moved) {
       return;
     }
 
     toggleOpen();
   }, [placeBoxAtLatestHit, toggleOpen, xrPlacement.placed, xrStatus.mode]);
+  const applyPlacementTransform = useCallback((patch) => {
+    setXrPlacement((current) => ({
+      ...current,
+      ...patch,
+    }));
+  }, []);
   const adjustPlacementScale = useCallback((amount) => {
     setXrPlacement((current) => ({
       ...current,
@@ -794,9 +1094,10 @@ export default function BoxModelViewer() {
   const isVrMode = xrStatus.mode === "vr";
   const scalePercent = Math.round((xrPlacement.scale / XR_DEFAULT_SCALE) * 100);
   const placementLabel = isArMode
-    ? xrPlacement.placed
-      ? `Placed at tabletop scale (${scalePercent}%). Resize or rotate as needed.`
-      : "Aim at a table or floor until the gold ring appears, then tap or trigger to place."
+    ? xrControlHint ||
+      (xrPlacement.placed
+        ? `Placed at tabletop scale (${scalePercent}%). Quick pinch opens. Hold and move to rotate.`
+        : "Aim at a table or floor until the gold ring appears, then tap or trigger to place.")
     : `Immersive scale set to ${scalePercent}% for Meta Quest viewing.`;
 
   const animationLabel =
@@ -813,7 +1114,7 @@ export default function BoxModelViewer() {
         <h1>You Are Important Box</h1>
         <p>
           Drag to rotate, pinch or scroll to zoom, or use AR on Meta Quest Browser to place
-          the box on a real table at adjustable scale.
+          the box on a real table and adjust it with your hands or controllers.
         </p>
       </div>
 
@@ -836,9 +1137,11 @@ export default function BoxModelViewer() {
         >
           <ViewerScene
             isOpen={isOpen}
+            onControlHintChange={setXrControlHint}
             onToggle={handleSceneSelect}
             onModelInfo={setModelInfo}
             onArHitUpdate={handleArHitUpdate}
+            onPlacementTransform={applyPlacementTransform}
             resetSignal={resetSignal}
             xrApiRef={xrApiRef}
             xrMode={xrStatus.mode}
