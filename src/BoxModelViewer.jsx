@@ -33,6 +33,8 @@ const XR_ROTATE_SENSITIVITY = 5.4;
 const XR_SCALE_VERTICAL_SENSITIVITY = 0.32;
 const XR_CONTROL_MOVE_THRESHOLD = 0.012;
 const XR_PINCH_SCALE_MIN_DISTANCE = 0.03;
+const OPEN_TOGGLE_COOLDOWN_MS = 700;
+const MODEL_CLICK_DRAG_THRESHOLD = 8;
 const XR_DEFAULT_PLACEMENT = {
   position: [0, 0, -1.25],
   rotationY: 0,
@@ -159,6 +161,7 @@ function AnimatedBoxModel({
   const lidRef = useRef(null);
   const initialLidRotationRef = useRef(0);
   const hasPlayedClipRef = useRef(false);
+  const lastAnimatedStateRef = useRef(null);
   const { scene, animations } = useGLTF(MODEL_PATH);
   const preparedModel = useMemo(() => prepareModel(scene), [scene]);
   const { actions } = useAnimations(animations, groupRef);
@@ -184,8 +187,15 @@ function AnimatedBoxModel({
     }
 
     animationAction.enabled = true;
-    animationAction.loop = THREE.LoopOnce;
+    animationAction.setLoop(THREE.LoopOnce, 1);
     animationAction.clampWhenFinished = true;
+    animationAction.repetitions = 1;
+
+    if (lastAnimatedStateRef.current === isOpen) {
+      return;
+    }
+
+    lastAnimatedStateRef.current = isOpen;
 
     if (!hasPlayedClipRef.current && !isOpen) {
       animationAction.reset();
@@ -244,7 +254,11 @@ function AnimatedBoxModel({
       visible={modelVisible}
       onClick={(event) => {
         event.stopPropagation();
-        onToggle();
+        if (event.delta > MODEL_CLICK_DRAG_THRESHOLD) {
+          return;
+        }
+
+        onToggle({ source: "model-click" });
       }}
     >
       <primitive object={preparedModel.scene} />
@@ -1014,6 +1028,7 @@ export default function BoxModelViewer() {
   });
   const [xrControlHint, setXrControlHint] = useState("");
   const xrApiRef = useRef(null);
+  const lastOpenToggleAtRef = useRef(Number.NEGATIVE_INFINITY);
   const latestArHitRef = useRef(null);
   const updateViewerMessage = useCallback((message) => {
     setXrStatus((current) => ({
@@ -1022,6 +1037,12 @@ export default function BoxModelViewer() {
     }));
   }, []);
   const toggleOpen = useCallback(() => {
+    const now = typeof performance === "undefined" ? Date.now() : performance.now();
+    if (now - lastOpenToggleAtRef.current < OPEN_TOGGLE_COOLDOWN_MS) {
+      return;
+    }
+
+    lastOpenToggleAtRef.current = now;
     setIsOpen((current) => !current);
   }, []);
   const handleArHitUpdate = useCallback((position) => {
