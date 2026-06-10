@@ -223,15 +223,16 @@ function AnimatedBoxModel({
 
   const isBrowserMode = displayMode === "browser";
   const isArMode = displayMode === "ar";
-  const modelScale = preparedModel.scale * (isBrowserMode ? 1 : xrPlacement.scale);
+  const browserScaleMultiplier = xrPlacement.scale / XR_DEFAULT_SCALE;
+  const modelScale = preparedModel.scale * (isBrowserMode ? browserScaleMultiplier : xrPlacement.scale);
   const modelPosition = isBrowserMode
     ? [0, 0, 0]
     : displayMode === "vr"
       ? [0, -0.18, -1.38]
       : xrPlacement.position;
   const modelRotation = isBrowserMode
-    ? [-0.05, -0.35, 0]
-    : [0, displayMode === "vr" ? -0.18 : xrPlacement.rotationY, 0];
+    ? [-0.05, -0.35 + xrPlacement.rotationY, 0]
+    : [0, displayMode === "vr" ? -0.18 + xrPlacement.rotationY : xrPlacement.rotationY, 0];
   const modelVisible = !isArMode || xrPlacement.placed;
 
   return (
@@ -1014,6 +1015,12 @@ export default function BoxModelViewer() {
   const [xrControlHint, setXrControlHint] = useState("");
   const xrApiRef = useRef(null);
   const latestArHitRef = useRef(null);
+  const updateViewerMessage = useCallback((message) => {
+    setXrStatus((current) => ({
+      ...current,
+      message,
+    }));
+  }, []);
   const toggleOpen = useCallback(() => {
     setIsOpen((current) => !current);
   }, []);
@@ -1066,30 +1073,51 @@ export default function BoxModelViewer() {
       ...current,
       scale: clamp(current.scale + amount, XR_MIN_SCALE, XR_MAX_SCALE),
     }));
+    setXrControlHint("Scale adjusted. The model updates in 3D, AR, and VR.");
   }, []);
   const rotatePlacement = useCallback((amount) => {
     setXrPlacement((current) => ({
       ...current,
       rotationY: current.rotationY + amount,
     }));
+    setXrControlHint("Rotation adjusted. The model updates in 3D, AR, and VR.");
   }, []);
-  const handleArToggle = useCallback(() => {
+  const handleResetView = useCallback(() => {
+    setResetSignal((current) => current + 1);
+    setXrPlacement((current) => ({
+      ...current,
+      rotationY: 0,
+      scale: XR_DEFAULT_SCALE,
+    }));
+    setXrControlHint("View reset. Scale and rotation are back to default.");
+  }, []);
+  const handleArToggle = useCallback(async () => {
     if (xrStatus.isPresenting) {
       xrApiRef.current?.exitXr();
+      return;
+    }
+
+    if (!xrApiRef.current?.enterAr) {
+      updateViewerMessage("3D viewer is still loading. Try Enter AR again in a moment.");
       return;
     }
 
     resetPlacement();
-    xrApiRef.current?.enterAr();
-  }, [resetPlacement, xrStatus.isPresenting]);
-  const handleVrToggle = useCallback(() => {
+    await xrApiRef.current.enterAr();
+  }, [resetPlacement, updateViewerMessage, xrStatus.isPresenting]);
+  const handleVrToggle = useCallback(async () => {
     if (xrStatus.isPresenting) {
       xrApiRef.current?.exitXr();
       return;
     }
 
-    xrApiRef.current?.enterVr();
-  }, [xrStatus.isPresenting]);
+    if (!xrApiRef.current?.enterVr) {
+      updateViewerMessage("3D viewer is still loading. Try Enter VR again in a moment.");
+      return;
+    }
+
+    await xrApiRef.current.enterVr();
+  }, [updateViewerMessage, xrStatus.isPresenting]);
   const isArMode = xrStatus.mode === "ar";
   const isVrMode = xrStatus.mode === "vr";
   const scalePercent = Math.round((xrPlacement.scale / XR_DEFAULT_SCALE) * 100);
@@ -1154,10 +1182,7 @@ export default function BoxModelViewer() {
           <button
             type="button"
             className={`bmv-control bmv-control--ar ${isArMode ? "is-active" : ""}`}
-            disabled={
-              (xrStatus.checked && !xrStatus.arSupported) ||
-              (xrStatus.isPresenting && !isArMode)
-            }
+            disabled={xrStatus.isPresenting && !isArMode}
             onClick={handleArToggle}
           >
             {isArMode ? "Exit AR" : "Enter AR"}
@@ -1165,10 +1190,7 @@ export default function BoxModelViewer() {
           <button
             type="button"
             className={`bmv-control bmv-control--vr ${isVrMode ? "is-active" : ""}`}
-            disabled={
-              (xrStatus.checked && !xrStatus.vrSupported) ||
-              (xrStatus.isPresenting && !isVrMode)
-            }
+            disabled={xrStatus.isPresenting && !isVrMode}
             onClick={handleVrToggle}
           >
             {isVrMode ? "Exit VR" : "Enter VR"}
@@ -1210,7 +1232,7 @@ export default function BoxModelViewer() {
           <button
             type="button"
             className="bmv-control"
-            onClick={() => setResetSignal((current) => current + 1)}
+            onClick={handleResetView}
           >
             Reset View
           </button>
