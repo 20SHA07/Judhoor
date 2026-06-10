@@ -531,6 +531,7 @@ function JudhoorGLBModel({ box, isOpen }) {
   const groupRef = useRef(null);
   const lidRef = useRef(null);
   const closedLidRotationRef = useRef(0);
+  const lastAnimatedStateRef = useRef(null);
   const modelPath = getModelPath(box);
   const { scene, animations } = useGLTF(modelPath);
   const preparedModel = useMemo(() => prepareModelScene(scene), [scene]);
@@ -555,7 +556,14 @@ function JudhoorGLBModel({ box, isOpen }) {
     action.enabled = true;
     action.clampWhenFinished = true;
     action.setLoop(THREE.LoopOnce, 1);
+    action.repetitions = 1;
     action.paused = false;
+
+    if (lastAnimatedStateRef.current === isOpen) {
+      return undefined;
+    }
+
+    lastAnimatedStateRef.current = isOpen;
     action.timeScale = isOpen ? 1 : -1;
 
     if (isOpen) {

@@ -1,0 +1,357 @@
+/* Demo-day readiness layer: loaded last to stabilize responsive navigation,
+   touch targets, and headset/tablet presentation without changing the brand. */
+
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overscroll-behavior-x: none;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+img,
+canvas,
+video {
+  max-width: 100%;
+}
+
+.jh-main {
+  min-height: 52vh;
+}
+
+.jh-intro__skip {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(18px, env(safe-area-inset-right));
+  z-index: 8;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 246, 226, 0.42);
+  border-radius: 999px;
+  background: rgba(39, 24, 15, 0.72);
+  color: #fff8ed;
+  font-weight: 900;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+}
+
+.jh-intro__skip:hover,
+.jh-intro__skip:focus-visible {
+  background: rgba(39, 24, 15, 0.92);
+  outline: none;
+}
+
+.jh-header {
+  isolation: isolate;
+}
+
+.jh-nav a,
+.jh-replay,
+.jh-cart-pill,
+.jh-currency-select--compact .jh-dropdown__button {
+  white-space: nowrap;
+}
+
+.jh-nav a:focus-visible,
+.jh-replay:focus-visible,
+.jh-cart-pill:focus-visible,
+.jh-button:focus-visible,
+.jh-nav-toggle:focus-visible,
+.bmv-control:focus-visible,
+.jd-selector__button:focus-visible,
+.jd-icon-button:focus-visible,
+.jd-phone-demo button:focus-visible {
+  outline: 3px solid rgba(199, 162, 94, 0.42) !important;
+  outline-offset: 3px;
+}
+
+.jh-form-grid input,
+.jh-form-grid textarea,
+.jh-custom-text-field input,
+.jh-custom-text-field textarea,
+.jh-upload-field input {
+  min-width: 0;
+}
+
+.jh-checkout__item,
+.jh-cart-item,
+.jh-shop-card,
+.jh-payment-card,
+.jh-important-preview,
+.jh-box-quiz,
+.jd-stage,
+.bmv-stage {
+  min-width: 0;
+}
+
+.jh-checkout__item-copy,
+.jh-cart-item__copy,
+.jh-shop-card__body,
+.jh-payment-card,
+.jh-important-preview,
+.jd-copy,
+.bmv-copy {
+  overflow-wrap: anywhere;
+}
+
+.jh-remove-line,
+.jh-counter button,
+.jh-upload-field__clear,
+.jh-upload-field__files button {
+  min-height: 38px;
+}
+
+@media (max-width: 980px) {
+  .jh-app {
+    padding: clamp(10px, 3vw, 18px);
+  }
+
+  .jh-header,
+  .jh-header.jh-header--mobile,
+  .jh-header.jh-header--condensed,
+  .jh-header.jh-header--has-cart {
+    position: sticky !important;
+    top: max(8px, env(safe-area-inset-top)) !important;
+    width: min(100%, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    min-height: 64px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    padding: 10px 12px !important;
+    border-radius: 24px !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  .jh-brand {
+    min-width: 0 !important;
+    gap: 9px !important;
+  }
+
+  .jh-brand img {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .jh-brand strong {
+    font-size: clamp(1.65rem, 7vw, 2.35rem) !important;
+    line-height: 0.95 !important;
+  }
+
+  .jh-brand span {
+    display: none;
+  }
+
+  .jh-nav-toggle {
+    display: inline-grid !important;
+    justify-self: end;
+  }
+
+  .jh-nav,
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-nav,
+  .jh-header.jh-header--has-cart:not(.jh-header--compact-open) .jh-nav {
+    grid-column: 1 / -1;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-width: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(-8px) !important;
+    transition:
+      max-height 260ms ease,
+      opacity 220ms ease,
+      transform 240ms ease,
+      padding 220ms ease !important;
+  }
+
+  .jh-header.jh-header--compact-open .jh-nav,
+  .jh-header.jh-header--compact-open:hover .jh-nav,
+  .jh-header.jh-header--compact-open.jh-header--has-cart:hover .jh-nav {
+    max-height: min(72vh, 620px) !important;
+    padding: 8px !important;
+    overflow: auto !important;
+    border-width: 1px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+
+  .jh-header.jh-header--compact-open .jh-nav > *,
+  .jh-header.jh-header--compact-open:hover .jh-nav > * {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .jh-nav a,
+  .jh-replay,
+  .jh-cart-pill,
+  .jh-currency-select--compact {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .jh-nav a,
+  .jh-replay,
+  .jh-cart-pill,
+  .jh-currency-select--compact .jh-dropdown__button {
+    min-height: 46px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .jh-currency-select--compact .jh-dropdown__menu {
+    left: 0;
+    right: auto;
+    width: min(100%, 240px);
+  }
+}
+
+@media (max-width: 640px) {
+  .jh-nav {
+    grid-template-columns: 1fr !important;
+  }
+
+  .jh-hero__actions,
+  .jh-product-row__actions,
+  .jh-checkout__actions,
+  .jh-success-card__actions,
+  .jd-hero__actions,
+  .jd-companion__actions,
+  .bmv-toolbar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+
+  .jh-button,
+  .jh-product-row__cart,
+  .jh-product-row__demo,
+  .jd-icon-button,
+  .bmv-control {
+    width: 100% !important;
+  }
+
+  .jh-home-product-card__footer,
+  .jh-shop-card__row,
+  .jh-cart-line-actions,
+  .jh-checkout__item-side {
+    align-items: stretch;
+  }
+
+  .jh-cart-line-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .jh-header,
+  .jh-header.jh-header--mobile,
+  .jh-header.jh-header--condensed {
+    border-radius: 20px !important;
+  }
+
+  .jh-brand strong {
+    font-size: clamp(1.45rem, 9vw, 2rem) !important;
+  }
+
+  .jh-brand img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .jh-home-drop-banner,
+  .jh-testimonial,
+  .jh-product-line-advisor,
+  .jh-payment-card,
+  .jh-checkout,
+  .jh-cart-item,
+  .jh-shop-card,
+  .jd-hero,
+  .bmv-stage {
+    border-radius: 20px !important;
+  }
+}
+
+@media (min-width: 981px) and (hover: hover) {
+  .jh-header.jh-header--condensed:hover .jh-nav-toggle,
+  .jh-header.jh-header--condensed:focus-within .jh-nav-toggle {
+    display: inline-grid !important;
+  }
+}
+
+@media (min-width: 981px) and (max-height: 760px) {
+  .jh-hero,
+  .jd-hero,
+  .bmv-stage {
+    min-height: min(680px, calc(100dvh - 120px)) !important;
+  }
+
+  .jd-stage {
+    min-height: clamp(460px, 58vh, 620px) !important;
+  }
+}
+
+@media (min-width: 700px) and (max-width: 1180px) and (orientation: landscape) {
+  .jh-hero,
+  .jd-hero {
+    min-height: auto !important;
+  }
+
+  .bmv-stage {
+    min-height: min(680px, calc(100dvh - 140px)) !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .jh-header,
+  .jh-nav,
+  .jh-button,
+  .jd-stage,
+  .bmv-stage {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .jh-header.jh-header--condensed:not(.jh-header--compact-open) .jh-nav {
+    pointer-events: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  .jd-three-canvas,
+  .bmv-canvas {
+    cursor: default;
+  }
+}

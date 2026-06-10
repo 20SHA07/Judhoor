@@ -703,13 +703,32 @@ function ImportantBoxCustomizationPreview({ values, photoPreviewUrl, uploadLabel
 
 function IntroScreen({ onFinish }) {
   useEffect(() => {
-    const timer = window.setTimeout(onFinish, 4700);
-    return () => window.clearTimeout(timer);
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+      const timer = window.setTimeout(onFinish, 250);
+      return () => window.clearTimeout(timer);
+    }
+
+    const timer = window.setTimeout(onFinish, 3200);
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onFinish();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [onFinish]);
 
   return (
-    <div className="jh-intro" aria-hidden="true">
+    <div className="jh-intro" aria-label="Judhoor opening animation">
       <div className="jh-intro__veil" />
+      <button type="button" className="jh-intro__skip" onClick={onFinish}>
+        Skip intro
+      </button>
       <div className="jh-intro__stage">
         <div className="jh-intro__halo" />
         <div className="jh-intro__box">
@@ -829,11 +848,34 @@ function TranslateWidget() {
 
 function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
+  const [isCompactViewport, setIsCompactViewport] = useState(false);
   const [isCompactNavOpen, setIsCompactNavOpen] = useState(false);
   const [isCompactNavHovered, setIsCompactNavHovered] = useState(false);
   const headerRef = useRef(null);
   const location = useLocation();
-  const isCompactNavExpanded = isCompactNavOpen || isCompactNavHovered;
+  const shouldCollapseNav = isHeaderCondensed || isCompactViewport;
+  const isCompactNavExpanded =
+    isCompactNavOpen || (!isCompactViewport && isHeaderCondensed && isCompactNavHovered);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 980px)");
+    const syncCompactViewport = () => setIsCompactViewport(mediaQuery.matches);
+
+    syncCompactViewport();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", syncCompactViewport);
+    } else {
+      mediaQuery.addListener(syncCompactViewport);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", syncCompactViewport);
+      } else {
+        mediaQuery.removeListener(syncCompactViewport);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let frameId = 0;
@@ -845,7 +887,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
         const shouldCondense = isHeaderCondensed ? scrollTop > 96 : scrollTop > 180;
 
-        if (!shouldCondense) {
+        if (!shouldCondense && !isCompactViewport) {
           setIsCompactNavOpen(false);
           setIsCompactNavHovered(false);
         }
@@ -879,7 +921,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       window.removeEventListener("scroll", syncHeaderState);
       window.removeEventListener("resize", syncHeaderState);
     };
-  }, [isHeaderCondensed]);
+  }, [isCompactViewport, isHeaderCondensed]);
 
   useEffect(() => {
     setIsCompactNavOpen(false);
@@ -887,7 +929,14 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!isCompactNavExpanded || !isHeaderCondensed) {
+    if (!shouldCollapseNav) {
+      setIsCompactNavOpen(false);
+      setIsCompactNavHovered(false);
+    }
+  }, [shouldCollapseNav]);
+
+  useEffect(() => {
+    if (!isCompactNavExpanded || !shouldCollapseNav) {
       return undefined;
     }
 
@@ -912,7 +961,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isCompactNavExpanded, isHeaderCondensed]);
+  }, [isCompactNavExpanded, shouldCollapseNav]);
 
   const closeCompactNav = () => {
     setIsCompactNavOpen(false);
@@ -942,14 +991,14 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       <div className="jh-bg jh-bg--two" />
       <header
         ref={headerRef}
-        onMouseEnter={() => {
-          if (isHeaderCondensed) {
+        onPointerEnter={() => {
+          if (isHeaderCondensed && !isCompactViewport) {
             setIsCompactNavHovered(true);
           }
         }}
-        onMouseLeave={() => setIsCompactNavHovered(false)}
+        onPointerLeave={() => setIsCompactNavHovered(false)}
         onFocusCapture={() => {
-          if (isHeaderCondensed) {
+          if (isHeaderCondensed && !isCompactViewport) {
             setIsCompactNavHovered(true);
           }
         }}
@@ -966,7 +1015,8 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
         className={[
           "jh-header",
           isHeaderCondensed ? "jh-header--condensed" : "",
-          isHeaderCondensed && isCompactNavExpanded ? "jh-header--compact-open" : "",
+          isCompactViewport ? "jh-header--mobile" : "",
+          shouldCollapseNav && isCompactNavExpanded ? "jh-header--compact-open" : "",
           cartCount > 0 ? "jh-header--has-cart" : "",
         ].filter(Boolean).join(" ")}
       >
@@ -994,7 +1044,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           id="jh-primary-nav"
           className="jh-nav"
           aria-label="Primary navigation"
-          aria-hidden={isHeaderCondensed && !isCompactNavExpanded ? "true" : undefined}
+          aria-hidden={shouldCollapseNav && !isCompactNavExpanded ? "true" : undefined}
           onClick={(event) => {
             if (event.target instanceof Element && event.target.closest("a")) {
               closeCompactNav();
@@ -2800,13 +2850,23 @@ export default function JudhoorApp() {
   const [cart, setCart] = useState(() =>
     Object.fromEntries(boxCatalog.map((box) => [box.slug, 0])),
   );
+  const location = useLocation();
+  const introBlockedRoutes = ["/demo-day", "/vr-box-viewer", "/model-viewer"];
+  const shouldShowIntro =
+    showIntro && !introBlockedRoutes.some((route) => location.pathname.startsWith(route));
 
   useEffect(() => {
-    document.body.classList.toggle("jh-no-scroll", showIntro);
+    document.body.classList.toggle("jh-no-scroll", shouldShowIntro);
     return () => {
       document.body.classList.remove("jh-no-scroll");
     };
-  }, [showIntro]);
+  }, [shouldShowIntro]);
+
+  useEffect(() => {
+    if (!shouldShowIntro && showIntro) {
+      setShowIntro(false);
+    }
+  }, [shouldShowIntro, showIntro]);
 
   useEffect(() => {
     const defaultFallback = assetPath("/judhoor-logo.png");
@@ -2867,7 +2927,7 @@ export default function JudhoorApp() {
   return (
     <>
       <RouteScrollReset />
-      {showIntro ? <IntroScreen onFinish={() => setShowIntro(false)} /> : null}
+      {shouldShowIntro ? <IntroScreen onFinish={() => setShowIntro(false)} /> : null}
       <ItemPreviewModal item={selectedItem} onClose={() => setSelectedItem(null)} />
       <BoxDemoModal
         box={selectedBoxDemo}

@@ -7,6 +7,7 @@ import "./polish.css";
 import "./intro-polish.css";
 import "./stitch-redesign.css";
 import "./demo-day.css";
+import "./demo-ready.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
