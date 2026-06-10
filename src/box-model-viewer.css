@@ -91,8 +91,7 @@
   pointer-events: auto;
 }
 
-.bmv-control,
-.bmv-vr-button-host button {
+.bmv-control {
   min-height: 42px !important;
   padding: 0 16px !important;
   display: inline-flex !important;
@@ -122,13 +121,22 @@
 }
 
 .bmv-control:hover,
-.bmv-control:focus-visible,
-.bmv-vr-button-host button:hover,
-.bmv-vr-button-host button:focus-visible {
+.bmv-control:focus-visible {
   border-color: rgba(119, 89, 51, 0.48) !important;
   background: rgba(255, 249, 239, 0.98) !important;
   transform: translateY(-1px);
   outline: none;
+}
+
+.bmv-control:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.58 !important;
+  transform: none;
+}
+
+.bmv-control--vr.is-active {
+  background: rgba(39, 24, 15, 0.9) !important;
+  color: #fff8ed !important;
 }
 
 .bmv-control--link {
@@ -152,6 +160,15 @@
   line-height: 1.35;
   box-shadow: 0 12px 28px rgba(65, 41, 24, 0.1);
   backdrop-filter: blur(12px);
+}
+
+.bmv-mode-note span {
+  display: block;
+}
+
+.bmv-mode-note span + span {
+  margin-top: 3px;
+  color: rgba(39, 24, 15, 0.62);
 }
 
 .bmv-status {
@@ -189,8 +206,7 @@
     max-width: none;
   }
 
-  .bmv-control,
-  .bmv-vr-button-host button {
+  .bmv-control {
     min-height: 40px !important;
     padding-inline: 13px !important;
     font-size: 0.76rem !important;

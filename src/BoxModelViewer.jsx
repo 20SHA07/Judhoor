@@ -17,7 +17,6 @@ import {
   useAnimations,
   useGLTF,
 } from "@react-three/drei";
-import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
 import * as THREE from "three";
 import "./box-model-viewer.css";
 
@@ -242,37 +241,151 @@ function CameraControls({ resetSignal }) {
   );
 }
 
-function XRSupport({ buttonHostRef, onSelect }) {
+function XRSupport({ onSelect, onStatusChange, xrApiRef }) {
   const { gl, scene } = useThree();
+  const onSelectRef = useRef(onSelect);
 
   useEffect(() => {
-    gl.xr.enabled = true;
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
-    let vrButton = null;
-    if (buttonHostRef.current) {
-      buttonHostRef.current.replaceChildren();
-      vrButton = VRButton.createButton(gl);
-      vrButton.classList.add("bmv-vr-native-button");
-      buttonHostRef.current.appendChild(vrButton);
+  useEffect(() => {
+    let isMounted = true;
+    let activeSession = null;
+
+    function updateStatus(nextStatus) {
+      if (isMounted) {
+        onStatusChange?.(nextStatus);
+      }
+    }
+
+    function handleControllerSelect() {
+      onSelectRef.current?.();
+    }
+
+    function handleSessionEnd() {
+      activeSession = null;
+      updateStatus({
+        checked: true,
+        supported: true,
+        isPresenting: false,
+        message: "VR session ended. You can re-enter VR from Meta Quest Browser.",
+      });
+    }
+
+    gl.xr.enabled = true;
+    try {
+      gl.xr.setReferenceSpaceType("local-floor");
+    } catch {
+      gl.xr.setReferenceSpaceType("local");
+    }
+
+    async function checkSupport() {
+      if (typeof navigator === "undefined" || !navigator.xr) {
+        updateStatus({
+          checked: true,
+          supported: false,
+          isPresenting: false,
+          message: "WebXR is not available in this browser. Open this page in Meta Quest Browser for VR.",
+        });
+        return;
+      }
+
+      try {
+        const supported = await navigator.xr.isSessionSupported("immersive-vr");
+        updateStatus({
+          checked: true,
+          supported,
+          isPresenting: false,
+          message: supported
+            ? "VR ready. Use Enter VR, then controller trigger/select to open or close the box."
+            : "Immersive VR is not available here. Touch and 360 rotation still work in browser mode.",
+        });
+      } catch {
+        updateStatus({
+          checked: true,
+          supported: false,
+          isPresenting: false,
+          message: "Could not check WebXR support. Browser mode still works.",
+        });
+      }
+    }
+
+    async function enterVr() {
+      if (typeof navigator === "undefined" || !navigator.xr) {
+        updateStatus({
+          checked: true,
+          supported: false,
+          isPresenting: false,
+          message: "WebXR is not available in this browser. Open this page in Meta Quest Browser for VR.",
+        });
+        return false;
+      }
+
+      try {
+        updateStatus({
+          checked: true,
+          supported: true,
+          isPresenting: false,
+          message: "Opening VR session...",
+        });
+
+        activeSession = await navigator.xr.requestSession("immersive-vr", {
+          optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"],
+        });
+        activeSession.addEventListener("end", handleSessionEnd);
+        await gl.xr.setSession(activeSession);
+
+        updateStatus({
+          checked: true,
+          supported: true,
+          isPresenting: true,
+          message: "VR active. Use the Meta Quest trigger/select action to open or close the box.",
+        });
+        return true;
+      } catch {
+        updateStatus({
+          checked: true,
+          supported: true,
+          isPresenting: false,
+          message: "VR could not start. Make sure this page is open in Meta Quest Browser over HTTPS.",
+        });
+        return false;
+      }
+    }
+
+    async function exitVr() {
+      const session = gl.xr.getSession?.() ?? activeSession;
+      if (session) {
+        await session.end();
+      }
     }
 
     const controllers = [gl.xr.getController(0), gl.xr.getController(1)];
     controllers.forEach((controller) => {
-      controller.addEventListener("select", onSelect);
+      controller.addEventListener("select", handleControllerSelect);
       scene.add(controller);
     });
 
+    xrApiRef.current = { enterVr, exitVr };
+    checkSupport();
+
     return () => {
+      isMounted = false;
+      if (xrApiRef.current?.enterVr === enterVr) {
+        xrApiRef.current = null;
+      }
+
       controllers.forEach((controller) => {
-        controller.removeEventListener("select", onSelect);
+        controller.removeEventListener("select", handleControllerSelect);
         scene.remove(controller);
       });
 
-      if (vrButton?.parentElement) {
-        vrButton.parentElement.removeChild(vrButton);
+      if (activeSession) {
+        activeSession.removeEventListener("end", handleSessionEnd);
       }
     };
-  }, [buttonHostRef, gl, onSelect, scene]);
+  }, [gl, onStatusChange, scene, xrApiRef]);
 
   return null;
 }
@@ -282,7 +395,8 @@ function ViewerScene({
   onToggle,
   onModelInfo,
   resetSignal,
-  vrButtonHostRef,
+  xrApiRef,
+  onXrStatusChange,
 }) {
   return (
     <>
@@ -318,7 +432,11 @@ function ViewerScene({
         distance={12}
       />
 
-      <XRSupport buttonHostRef={vrButtonHostRef} onSelect={onToggle} />
+      <XRSupport
+        onSelect={onToggle}
+        onStatusChange={onXrStatusChange}
+        xrApiRef={xrApiRef}
+      />
       <ViewerErrorBoundary fallback={<ModelErrorFallback />}>
         <Suspense fallback={<ModelLoadingFallback />}>
           <AnimatedBoxModel
@@ -356,10 +474,24 @@ export default function BoxModelViewer() {
     hasLid: false,
     mode: "loading",
   });
-  const vrButtonHostRef = useRef(null);
+  const [xrStatus, setXrStatus] = useState({
+    checked: false,
+    supported: false,
+    isPresenting: false,
+    message: "Checking WebXR support...",
+  });
+  const xrApiRef = useRef(null);
   const toggleOpen = useCallback(() => {
     setIsOpen((current) => !current);
   }, []);
+  const handleVrToggle = useCallback(() => {
+    if (xrStatus.isPresenting) {
+      xrApiRef.current?.exitVr();
+      return;
+    }
+
+    xrApiRef.current?.enterVr();
+  }, [xrStatus.isPresenting]);
 
   const animationLabel =
     modelInfo.mode === "clip" && modelInfo.clipNames.length
@@ -393,12 +525,20 @@ export default function BoxModelViewer() {
             onToggle={toggleOpen}
             onModelInfo={setModelInfo}
             resetSignal={resetSignal}
-            vrButtonHostRef={vrButtonHostRef}
+            xrApiRef={xrApiRef}
+            onXrStatusChange={setXrStatus}
           />
         </Canvas>
 
         <div className="bmv-toolbar" aria-label="3D box controls">
-          <div ref={vrButtonHostRef} className="bmv-vr-button-host" />
+          <button
+            type="button"
+            className={`bmv-control bmv-control--vr ${xrStatus.isPresenting ? "is-active" : ""}`}
+            disabled={xrStatus.checked && !xrStatus.supported}
+            onClick={handleVrToggle}
+          >
+            {xrStatus.isPresenting ? "Exit VR" : "Enter VR"}
+          </button>
           <button type="button" className="bmv-control" onClick={toggleOpen}>
             {isOpen ? "Close Box" : "Open Box"}
           </button>
@@ -415,7 +555,8 @@ export default function BoxModelViewer() {
         </div>
 
         <div className="bmv-mode-note" aria-live="polite">
-          {animationLabel}
+          <span>{animationLabel}</span>
+          <span>{xrStatus.message}</span>
         </div>
       </div>
     </section>
