@@ -40,6 +40,17 @@
   touch-action: none;
 }
 
+.bmv-stage--ar {
+  background:
+    radial-gradient(circle at 22% 16%, rgba(255, 255, 255, 0.34), transparent 30%),
+    linear-gradient(145deg, rgba(255, 248, 237, 0.54), rgba(64, 45, 30, 0.24));
+}
+
+.bmv-stage--ar::before,
+.bmv-stage--ar::after {
+  opacity: 0.22;
+}
+
 .bmv-stage::before,
 .bmv-stage::after {
   content: "";
@@ -78,6 +89,10 @@
   cursor: grabbing;
 }
 
+.bmv-stage--ar .bmv-canvas {
+  cursor: crosshair;
+}
+
 .bmv-toolbar {
   position: absolute;
   top: 18px;
@@ -87,7 +102,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
-  max-width: min(680px, calc(100% - 36px));
+  max-width: min(880px, calc(100% - 36px));
   pointer-events: auto;
 }
 
@@ -134,6 +149,7 @@
   transform: none;
 }
 
+.bmv-control--ar.is-active,
 .bmv-control--vr.is-active {
   background: rgba(39, 24, 15, 0.9) !important;
   color: #fff8ed !important;
@@ -149,10 +165,10 @@
   left: 18px;
   bottom: 18px;
   z-index: 5;
-  max-width: min(520px, calc(100% - 36px));
+  max-width: min(660px, calc(100% - 36px));
   padding: 10px 13px;
   border: 1px solid rgba(119, 89, 51, 0.14);
-  border-radius: 999px;
+  border-radius: 18px;
   color: rgba(39, 24, 15, 0.78);
   background: rgba(255, 249, 239, 0.72);
   font-size: 0.78rem;
