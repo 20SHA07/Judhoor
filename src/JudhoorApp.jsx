@@ -830,8 +830,10 @@ function TranslateWidget() {
 function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIntro }) {
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
   const [isCompactNavOpen, setIsCompactNavOpen] = useState(false);
+  const [isCompactNavHovered, setIsCompactNavHovered] = useState(false);
   const headerRef = useRef(null);
   const location = useLocation();
+  const isCompactNavExpanded = isCompactNavOpen || isCompactNavHovered;
 
   useEffect(() => {
     let frameId = 0;
@@ -845,6 +847,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
 
         if (!shouldCondense) {
           setIsCompactNavOpen(false);
+          setIsCompactNavHovered(false);
         }
 
         setIsHeaderCondensed((current) =>
@@ -880,22 +883,25 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
 
   useEffect(() => {
     setIsCompactNavOpen(false);
+    setIsCompactNavHovered(false);
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!isCompactNavOpen || !isHeaderCondensed) {
+    if (!isCompactNavExpanded || !isHeaderCondensed) {
       return undefined;
     }
 
     function handlePointerDown(event) {
       if (!headerRef.current?.contains(event.target)) {
         setIsCompactNavOpen(false);
+        setIsCompactNavHovered(false);
       }
     }
 
     function handleKeyDown(event) {
       if (event.key === "Escape") {
         setIsCompactNavOpen(false);
+        setIsCompactNavHovered(false);
       }
     }
 
@@ -906,10 +912,20 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isCompactNavOpen, isHeaderCondensed]);
+  }, [isCompactNavExpanded, isHeaderCondensed]);
 
   const closeCompactNav = () => {
     setIsCompactNavOpen(false);
+    setIsCompactNavHovered(false);
+  };
+
+  const handleCompactNavToggle = () => {
+    if (isCompactNavExpanded) {
+      closeCompactNav();
+      return;
+    }
+
+    setIsCompactNavOpen(true);
   };
 
   const handleReplayIntro = () => {
@@ -926,10 +942,31 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
       <div className="jh-bg jh-bg--two" />
       <header
         ref={headerRef}
+        onMouseEnter={() => {
+          if (isHeaderCondensed) {
+            setIsCompactNavHovered(true);
+          }
+        }}
+        onMouseLeave={() => setIsCompactNavHovered(false)}
+        onFocusCapture={() => {
+          if (isHeaderCondensed) {
+            setIsCompactNavHovered(true);
+          }
+        }}
+        onBlurCapture={(event) => {
+          const nextFocusedElement = event.relatedTarget;
+
+          if (
+            !(nextFocusedElement instanceof Node) ||
+            !event.currentTarget.contains(nextFocusedElement)
+          ) {
+            setIsCompactNavHovered(false);
+          }
+        }}
         className={[
           "jh-header",
           isHeaderCondensed ? "jh-header--condensed" : "",
-          isHeaderCondensed && isCompactNavOpen ? "jh-header--compact-open" : "",
+          isHeaderCondensed && isCompactNavExpanded ? "jh-header--compact-open" : "",
           cartCount > 0 ? "jh-header--has-cart" : "",
         ].filter(Boolean).join(" ")}
       >
@@ -944,10 +981,10 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           type="button"
           className="jh-nav-toggle"
           aria-controls="jh-primary-nav"
-          aria-expanded={isCompactNavOpen}
-          aria-label={isCompactNavOpen ? "Close navigation" : "Open navigation"}
-          title={isCompactNavOpen ? "Close navigation" : "Open navigation"}
-          onClick={() => setIsCompactNavOpen((current) => !current)}
+          aria-expanded={isCompactNavExpanded}
+          aria-label={isCompactNavExpanded ? "Close navigation" : "Open navigation"}
+          title={isCompactNavExpanded ? "Close navigation" : "Open navigation"}
+          onClick={handleCompactNavToggle}
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
@@ -957,7 +994,7 @@ function Shell({ cartCount, children, currencyCode, onCurrencyChange, onReplayIn
           id="jh-primary-nav"
           className="jh-nav"
           aria-label="Primary navigation"
-          aria-hidden={isHeaderCondensed && !isCompactNavOpen ? "true" : undefined}
+          aria-hidden={isHeaderCondensed && !isCompactNavExpanded ? "true" : undefined}
           onClick={(event) => {
             if (event.target instanceof Element && event.target.closest("a")) {
               closeCompactNav();
